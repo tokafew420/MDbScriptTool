@@ -272,7 +272,7 @@
         var $plusTab = $('.plus-tab', $codeTabs);
 
         $plusTab.click(function () {
-            newEditor('New *', guid());
+            newEditor('New *', 'editor' + guid());
 
         }).click();
     });
@@ -341,7 +341,7 @@
         /** result slider **/
         (function () {
             var $dynoStyle = $('<style/>');
-            $dynoStyle.prependTo($tabContent);
+            $dynoStyle.appendTo($tabContent);
             $resultSlider = $('.result-slider', $tabContent);
 
             $resultSlider.draggable({
