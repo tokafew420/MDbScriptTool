@@ -1,0 +1,447 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.props" Condition="Exists('..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.props')" />
+  <Import Project="..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.props" Condition="Exists('..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.props')" />
+  <Import Project="..\packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props" Condition="Exists('..\packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props')" />
+  <Import Project="..\packages\cef.redist.x64.3.3239.1723\build\cef.redist.x64.props" Condition="Exists('..\packages\cef.redist.x64.3.3239.1723\build\cef.redist.x64.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2E1427FD-050E-44B6-8E15-0504630C3F40}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tokafew420.CefSharpWinFormTemplate</RootNamespace>
+    <AssemblyName>Tokafew420.CefSharpWinFormTemplate</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>laughing-man.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Tokafew420.CefSharpWinFormTemplate.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ChromeDevToolsSystemMenu.cs" />
+    <Compile Include="FileSystemSchemeHandlerFactory.cs" />
+    <Compile Include="KeyboardHandler.cs" />
+    <Compile Include="App.cs" />
+    <Compile Include="SystemEvent.cs" />
+    <Compile Include="AppForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AppForm.Designer.cs">
+      <DependentUpon>AppForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ScriptEvent.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="AppForm.resx">
+      <DependentUpon>AppForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Content\bootstrap-grid.css.map" />
+    <None Include="Content\bootstrap-grid.min.css.map" />
+    <None Include="Content\bootstrap-reboot.css.map" />
+    <None Include="Content\bootstrap-reboot.min.css.map" />
+    <None Include="Content\bootstrap.css.map" />
+    <None Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\themes\base\accordion.css" />
+    <Content Include="Content\themes\base\all.css" />
+    <Content Include="Content\themes\base\autocomplete.css" />
+    <Content Include="Content\themes\base\base.css" />
+    <Content Include="Content\themes\base\button.css" />
+    <Content Include="Content\themes\base\core.css" />
+    <Content Include="Content\themes\base\datepicker.css" />
+    <Content Include="Content\themes\base\dialog.css" />
+    <Content Include="Content\themes\base\draggable.css" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\themes\base\jquery-ui.css" />
+    <Content Include="Content\themes\base\jquery-ui.min.css" />
+    <Content Include="Content\themes\base\menu.css" />
+    <Content Include="Content\themes\base\progressbar.css" />
+    <Content Include="Content\themes\base\resizable.css" />
+    <Content Include="Content\themes\base\selectable.css" />
+    <Content Include="Content\themes\base\selectmenu.css" />
+    <Content Include="Content\themes\base\slider.css" />
+    <Content Include="Content\themes\base\sortable.css" />
+    <Content Include="Content\themes\base\spinner.css" />
+    <Content Include="Content\themes\base\tabs.css" />
+    <Content Include="Content\themes\base\theme.css" />
+    <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Scripts\bootstrap.bundle.js.map" />
+    <None Include="Scripts\bootstrap.bundle.min.js.map" />
+    <None Include="Scripts\bootstrap.js.map" />
+    <None Include="Scripts\bootstrap.min.js.map" />
+    <None Include="Scripts\codemirror-2.37\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\coffeescript\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\pascal\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\perl\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\ruby\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\r\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\sieve\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\xquery\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\package.json" />
+    <None Include="Scripts\esm\popper-utils.js.map" />
+    <None Include="Scripts\esm\popper-utils.min.js.map" />
+    <None Include="Scripts\esm\popper.js.map" />
+    <None Include="Scripts\esm\popper.min.js.map" />
+    <None Include="Scripts\jquery-3.3.1.min.map" />
+    <None Include="Scripts\jquery-3.3.1.slim.min.map" />
+    <None Include="Scripts\popper-utils.js.map" />
+    <None Include="Scripts\popper-utils.min.js.map" />
+    <None Include="Scripts\popper.js.map" />
+    <None Include="Scripts\popper.min.js.map" />
+    <None Include="Scripts\README.md" />
+    <None Include="Scripts\umd\popper-utils.js.map" />
+    <None Include="Scripts\umd\popper-utils.min.js.map" />
+    <None Include="Scripts\umd\popper.js.map" />
+    <None Include="Scripts\umd\popper.min.js.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bootstrap-grid.css" />
+    <Content Include="Content\bootstrap-grid.min.css" />
+    <Content Include="Content\bootstrap-reboot.css" />
+    <Content Include="Content\bootstrap-reboot.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="laughing-man.ico" />
+    <Content Include="Content\app.html" />
+    <Content Include="Content\app.css" />
+    <Content Include="Scripts\app.js" />
+    <Content Include="Scripts\app-core.js" />
+    <Content Include="Scripts\bootstrap.bundle.js" />
+    <Content Include="Scripts\bootstrap.bundle.min.js" />
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\codemirror-2.37\keymap\emacs.js" />
+    <Content Include="Scripts\codemirror-2.37\keymap\vim.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\codemirror.css" />
+    <Content Include="Scripts\codemirror-2.37\lib\codemirror.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\closetag.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\continuecomment.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\continuelist.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\dialog.css" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\dialog.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\foldcode.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\formatting.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\javascript-hint.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\loadmode.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\match-highlighter.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\multiplex.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\overlay.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\pig-hint.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\runmode-standalone.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\runmode.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\search.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\searchcursor.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\simple-hint.css" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\simple-hint.js" />
+    <Content Include="Scripts\codemirror-2.37\lib\util\xml-hint.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\clike\clike.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\clojure\clojure.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\coffeescript\coffeescript.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\commonlisp\commonlisp.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\css\css.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\css\test.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\diff\diff.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\ecl\ecl.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\erlang\erlang.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\gfm\gfm.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\gfm\test.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\go\go.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\groovy\groovy.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\haskell\haskell.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\haxe\haxe.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\htmlembedded\htmlembedded.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\htmlmixed\htmlmixed.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\http\http.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\javascript\javascript.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\jinja2\jinja2.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\less\less.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\lua\lua.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\markdown\markdown.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\markdown\test.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\mysql\mysql.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\ntriples\ntriples.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\ocaml\ocaml.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\pascal\pascal.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\perl\perl.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\php\php.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\pig\pig.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\plsql\plsql.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\properties\properties.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\python\LICENSE.txt" />
+    <Content Include="Scripts\codemirror-2.37\mode\python\python.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\rpm\changes\changes.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\rpm\spec\spec.css" />
+    <Content Include="Scripts\codemirror-2.37\mode\rpm\spec\spec.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\rst\rst.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\ruby\ruby.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\rust\rust.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\r\r.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\scheme\scheme.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\shell\shell.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\sieve\sieve.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\smalltalk\smalltalk.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\smarty\smarty.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\sparql\sparql.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\sql\sql.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\stex\stex.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\stex\test.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\tiddlywiki\tiddlywiki.css" />
+    <Content Include="Scripts\codemirror-2.37\mode\tiddlywiki\tiddlywiki.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\tiki\tiki.css" />
+    <Content Include="Scripts\codemirror-2.37\mode\tiki\tiki.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\vbscript\vbscript.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\vb\LICENSE.txt" />
+    <Content Include="Scripts\codemirror-2.37\mode\vb\vb.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\velocity\velocity.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\verilog\verilog.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\xml\xml.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\xquery\test\testBase.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\xquery\test\testEmptySequenceKeyword.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\xquery\test\testMultiAttr.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\xquery\test\testNamespaces.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\xquery\test\testProcessingInstructions.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\xquery\test\testQuotes.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\xquery\xquery.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\yaml\yaml.js" />
+    <Content Include="Scripts\codemirror-2.37\mode\z80\z80.js" />
+    <Content Include="Scripts\codemirror-2.37\theme\ambiance-mobile.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\ambiance.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\blackboard.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\cobalt.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\eclipse.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\elegant.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\erlang-dark.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\lesser-dark.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\monokai.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\neat.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\night.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\rubyblue.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\twilight.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\vibrant-ink.css" />
+    <Content Include="Scripts\codemirror-2.37\theme\xq-dark.css" />
+    <Content Include="Scripts\esm\popper-utils.js" />
+    <Content Include="Scripts\esm\popper-utils.min.js" />
+    <Content Include="Scripts\esm\popper.js" />
+    <Content Include="Scripts\esm\popper.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.3.1.js" />
+    <Content Include="Scripts\jquery-3.3.1.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\popper-utils.js" />
+    <Content Include="Scripts\popper-utils.min.js" />
+    <Content Include="Scripts\popper.js" />
+    <Content Include="Scripts\popper.min.js" />
+    <Content Include="Scripts\umd\popper-utils.js" />
+    <Content Include="Scripts\umd\popper-utils.min.js" />
+    <Content Include="Scripts\umd\popper.js" />
+    <Content Include="Scripts\umd\popper.min.js" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\index.d.ts" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>ECHO Copying directories to output
+ECHO Command: xcopy "$(ProjectDir)Content" "$(TargetDir)Content" /S /I /Y
+xcopy "$(ProjectDir)Content" "$(TargetDir)Content" /S /I /Y
+ECHO Command: xcopy "$(ProjectDir)Scripts" "$(TargetDir)Scripts" /S /I /Y
+xcopy "$(ProjectDir)Scripts" "$(TargetDir)Scripts" /S /I /Y
+ECHO Command: xcopy "$(ProjectDir)fonts" "$(TargetDir)fonts" /S /I /Y
+xcopy "$(ProjectDir)fonts" "$(TargetDir)fonts" /S /I /Y</PostBuildEvent>
+  </PropertyGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\cef.redist.x64.3.3239.1723\build\cef.redist.x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x64.3.3239.1723\build\cef.redist.x64.props'))" />
+    <Error Condition="!Exists('..\packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x86.3.3239.1723\build\cef.redist.x86.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.targets'))" />
+  </Target>
+  <PropertyGroup>
+    <PreBuildEvent>ECHO Cleaning output directories
+ECHO Command: rd /s /q "$(TargetDir)Content"
+rd /s /q "$(TargetDir)Content"
+ECHO Command: rd /s /q "$(TargetDir)Scripts"
+rd /s /q "$(TargetDir)Scripts"
+ECHO Command: rd /s /q "$(TargetDir)fonts"
+rd /s /q "$(TargetDir)fonts"</PreBuildEvent>
+  </PropertyGroup>
+  <Import Project="..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.63.0.3\build\CefSharp.Common.targets')" />
+  <Import Project="..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.targets" Condition="Exists('..\packages\CefSharp.WinForms.63.0.3\build\CefSharp.WinForms.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

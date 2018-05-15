@@ -1,0 +1,274 @@
+html,
+body {
+    height: 100%;
+    background-color: #c8c8c8;
+}
+
+body {
+    -webkit-box-pack: center;
+    justify-content: center;
+    color: #fff;
+    text-shadow: 0 .05rem .1rem rgba(0, 0, 0, .5);
+}
+
+/* Navbar */
+.navbar-dark {
+    background-color: #333333;
+}
+
+.navbar-brand .sidebar-toggle {
+    margin-right: 6px;
+}
+
+/* Sidebar */
+
+.sidebar {
+    position: absolute;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    width: 300px;
+    margin: 0;
+    background-color: #424242;
+    overflow: auto;
+}
+
+    .sidebar.collapsed {
+        margin-left: -306px;
+    }
+
+    .sidebar .sidebar-toolbar {
+        flex-wrap: nowrap;
+    }
+
+.sidebar-nav .db-lst {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+    .sidebar-nav .db-lst .db-lst-item {
+        line-height: 14px;
+    }
+
+        .sidebar-nav .db-lst .db-lst-item input[type=checkbox] {
+            margin: 0 3px;
+            vertical-align: middle;
+        }
+
+/* Sidebar slider */
+.sidebar-slider {
+    position: absolute;
+    top: 56px;
+    left: 300px;
+    bottom: 0;
+    width: 1px;
+    margin: 0;
+    padding: 3px;
+    background-color: #c8c8c8;
+    border-left: solid #333333 2px;
+    border-right: solid #333333 2px;
+}
+
+    .sidebar-slider.collapsed {
+        margin-left: -306px;
+    }
+
+    .sidebar-slider:hover {
+        cursor: ew-resize;
+        border-left: solid #fff 2px;
+        border-right: solid #fff 2px;
+    }
+
+        .sidebar-slider:hover div {
+            background-color: #fff;
+        }
+
+    .sidebar-slider div {
+        width: 6px;
+        height: 56px;
+        padding: 2px;
+        top: 50%;
+        position: relative;
+        background-color: #323232;
+        margin-left: -3px;
+        margin-top: -28px;
+    }
+
+
+/* Content */
+.content {
+    position: absolute;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    margin-left: 306px;
+}
+
+    .content.full {
+        /* Overlay sidebar purposefully so dragging is not possibly */
+        margin-left: 0px !important;
+    }
+
+    .content > div {
+        height: 100%;
+        padding-right: 0;
+        padding-left: 4px;
+    }
+
+    .content .content-toolbar {
+        flex-wrap: nowrap;
+    }
+
+    .content .code-panes {
+        height: calc(100% - 88px);
+    }
+
+        .content .code-panes .tab-pane {
+            height: 100%;
+        }
+
+            .content .code-panes .tab-pane .editor-subpane {
+                z-index: 10;
+            }
+
+            .content .code-panes .tab-pane .result-subpane {
+                margin-top: 406px;
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                top: 0;
+                left: 0;
+                overflow: auto;
+                color: #000;
+                padding: 4px;
+                padding-left: 12px;
+            }
+
+                .content .code-panes .tab-pane .result-subpane table {
+                    white-space: nowrap;
+                }
+/* Sidebar slider */
+.result-slider {
+    position: absolute;
+    height: 1px;
+    right: 0;
+    left: 4px;
+    padding: 3px;
+    background-color: #c8c8c8;
+    border-top: solid #333333 2px;
+    border-bottom: solid #333333 2px;
+    z-index: 20;
+}
+
+    .result-slider:hover {
+        cursor: ns-resize;
+        border-top: solid #fff 2px;
+        border-bottom: solid #fff 2px;
+    }
+
+        .result-slider:hover div {
+            background-color: #fff;
+        }
+
+    .result-slider div {
+        width: 56px;
+        height: 6px;
+        background-color: #323232;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: -3px;
+    }
+
+.modal-content {
+    background-color: #333333;
+}
+
+.modal-header .close {
+    color: #ffffff;
+}
+
+
+/* Links */
+a,
+a:focus,
+a:hover {
+    color: #fff;
+}
+
+/* Custom default button */
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:focus {
+    color: #333;
+    text-shadow: none; /* Prevent inheritance from `body` */
+    background-color: #fff;
+    border: .05rem solid #fff;
+}
+
+.animating {
+    transition: all ease-out .5s;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Bootstrap overrides */
+hr {
+    border-top: 1px solid #e9ecef;
+}
+
+/** Loader **/
+.loader-container {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: none;
+    position: absolute;
+    padding: 200px;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+}
+
+    .loader-container .loader {
+        border: 16px solid #c8c8c8;
+        border-radius: 50%;
+        border-top: 16px solid #1e28ad;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+        -webkit-animation: spin .75s linear infinite;
+        animation: spin .75s linear infinite;
+    }
+
+    .loader-container .msg {
+        text-align: center;
+        font-size: 24px;
+    }
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.CodeMirror {
+    height: auto;
+}
