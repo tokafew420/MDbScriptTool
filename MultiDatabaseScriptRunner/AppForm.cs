@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Windows.Forms;
 
-namespace Tokafew420.CefSharpWinFormTemplate
+namespace Tokafew420.MDScriptRunner
 {
     public partial class AppForm : Form
     {

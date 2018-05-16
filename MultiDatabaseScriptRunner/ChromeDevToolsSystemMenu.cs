@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Tokafew420.CefSharpWinFormTemplate
+namespace Tokafew420.MDScriptRunner
 {
     internal static class ChromeDevToolsSystemMenu
     {

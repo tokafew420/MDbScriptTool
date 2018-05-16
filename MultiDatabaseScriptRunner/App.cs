@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Tokafew420.CefSharpWinFormTemplate
+namespace Tokafew420.MDScriptRunner
 {
     /// <summary>
     /// An example of the application class.

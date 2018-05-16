@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace Tokafew420.CefSharpWinFormTemplate
+namespace Tokafew420.MDScriptRunner
 {
     public class KeyboardHandler : IKeyboardHandler
     {

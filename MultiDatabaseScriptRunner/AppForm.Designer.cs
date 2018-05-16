@@ -1,4 +1,4 @@
-﻿namespace Tokafew420.CefSharpWinFormTemplate
+﻿namespace Tokafew420.MDScriptRunner
 {
     partial class AppForm
     {
@@ -47,8 +47,8 @@
             this.ClientSize = new System.Drawing.Size(722, 445);
             this.Controls.Add(this.MainPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "AppForm";
-            this.Text = "CefSharpWinForm";
+            this.Name = "MDScriptRunner";
+            this.Text = "MultiDatabase Script Runner";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AppForm_Closing);
             this.Load += new System.EventHandler(this.AppForm_Load);
             this.ResumeLayout(false);

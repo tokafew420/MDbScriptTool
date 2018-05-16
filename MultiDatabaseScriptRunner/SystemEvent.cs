@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 using System;
 using System.Linq;
 
-namespace Tokafew420.CefSharpWinFormTemplate
+namespace Tokafew420.MDScriptRunner
 {
     /// <summary>
     /// A class that is emit events in the Javascript environment.

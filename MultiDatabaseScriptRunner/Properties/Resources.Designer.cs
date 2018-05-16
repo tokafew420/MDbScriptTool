@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Tokafew420.CefSharpWinFormTemplate.Properties {
+namespace Tokafew420.MDScriptRunner.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Tokafew420.CefSharpWinFormTemplate.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Tokafew420.CefSharpWinFormTemplate.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Tokafew420.MultiDatabaseScriptRunner.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

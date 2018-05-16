@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 
-namespace Tokafew420.CefSharpWinFormTemplate
+namespace Tokafew420.MDScriptRunner
 {
     internal class FileSystemSchemeHandlerFactory : ISchemeHandlerFactory
     {
@@ -46,7 +46,7 @@ namespace Tokafew420.CefSharpWinFormTemplate
             {
                 root = root + Path.VolumeSeparatorChar;
             }
-            var filepath = root + uri.AbsolutePath;
+            var filepath = root + Uri.UnescapeDataString(uri.AbsolutePath);
 
             if (File.Exists(filepath))
             {
