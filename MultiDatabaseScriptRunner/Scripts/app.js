@@ -232,7 +232,7 @@
                 $dbTable = $('#' + db, $resultPane);
             }
             if (result && result.length) {
-                var $table = $('<table border="1"><thead></thead><tbody></tbody></table>');
+                var $table = $('<table class="result-set" border="1"><thead></thead><tbody></tbody></table>');
                 var keys = Object.keys(result[0]);
 
                 $('thead', $table).append(keys.map(function (k) {
@@ -241,7 +241,11 @@
 
                 $('tbody', $table).append(result.map(function (row) {
                     return '<tr>' + keys.map(function (k) {
-                        return '<td>' + row[k] + '</td>';
+                        if (row[k] === null) {
+                            return '<td class="null">NULL</td>';
+                        } else {
+                            return '<td>' + row[k] + '</td>';
+                        }
                     }).join() + '</tr>';
                 }).join());
 
