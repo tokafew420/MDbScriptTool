@@ -14,7 +14,7 @@ namespace Tokafew420.MDScriptRunner
     public class ScriptEvent
     {
         private ChromiumWebBrowser _browser = null;
-        private IDictionary<string, List<Action<object>>> _listeners = null;
+        private IDictionary<string, List<Action<object[]>>> _listeners = null;
 
         /// <summary>
         /// Initializes a new instance of ScriptEvent.
@@ -23,7 +23,7 @@ namespace Tokafew420.MDScriptRunner
         public ScriptEvent(ChromiumWebBrowser browser)
         {
             _browser = browser ?? throw new ArgumentNullException("browser");
-            _listeners = new Dictionary<string, List<Action<object>>>();
+            _listeners = new Dictionary<string, List<Action<object[]>>>();
         }
 
         /// <summary>
@@ -56,12 +56,13 @@ namespace Tokafew420.MDScriptRunner
                         }
                         catch
                         {
-                            // Do Nothing
+                            // Do nothing
                         }
                     }
                 }
 
-                foreach (var action in actionList) Task.Factory.StartNew(action, args);
+                foreach (var action in actionList)
+                    Task.Factory.StartNew(() => action(args));
             }
         }
 
@@ -71,7 +72,7 @@ namespace Tokafew420.MDScriptRunner
         /// <param name="name">The event name.</param>
         /// <param name="handler">The event handler.</param>
         [JavascriptIgnore]
-        public void On(string name, Action<object> handler)
+        public void On(string name, Action<object[]> handler)
         {
             if (name == null) throw new ArgumentNullException("name");
             if (handler == null) throw new ArgumentNullException("handler");
@@ -80,7 +81,7 @@ namespace Tokafew420.MDScriptRunner
 
             if (actionList == null)
             {
-                actionList = new List<Action<object>>();
+                actionList = new List<Action<object[]>>();
                 _listeners[name] = actionList;
             }
 
@@ -93,7 +94,7 @@ namespace Tokafew420.MDScriptRunner
         /// <param name="name">The event name.</param>
         /// <param name="handler">The event handler.</param>
         [JavascriptIgnore]
-        public void Once(string name, Action<object> handler)
+        public void Once(string name, Action<object[]> handler)
         {
             if (name == null) throw new ArgumentNullException("name");
             if (handler == null) throw new ArgumentNullException("handler");
@@ -102,7 +103,7 @@ namespace Tokafew420.MDScriptRunner
 
             if (actionList == null)
             {
-                actionList = new List<Action<object>>();
+                actionList = new List<Action<object[]>>();
                 _listeners[name] = actionList;
             }
 
@@ -119,7 +120,7 @@ namespace Tokafew420.MDScriptRunner
         /// <param name="name">The event name.</param>
         /// <param name="handler">The handler instance.</param>
         [JavascriptIgnore]
-        public void RemoveListener(string name, Action<object> handler)
+        public void RemoveListener(string name, Action<object[]> handler)
         {
             if (name == null) throw new ArgumentNullException("name");
             if (handler == null) throw new ArgumentNullException("handler");

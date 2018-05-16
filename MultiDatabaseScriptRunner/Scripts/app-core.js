@@ -76,7 +76,9 @@
             for (i = 1; i < len; i++) {
                 try {
                     args[i] = JSON.parse(args[i]);
-                } catch (err) { }
+                } catch (err) {
+                    console.error(err);
+                }
             }
 
             super.emit.apply(this, args);

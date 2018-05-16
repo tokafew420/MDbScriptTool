@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -39,9 +38,9 @@ namespace Tokafew420.MDScriptRunner
             _scriptEvent = scriptEvent ?? throw new ArgumentNullException("scriptEvent");
 
             // Register event handlers
-            _scriptEvent.On("parse-connection-string", (args) => ParseConnectionString(args as object[]));
-            _scriptEvent.On("get-databases", (args) => GetDatabases(args as object[]));
-            _scriptEvent.On("execute-sql", (args) => ExecuteSql(args as object[]));
+            _scriptEvent.On("parse-connection-string", ParseConnectionString);
+            _scriptEvent.On("get-databases", GetDatabases);
+            _scriptEvent.On("execute-sql", ExecuteSql);
         }
 
         /// <summary>
@@ -165,10 +164,9 @@ namespace Tokafew420.MDScriptRunner
 
                 if (!string.IsNullOrWhiteSpace(connStr) &&
                     dbs.Count() > 0 &&
-                    !string.IsNullOrWhiteSpace(sql) && 
+                    !string.IsNullOrWhiteSpace(sql) &&
                     !string.IsNullOrWhiteSpace(id))
                 {
-
                     var batches = GetSqlBatches(sql);
                     var builder = new SqlConnectionStringBuilder(connStr);
 
@@ -250,7 +248,6 @@ namespace Tokafew420.MDScriptRunner
                 }
                 else
                 {
-
                     count++;
                 }
             }

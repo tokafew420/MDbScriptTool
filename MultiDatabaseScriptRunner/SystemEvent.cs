@@ -45,7 +45,8 @@ namespace Tokafew420.MDScriptRunner
                     }
                 }
                 // Build args and escape single quote
-                serializedArgs = string.Join(",", args.Select(a => "'" + (a as string).Replace("'", "\\'") + "'"));
+                // New lines (ie: \r\n) are already escape but we need to double escape it for the javascript client
+                serializedArgs = string.Join(",", args.Select(a => "'" + (a as string).Replace("'", "\\'").Replace("\\n", "\\\\n").Replace("\\r", "\\\\r") + "'"));
                 
             }
 
