@@ -20,6 +20,13 @@
         return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
     }
 
+    function escapeHtml(html) {
+        if (typeof html === 'string') {
+            return html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+        return html;
+    }
+
     /** Navbar **/
     $(function () {
         var $navbarDrawer = $('#navbar-drawer', $navbar);
@@ -244,7 +251,7 @@
                         if (row[k] === null) {
                             return '<td class="null">NULL</td>';
                         } else {
-                            return '<td>' + row[k] + '</td>';
+                            return '<td>' + escapeHtml(row[k]) + '</td>';
                         }
                     }).join() + '</tr>';
                 }).join());
@@ -585,7 +592,7 @@
                     opts = {};
                 }
                 opts = opts || {};
-                callback = callback || function () { }
+                callback = callback || function () { };
 
                 if (type === 'alert') {
                     opts = Object.assign({
@@ -673,7 +680,7 @@
                 hide: function (opts) {
                     $container.hide();
                 }
-            }
+            };
         })();
     })();
 }(window));

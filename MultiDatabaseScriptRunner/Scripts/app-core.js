@@ -58,43 +58,20 @@
         };
     }
 
-    /**
-     * Specialize implementation for system events.
-     */
-    class SystemEvent extends EventEmitter {
-        /**
-         * Extends the EventEmitter by attempting to parse the arguments to emit().
-         *
-         * @param {any} event The event name.
-         * @param {...} args Any number of arguemnts.
-         */
-        emit(event) {
-            var i, len, args = [].slice.call(arguments);
-
-            len = args.length;
-
-            for (i = 1; i < len; i++) {
-                try {
-                    args[i] = JSON.parse(args[i]);
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-
-            super.emit.apply(this, args);
-        }
-    }
-
     // Define global system event emitter.
-    window.systemEvent = new SystemEvent();
+    window.systemEvent = new window.EventEmitter();
 
     /**
-     * 
+     *  A function that takes in a wrapper function which will delay the execution
+     *  of the original function until a specific amount of time has passed.
+     *  Generally used to prevent a function from running multiple times in quick
+     *  sucession.
      * https://davidwalsh.name/javascript-debounce-function
      * 
-     * @param {any} func
-     * @param {any} wait
-     * @param {any} immediate
+     * @param {function} func The function to run.
+     * @param {number} wait The time in milliseconds to wait before running.
+     * @param {boolean} immediate Whether to run immediately.
+     * @returns {function} A wrapper function.
      */
     window.debounce = function debounce(func, wait, immediate) {
         var timeout;

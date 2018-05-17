@@ -29,28 +29,12 @@ namespace Tokafew420.MDScriptRunner
         /// <param name="data">The event arguments.</param>
         public void Emit(string name, params object[] args)
         {
-            string serializedArgs = null;
+            if (args == null) args = new object[] { };
 
-            if (args != null)
-            {
-                for (var i = 0; i < args.Length; i++)
-                {
-                    try
-                    {
-                        args[i] = JsonConvert.SerializeObject(args[i]);
-                    }
-                    catch
-                    {
-                        // Do nothing
-                    }
-                }
-                // Build args and escape single quote
-                // New lines (ie: \r\n) are already escape but we need to double escape it for the javascript client
-                serializedArgs = string.Join(",", args.Select(a => "'" + (a as string).Replace("'", "\\'").Replace("\\n", "\\\\n").Replace("\\r", "\\\\r") + "'"));
-                
-            }
+            args = (new object[] { name }).Concat(args).ToArray();
 
-            _browser.ExecuteScriptAsync($"window.systemEvent.emit('{name}', {serializedArgs ?? "undefined"});");
+            // This will get eval in chrome
+            _browser.ExecuteScriptAsync($"window.systemEvent.emit.apply(window.systemEvent, {JsonConvert.SerializeObject(args)})");
         }
     }
 }
