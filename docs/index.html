@@ -1,156 +1,152 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-
-  <head>
-
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Grayscale - Start Bootstrap Theme</title>
-
+    <meta name="description" content="A tool to run SQL scripts against multiple MSSQL databases.">
+    <meta name="author" content="tokafew420">
+    <title>MultiDatabase Script Runner</title>
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
-
     <!-- Custom fonts for this template -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
     <link href='https://fonts.googleapis.com/css?family=Cabin:700' rel='stylesheet' type='text/css'>
-
     <!-- Custom styles for this template -->
-    <link href="css/grayscale.min.css" rel="stylesheet">
+    <link href="css/index.css" rel="stylesheet">
+</head>
+<body id="page-top">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+        <div class="container">
+            <a class="navbar-brand js-scroll-trigger" href="#page-top">MultiDatabase Script Runner</a>
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/tokafew420/MultiDatabaseScriptRunner">View Repo</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <nav id="section-nav" class="navbar">
+        <ul>
+            <li>
+                <a href="#page-top" class="nav-link js-scroll-trigger">Home</a>
+                <nav class="nav-item">
+                    <ul>
+                        <li><a href="#about" class="nav-link js-scroll-trigger">About</a></li>
+                        <li><a href="#download" class="nav-link js-scroll-trigger">Download</a></li>
+                    </ul>
+                </nav>
+            </li>
+            <li><a href="#contact" class="nav-link js-scroll-trigger">Contact</a></li>
+        </ul>
+    </nav>
+    <!-- Intro Header -->
+    <header class="masthead">
+        <div class="intro-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8 mx-auto">
+                        <!--<h1 class="brand-heading">MD Script Runner</h1>-->
+                        <p class="intro-text">
+                            A tool to run SQL scripts against
+                            <br>multiple MSSQL databases.
+                        </p>
+                        <a href="#about" class="btn btn-circle js-scroll-trigger">
+                            <i class="fa fa-angle-double-down animated"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- About Section -->
+    <section id="about" class="content-section text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2>About Grayscale</h2>
+                    <p>
+                        Grayscale is a free Bootstrap theme created by Start Bootstrap. It can be yours right now, simply download the template on
+                        <a href="http://startbootstrap.com/template-overviews/grayscale/">the preview page</a>. The theme is open source, and you can use it for any purpose, personal or commercial.
+                    </p>
+                    <p>
+                        This theme features stock photos by
+                        <a href="http://gratisography.com/">Gratisography</a>
+                        along with a custom Google Maps skin courtesy of
+                        <a href="http://snazzymaps.com/">Snazzy Maps</a>.
+                    </p>
+                    <p>Grayscale includes full HTML, CSS, and custom JavaScript files along with SASS and LESS files for easy customization!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Download Section -->
+    <section id="download" class="download-section content-section text-center">
+        <div class="container">
+            <div class="col-lg-8 mx-auto">
+                <h2>Download Grayscale</h2>
+                <p>You can download Grayscale for free on the preview page at Start Bootstrap.</p>
+                <a href="http://startbootstrap.com/template-overviews/grayscale/" class="btn btn-default btn-lg">Visit Download Page</a>
+            </div>
+        </div>
+    </section>
+    <!-- Contact Section -->
+    <section id="contact" class="content-section text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <h2>Contact Start Bootstrap</h2>
+                    <p>
+                        Feel free to leave us a comment on the
+                        <a href="http://startbootstrap.com/template-overviews/grayscale/">Grayscale template overview page</a>
+                        on Start Bootstrap to give some feedback about this theme!
+                    </p>
+                    <ul class="list-inline banner-social-buttons">
+                        <li class="list-inline-item">
+                            <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg">
+                                <i class="fa fa-twitter fa-fw"></i>
+                                <span class="network-name">Twitter</span>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://github.com/BlackrockDigital/startbootstrap" class="btn btn-default btn-lg">
+                                <i class="fa fa-github fa-fw"></i>
+                                <span class="network-name">Github</span>
+                            </a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a href="https://plus.google.com/+Startbootstrap/posts" class="btn btn-default btn-lg">
+                                <i class="fa fa-google-plus fa-fw"></i>
+                                <span class="network-name">Google+</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Footer -->
+    <footer>
+        <div class="container text-center">
+            <p>Copyright &copy; Tokafew420 <span id="year">2018</span></p>
+            <p>GrayScale Template by <a href="https://startbootstrap.com/template-overviews/grayscale/">startbootstrap.com</a></p>
+        </div>
+    </footer>
+    <!-- Bootstrap core JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
 
-  </head>
+    <!-- Plugin JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 
-  <body id="page-top">
-      <!-- Navigation -->
-      <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
-          <div class="container">
-              <a class="navbar-brand js-scroll-trigger" href="#page-top">Start Bootstrap</a>
-              <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                  Menu
-                  <i class="fa fa-bars"></i>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarResponsive">
-                  <ul class="navbar-nav ml-auto">
-                      <li class="nav-item">
-                          <a class="nav-link js-scroll-trigger" href="#about">About</a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link js-scroll-trigger" href="#download">Download</a>
-                      </li>
-                      <li class="nav-item">
-                          <a class="nav-link js-scroll-trigger" href="#contact">Contact</a>
-                      </li>
-                  </ul>
-              </div>
-          </div>
-      </nav>
-      <!-- Intro Header -->
-      <header class="masthead">
-          <div class="intro-body">
-              <div class="container">
-                  <div class="row">
-                      <div class="col-lg-8 mx-auto">
-                          <h1 class="brand-heading">Grayscale</h1>
-                          <p class="intro-text">
-                              A free, responsive, one page Bootstrap theme.
-                              <br>Created by Start Bootstrap.
-                          </p>
-                          <a href="#about" class="btn btn-circle js-scroll-trigger">
-                              <i class="fa fa-angle-double-down animated"></i>
-                          </a>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </header>
-      <!-- About Section -->
-      <section id="about" class="content-section text-center">
-          <div class="container">
-              <div class="row">
-                  <div class="col-lg-8 mx-auto">
-                      <h2>About Grayscale</h2>
-                      <p>
-                          Grayscale is a free Bootstrap theme created by Start Bootstrap. It can be yours right now, simply download the template on
-                          <a href="http://startbootstrap.com/template-overviews/grayscale/">the preview page</a>. The theme is open source, and you can use it for any purpose, personal or commercial.
-                      </p>
-                      <p>
-                          This theme features stock photos by
-                          <a href="http://gratisography.com/">Gratisography</a>
-                          along with a custom Google Maps skin courtesy of
-                          <a href="http://snazzymaps.com/">Snazzy Maps</a>.
-                      </p>
-                      <p>Grayscale includes full HTML, CSS, and custom JavaScript files along with SASS and LESS files for easy customization!</p>
-                  </div>
-              </div>
-          </div>
-      </section>
-      <!-- Download Section -->
-      <section id="download" class="download-section content-section text-center">
-          <div class="container">
-              <div class="col-lg-8 mx-auto">
-                  <h2>Download Grayscale</h2>
-                  <p>You can download Grayscale for free on the preview page at Start Bootstrap.</p>
-                  <a href="http://startbootstrap.com/template-overviews/grayscale/" class="btn btn-default btn-lg">Visit Download Page</a>
-              </div>
-          </div>
-      </section>
-      <!-- Contact Section -->
-      <section id="contact" class="content-section text-center">
-          <div class="container">
-              <div class="row">
-                  <div class="col-lg-8 mx-auto">
-                      <h2>Contact Start Bootstrap</h2>
-                      <p>
-                          Feel free to leave us a comment on the
-                          <a href="http://startbootstrap.com/template-overviews/grayscale/">Grayscale template overview page</a>
-                          on Start Bootstrap to give some feedback about this theme!
-                      </p>
-                      <ul class="list-inline banner-social-buttons">
-                          <li class="list-inline-item">
-                              <a href="https://twitter.com/SBootstrap" class="btn btn-default btn-lg">
-                                  <i class="fa fa-twitter fa-fw"></i>
-                                  <span class="network-name">Twitter</span>
-                              </a>
-                          </li>
-                          <li class="list-inline-item">
-                              <a href="https://github.com/BlackrockDigital/startbootstrap" class="btn btn-default btn-lg">
-                                  <i class="fa fa-github fa-fw"></i>
-                                  <span class="network-name">Github</span>
-                              </a>
-                          </li>
-                          <li class="list-inline-item">
-                              <a href="https://plus.google.com/+Startbootstrap/posts" class="btn btn-default btn-lg">
-                                  <i class="fa fa-google-plus fa-fw"></i>
-                                  <span class="network-name">Google+</span>
-                              </a>
-                          </li>
-                      </ul>
-                  </div>
-              </div>
-          </div>
-      </section>
-      <!-- Map Section -->
-      <div id="map"></div>
-      <!-- Footer -->
-      <footer>
-          <div class="container text-center">
-              <p>Copyright &copy; Your Website 2018</p>
-          </div>
-      </footer>
-      <!-- Bootstrap core JavaScript -->
-      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
-
-      <!-- Plugin JavaScript -->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-      <!-- Google Maps API Key - Use your own API key to enable the map feature. More information on the Google Maps API can be found at https://developers.google.com/maps/ -->
-      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCRngKslUGJTlibkQ3FkfTxj3Xss1UlZDA&sensor=false"></script>
-      <!-- Custom scripts for this template -->
-      <script src="js/grayscale.min.js"></script>
-  </body>
-
+    <!-- Custom scripts for this template -->
+    <script src="js/index.js"></script>
+</body>
 </html>
