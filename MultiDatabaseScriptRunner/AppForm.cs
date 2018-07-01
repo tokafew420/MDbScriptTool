@@ -32,7 +32,7 @@ namespace Tokafew420.MDScriptRunner
         private void AppForm_Load(object sender, EventArgs e)
         {
             // The main entry point for the browser page is index.html
-            var url = new Uri(string.Format("fs:///{0}Content/app.html", GetAppLocation()));
+            var url = new Uri(string.Format("fs:///{0}Content/app/app.html", GetAppLocation()));
 
             _browser = new ChromiumWebBrowser(url.ToString());
             _systemEvent = new SystemEvent(_browser);
@@ -45,7 +45,7 @@ namespace Tokafew420.MDScriptRunner
 
             MainPanel.Controls.Add(_browser);
 
-            ChromeDevToolsSystemMenu.CreateSysMenu(this);
+            NativeMethods.CreateSysMenu(this);
 
             // Initialize the app
             new App(this, _browser, _systemEvent, _scriptEvent);
@@ -56,7 +56,7 @@ namespace Tokafew420.MDScriptRunner
             base.WndProc(ref m);
 
             // Test if the About item was selected from the system menu
-            if ((m.Msg == ChromeDevToolsSystemMenu.WM_SYSCOMMAND) && ((int)m.WParam == ChromeDevToolsSystemMenu.SYSMENU_CHROME_DEV_TOOLS))
+            if ((m.Msg == NativeMethods.WM_SYSCOMMAND) && (m.WParam == NativeMethods.SYSMENU_CHROME_DEV_TOOLS))
             {
                 _browser.ShowDevTools();
             }

@@ -97,7 +97,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChromeDevToolsSystemMenu.cs" />
+    <Compile Include="NativeMethods.cs" />
     <Compile Include="FileSystemSchemeHandlerFactory.cs" />
     <Compile Include="KeyboardHandler.cs" />
     <Compile Include="App.cs" />
@@ -130,6 +130,11 @@
     <None Include="Content\bootstrap-reboot.min.css.map" />
     <None Include="Content\bootstrap.css.map" />
     <None Include="Content\bootstrap.min.css.map" />
+    <Content Include="Content\app\css\result-slider.css" />
+    <Content Include="Content\app\css\content.css" />
+    <Content Include="Content\app\css\sidebar-slider.css" />
+    <Content Include="Content\app\css\sidebar.css" />
+    <Content Include="Content\app\css\navbar.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -248,10 +253,16 @@
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="laughing-man.ico" />
-    <Content Include="Content\app.html" />
-    <Content Include="Content\app.css" />
-    <Content Include="Scripts\app.js" />
-    <Content Include="Scripts\app-core.js" />
+    <Content Include="Content\app\app.html" />
+    <Content Include="Content\app\css\app.css" />
+    <Content Include="Scripts\app\content.js" />
+    <Content Include="Scripts\app\connection-info-dialog.js" />
+    <Content Include="Scripts\app\sidebar.js" />
+    <Content Include="Scripts\app\sidebar-slider.js" />
+    <Content Include="Scripts\app\navbar.js" />
+    <Content Include="Scripts\app\utils.js" />
+    <Content Include="Scripts\app\app.js" />
+    <Content Include="Scripts\app\core.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />

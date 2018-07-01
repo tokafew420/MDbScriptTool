@@ -3,26 +3,29 @@ using System.Runtime.InteropServices;
 
 namespace Tokafew420.MDScriptRunner
 {
-    internal static class ChromeDevToolsSystemMenu
+    internal static class NativeMethods
     {
         // P/Invoke constants
         public static int WM_SYSCOMMAND = 0x112;
 
-        public static int MF_STRING = 0x0;
-        public static int MF_SEPARATOR = 0x800;
+        [Flags]
+        public enum MenuFlags : uint
+        {
+            MF_STRING = 0,
+            MF_BYPOSITION = 0x400,
+            MF_SEPARATOR = 0x800,
+            MF_REMOVE = 0x1000,
+        }
+
+        // ID for the Chrome dev tools item on the system menu
+        public static IntPtr SYSMENU_CHROME_DEV_TOOLS = new IntPtr(0x1);
 
         // P/Invoke declarations
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
 
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern bool AppendMenu(IntPtr hMenu, int uFlags, int uIDNewItem, string lpNewItem);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern bool InsertMenu(IntPtr hMenu, int uPosition, int uFlags, int uIDNewItem, string lpNewItem);
-
-        // ID for the Chrome dev tools item on the system menu
-        public static int SYSMENU_CHROME_DEV_TOOLS = 0x1;
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool AppendMenu(IntPtr hMenu, MenuFlags uFlags, IntPtr uIDNewItem, string lpNewItem);
 
         public static void CreateSysMenu(System.Windows.Forms.Form frm)
         {
@@ -36,10 +39,10 @@ namespace Tokafew420.MDScriptRunner
             IntPtr hSysMenu = GetSystemMenu(frm.Handle, false);
 
             // Add a separator
-            AppendMenu(hSysMenu, MF_SEPARATOR, 0, string.Empty);
+            AppendMenu(hSysMenu, MenuFlags.MF_SEPARATOR, new IntPtr(0), string.Empty);
 
             // Add the About menu item
-            AppendMenu(hSysMenu, MF_STRING, SYSMENU_CHROME_DEV_TOOLS, "&Chrome Dev Tools");
+            AppendMenu(hSysMenu, MenuFlags.MF_STRING, SYSMENU_CHROME_DEV_TOOLS, "&Chrome Dev Tools");
         }
     }
 }
