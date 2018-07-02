@@ -30,7 +30,7 @@
             var selectedConnIdx = +($('.select-connection option:selected').val()); // eslint-disable-line no-extra-parens
 
             app.opts.selectedConnIdx = isNaN(selectedConnIdx) ? -1 : selectedConnIdx;
-            app.currentConnection = connections[app.opts.selectedConnIdx];
+            app.currentConnection = app.connections[app.opts.selectedConnIdx];
 
             localStorage.setItem('options', JSON.stringify(app.opts));
 
@@ -62,16 +62,34 @@
             $dbLst.empty();
 
             if (dbLst) {
+                var comparer = new Intl.Collator('en', {
+                    sensitivity: 'base',
+                    numeric: true
+                }).compare;
+
+                // Sort by database name, case insensitive and accounting for numerics
+                dbLst.sort(function (a, b) {
+                    return comparer(a.name, b.name);
+                });
 
                 dbLst.forEach(function (db, idx) {
                     if (typeof db.checked !== 'boolean') db.checked = db.name !== 'master';
 
-                    $('input', $(`<li class="db-lst-item active">
-                    <input type="checkbox" ${db.checked ? 'checked' : ''}/><span class="db-name">${db.name}</span>
-                </li>`).appendTo($dbLst)).change(function () {
-                            db.checked = $(this).is(':checked');
-                            localStorage.setItem('connections', JSON.stringify(app.connections));
-                        });
+                    var $item = $(`<li class="db-lst-item active">
+                            <input type="checkbox" ${db.checked ? 'checked' : ''}/><span class="db-name">${db.name}</span>
+                        </li>`);
+
+                    if (db.name === 'master') {
+                        // master database always on top
+                        $item.prependTo($dbLst);
+                    } else {
+                        $item.appendTo($dbLst);
+                    }
+
+                    $('input', $item).change(function () {
+                        db.checked = $(this).is(':checked');
+                        localStorage.setItem('connections', JSON.stringify(app.connections));
+                    });
                 });
             }
         }
@@ -92,8 +110,28 @@
         if (app.connections.length) renderConnectionSelect();
         if (app.currentConnection) renderDbList(app.currentConnection.dbs);
 
+        function selectAll() {
+            $('.db-lst-item input[type="checkbox"]', $dbLst).prop('checked', true);
+            app.currentConnection.dbs.forEach(function (db) {
+                db.checked = true;
+            });
+
+            localStorage.setItem('connections', JSON.stringify(app.connections));
+        }
+
+        function unselectAll() {
+            $('.db-lst-item input[type="checkbox"]', $dbLst).prop('checked', false);
+            app.currentConnection.dbs.forEach(function (db) {
+                db.checked = false;
+            });
+
+            localStorage.setItem('connections', JSON.stringify(app.connections));
+        }
+
+
         /** sidebar toolbar **/
         (function () {
+            // Refresh database list
             $('.sidebar-toolbar .refresh-databases-btn').click(function () {
                 if (app.opts.selectedConnIdx === -1) {
                     bsAlert('No connection selected');
@@ -103,6 +141,16 @@
                         scriptEvent.emit('get-databases', app.currentConnection.raw);
                     }
                 }
+            });
+
+            // Select all databases
+            $('.sidebar-toolbar .check-all-databases-btn').click(function () {
+                selectAll();
+            });
+
+            // Unselect all databases
+            $('.sidebar-toolbar .uncheck-all-databases-btn').click(function () {
+                unselectAll();
             });
         })();
     });
