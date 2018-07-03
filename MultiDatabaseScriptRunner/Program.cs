@@ -1,6 +1,6 @@
 ﻿using CefSharp;
+using Newtonsoft.Json;
 using System;
-using System.IO;
 using System.Windows.Forms;
 
 namespace Tokafew420.MDScriptRunner
@@ -19,7 +19,7 @@ namespace Tokafew420.MDScriptRunner
             var settings = new CefSettings()
             {
                 //By default CefSharp will use an in-memory cache, you need to specify a Cache Folder to persist data
-                CachePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "CefSharp\\Cache")
+                CachePath = AppForm.CacheDirectory
             };
             settings.RegisterScheme(new CefCustomScheme()
             {
@@ -29,6 +29,16 @@ namespace Tokafew420.MDScriptRunner
 
             // Perform dependency check to make sure all relevant resources are in our output directory.
             Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
+
+            // Setup default json serialization settings.
+            JsonConvert.DefaultSettings = () =>
+                new JsonSerializerSettings
+                {
+                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                    Formatting = Formatting.Indented,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+                };
 
             Application.Run(new AppForm());
         }

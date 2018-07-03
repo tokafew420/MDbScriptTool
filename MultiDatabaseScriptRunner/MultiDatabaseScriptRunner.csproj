@@ -101,6 +101,8 @@
     <Compile Include="FileSystemSchemeHandlerFactory.cs" />
     <Compile Include="KeyboardHandler.cs" />
     <Compile Include="App.cs" />
+    <Compile Include="AppSettings.cs" />
+    <Compile Include="SettingsJsonConverter.cs" />
     <Compile Include="SystemEvent.cs" />
     <Compile Include="AppForm.cs">
       <SubType>Form</SubType>

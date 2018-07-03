@@ -1,6 +1,7 @@
 ﻿using CefSharp;
 using CefSharp.WinForms;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
@@ -12,18 +13,6 @@ namespace Tokafew420.MDScriptRunner
         private ScriptEvent _scriptEvent;
         private SystemEvent _systemEvent;
 
-        public static string GetAppLocation()
-        {
-#if DEBUG
-            // Use the project directory when in Debug mode
-            // Output path is {project dir}/bin/{Configuration}/{Platform}/
-            // ie: ./bin/x64/Debug
-            return Directory.GetParent(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../..")).FullName + "\\";
-#else
-            return AppDomain.CurrentDomain.BaseDirectory;
-#endif
-        }
-
         public AppForm()
         {
             InitializeComponent();
@@ -32,7 +21,7 @@ namespace Tokafew420.MDScriptRunner
         private void AppForm_Load(object sender, EventArgs e)
         {
             // The main entry point for the browser page is index.html
-            var url = new Uri(string.Format("fs:///{0}Content/app/app.html", GetAppLocation()));
+            var url = new Uri(string.Format("fs:///{0}Content/app/app.html", AppDirectory));
 
             _browser = new ChromiumWebBrowser(url.ToString());
             _systemEvent = new SystemEvent(_browser);
@@ -46,6 +35,33 @@ namespace Tokafew420.MDScriptRunner
             MainPanel.Controls.Add(_browser);
 
             NativeMethods.CreateSysMenu(this);
+
+            // Load saved state
+            try
+            {
+                var windowLocation = AppSettings.Get<System.Drawing.Point?>("WindowLocation");
+                if (windowLocation != null)
+                {
+                    this.Location = windowLocation.Value;
+                }
+
+                var windowSize = AppSettings.Get<System.Drawing.Size?>("WindowSize");
+                if (windowSize != null)
+                {
+                    this.Size = windowSize.Value;
+                }
+
+                var windowIsMaximized = AppSettings.Get<bool>("WindowIsMaximized");
+                if (windowIsMaximized)
+                {
+                    this.WindowState = FormWindowState.Maximized;
+                }
+            }
+            catch (Exception err)
+            {
+                Debug.WriteLine("Failed to apply AppSettings");
+                Debug.WriteLine(err.ToString());
+            }
 
             // Initialize the app
             new App(this, _browser, _systemEvent, _scriptEvent);
@@ -69,6 +85,55 @@ namespace Tokafew420.MDScriptRunner
             //Alternative solution is to set the WCF timeout to Zero (or a smaller number) using CefSharp.CefSharpSettings.WcfTimeout = TimeSpan.Zero;
             // This must be done before creating any ChromiumWebBrowser instance
             //Cef.Shutdown();
+
+            // Save window state
+            AppSettings.Set("WindowLocation", new System.Drawing.Point?(this.Location));
+
+            // Copy window size to app settings
+            if (this.WindowState == FormWindowState.Normal)
+            {
+                AppSettings.Set("WindowSize", new System.Drawing.Size?(this.Size));
+            }
+            else
+            {
+                AppSettings.Set("WindowSize", new System.Drawing.Size?(this.RestoreBounds.Size));
+            }
+            AppSettings.Set("WindowIsMaximized", this.WindowState == FormWindowState.Maximized);
+
+            AppSettings.Save();
         }
+
+        #region Properties
+        private static Lazy<string> _appDirectory = new Lazy<string>(() =>
+        {
+#if DEBUG
+            // Use the project directory when in Debug mode
+            // Output path is {project dir}/bin/{Configuration}/{Platform}/
+            // ie: ./bin/x64/Debug
+            return Directory.GetParent(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../..")).FullName + "\\";
+#else
+            return AppDomain.CurrentDomain.BaseDirectory;
+#endif
+        });
+
+        /// <summary>
+        /// Gets the directory path where the application is running.
+        /// </summary>
+        public static string AppDirectory => _appDirectory.Value;
+
+        private static Lazy<string> _dataDirectory = new Lazy<string>(() => Path.Combine(AppDirectory, "Data"));
+
+        /// <summary>
+        /// Gets the Data directory path.
+        /// </summary>
+        public static string DataDirectory = _dataDirectory.Value;
+
+        private static Lazy<string> _cacheDirectory = new Lazy<string>(() => Path.Combine(DataDirectory, "Cache"));
+
+        /// <summary>
+        /// Gets the cache directory path.
+        /// </summary>
+        public static string CacheDirectory = _cacheDirectory.Value;
+        #endregion Properties
     }
 }
