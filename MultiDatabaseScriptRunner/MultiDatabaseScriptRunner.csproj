@@ -79,7 +79,7 @@
     <ApplicationIcon>laughing-man.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Tokafew420.MDScriptRunner.Program</StartupObject>
+    <StartupObject>Tokafew420.MDScriptRunner.AppForm</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -97,11 +97,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="FileSystemSchemeHandlerFactory.cs" />
     <Compile Include="KeyboardHandler.cs" />
     <Compile Include="App.cs" />
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Options.cs" />
     <Compile Include="SettingsJsonConverter.cs" />
     <Compile Include="SystemEvent.cs" />
     <Compile Include="AppForm.cs">
@@ -111,7 +113,6 @@
       <DependentUpon>AppForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ScriptEvent.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />

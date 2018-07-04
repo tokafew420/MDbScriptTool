@@ -1,5 +1,7 @@
 ﻿using CefSharp;
 using CefSharp.WinForms;
+using Mono.Options;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,6 +14,53 @@ namespace Tokafew420.MDScriptRunner
         private ChromiumWebBrowser _browser;
         private ScriptEvent _scriptEvent;
         private SystemEvent _systemEvent;
+        private static bool _runningInVs = false;
+        private static string _appDir;
+        private static string _dataDir;
+
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        private static void Main(string[] args)
+        {
+            // Parse commandline args
+            var options = new OptionSet() {
+                { "a|app", v => _appDir = v },
+                { "d|data", v => _dataDir = v },
+                { "vs", v => _runningInVs = v != null }
+            };
+            options.Parse(args);
+
+            // For Windows 7 and above, best to include relevant app.manifest entries as well
+            Cef.EnableHighDPISupport();
+
+            var settings = new CefSettings()
+            {
+                //By default CefSharp will use an in-memory cache, you need to specify a Cache Folder to persist data
+                CachePath = CacheDirectory
+            };
+            settings.RegisterScheme(new CefCustomScheme()
+            {
+                SchemeName = FileSystemSchemeHandlerFactory.SchemeName,
+                SchemeHandlerFactory = new FileSystemSchemeHandlerFactory()
+            });
+
+            // Perform dependency check to make sure all relevant resources are in our output directory.
+            Cef.Initialize(settings, performDependencyCheck: true, browserProcessHandler: null);
+
+            // Setup default json serialization settings.
+            JsonConvert.DefaultSettings = () =>
+                new JsonSerializerSettings
+                {
+                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+                    Formatting = Formatting.Indented,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+                };
+
+            Application.Run(new AppForm());
+        }
 
         public AppForm()
         {
@@ -104,36 +153,64 @@ namespace Tokafew420.MDScriptRunner
         }
 
         #region Properties
-        private static Lazy<string> _appDirectory = new Lazy<string>(() =>
+
+        private static Lazy<string> _AppDirectory = new Lazy<string>(() =>
         {
-#if DEBUG
-            // Use the project directory when in Debug mode
-            // Output path is {project dir}/bin/{Configuration}/{Platform}/
-            // ie: ./bin/x64/Debug
-            return Directory.GetParent(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../..")).FullName + "\\";
-#else
+            if (!string.IsNullOrWhiteSpace(_appDir))
+            {
+                if (Directory.Exists(_appDir))
+                {
+                    return _appDir;
+                }
+            }
+
+            if (_runningInVs)
+            {
+                // Use the project directory when in Debug mode
+                // Output path is {project dir}/bin/{Configuration}/{Platform}/
+                // ie: ./bin/x64/Debug
+                return Directory.GetParent(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../..")).FullName + "\\";
+            }
+
             return AppDomain.CurrentDomain.BaseDirectory;
-#endif
         });
 
         /// <summary>
         /// Gets the directory path where the application is running.
         /// </summary>
-        public static string AppDirectory => _appDirectory.Value;
+        public static string AppDirectory => _AppDirectory.Value;
 
-        private static Lazy<string> _dataDirectory = new Lazy<string>(() => Path.Combine(AppDirectory, "Data"));
+        private static Lazy<string> _DataDirectory = new Lazy<string>(() =>
+        {
+            if (!string.IsNullOrWhiteSpace(_dataDir))
+            {
+                if (Directory.Exists(_dataDir))
+                {
+                    return _dataDir;
+                }
+            }
+
+            if (_runningInVs)
+            {
+                // Use the running application directory instead of the remapped AppDirectory.
+                return Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+            }
+
+            return Path.Combine(AppDirectory, "Data");
+        });
 
         /// <summary>
         /// Gets the Data directory path.
         /// </summary>
-        public static string DataDirectory = _dataDirectory.Value;
+        public static string DataDirectory => _DataDirectory.Value;
 
-        private static Lazy<string> _cacheDirectory = new Lazy<string>(() => Path.Combine(DataDirectory, "Cache"));
+        private static Lazy<string> _CacheDirectory = new Lazy<string>(() => Path.Combine(DataDirectory, "Cache"));
 
         /// <summary>
         /// Gets the cache directory path.
         /// </summary>
-        public static string CacheDirectory = _cacheDirectory.Value;
+        public static string CacheDirectory => _CacheDirectory.Value;
+
         #endregion Properties
     }
 }
