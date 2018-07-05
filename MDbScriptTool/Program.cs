@@ -76,7 +76,8 @@ namespace Tokafew420.MDbScriptTool
             _systemEvent = new SystemEvent(_browser);
             _scriptEvent = new ScriptEvent(_browser);
 
-            // Register keyboard event handler.
+            // Register handlers.
+            _browser.RequestHandler = new BrowserRequestHandler();
             _browser.KeyboardHandler = new KeyboardHandler();
             // Register the scriptEvent class with JS
             _browser.JavascriptObjectRepository.Register("scriptEvent", _scriptEvent, true, BindingOptions.DefaultBinder);
