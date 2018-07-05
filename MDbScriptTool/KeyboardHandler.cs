@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 
-namespace Tokafew420.MDScriptRunner
+namespace Tokafew420.MDbScriptTool
 {
     public class KeyboardHandler : IKeyboardHandler
     {

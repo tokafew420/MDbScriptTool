@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 
-namespace Tokafew420.MDScriptRunner
+namespace Tokafew420.MDbScriptTool
 {
     internal class FileSystemSchemeHandlerFactory : ISchemeHandlerFactory
     {

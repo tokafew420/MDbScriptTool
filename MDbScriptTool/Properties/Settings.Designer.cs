@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Tokafew420.MDScriptRunner.Properties {
+namespace Tokafew420.MDbScriptTool.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

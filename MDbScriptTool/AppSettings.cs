@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Tokafew420.MDScriptRunner
+namespace Tokafew420.MDbScriptTool
 {
     internal static class AppSettings
     {
@@ -14,13 +14,13 @@ namespace Tokafew420.MDScriptRunner
 
         static AppSettings()
         {
-            _filePath = System.IO.Path.Combine(AppForm.DataDirectory, "settings");
+            _filePath = System.IO.Path.Combine(Program.DataDirectory, "settings");
 
-            if (!Directory.Exists(AppForm.DataDirectory))
+            if (!Directory.Exists(Program.DataDirectory))
             {
                 try
                 {
-                    Directory.CreateDirectory(AppForm.DataDirectory);
+                    Directory.CreateDirectory(Program.DataDirectory);
                     Debug.WriteLine("Created Data/ Directory");
                 }
                 catch (Exception e)
@@ -102,9 +102,9 @@ namespace Tokafew420.MDScriptRunner
         {
             try
             {
-                if (!Directory.Exists(AppForm.DataDirectory))
+                if (!Directory.Exists(Program.DataDirectory))
                 {
-                    Directory.CreateDirectory(AppForm.DataDirectory);
+                    Directory.CreateDirectory(Program.DataDirectory);
                     Debug.WriteLine("Created Data/ Directory");
                 }
 

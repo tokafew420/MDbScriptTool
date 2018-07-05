@@ -7,9 +7,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 
-namespace Tokafew420.MDScriptRunner
+namespace Tokafew420.MDbScriptTool
 {
-    public partial class AppForm : Form
+    public partial class Program : Form
     {
         private ChromiumWebBrowser _browser;
         private ScriptEvent _scriptEvent;
@@ -59,10 +59,10 @@ namespace Tokafew420.MDScriptRunner
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
                 };
 
-            Application.Run(new AppForm());
+            Application.Run(new Program());
         }
 
-        public AppForm()
+        public Program()
         {
             InitializeComponent();
         }

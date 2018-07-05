@@ -1,4 +1,4 @@
-# MultiDatabase Script Runner #
+# Multi Database Script Tool #
 
 A tool to run SQL scripts against multiple MSSQL databases.
 
@@ -20,3 +20,4 @@ is a pretty good tool,
 On a fresh clone of the repository, Nuget only downloads the dependencies to the packages directory.
 To get the client files to "unpack" to the project directory you will need to open Nuget console and run `Update-Package -reinstall`.
 The install script of the package is what actually places the files into the project.
+When prompted with "**Do you want to overwrite it?**", enter "**A**" for *Yes to All*.

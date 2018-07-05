@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Tokafew420.MDScriptRunner
+namespace Tokafew420.MDbScriptTool
 {
     internal static class NativeMethods
     {

@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Tokafew420.MDScriptRunner
+namespace Tokafew420.MDbScriptTool
 {
     /// <summary>
     /// An example of the application class.

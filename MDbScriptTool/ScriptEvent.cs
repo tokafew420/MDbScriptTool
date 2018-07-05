@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Tokafew420.MDScriptRunner
+namespace Tokafew420.MDbScriptTool
 {
     /// <summary>
     /// A class that is used handle javascript events. This class is registered as a javascript object.
