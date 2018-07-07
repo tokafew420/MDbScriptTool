@@ -6,12 +6,10 @@
  */
 (function (window) {
     var $sidebar = $('.sidebar');
+    var $connectionSelect = $('.select-connection', $sidebar);
+    var $dbLst = $('.db-lst', $sidebar);
 
     $(function () {
-
-        var $connectionSelect = $('.select-connection', $sidebar);
-        var $dbLst = $('.db-lst', $sidebar);
-
         // Toggle collapse on navbar's sidebar toggle click
         app.on('navbar-sidebar-toggled', function (sidebarCollapsed) {
             $sidebar.addClass('animating').toggleClass('collapsed');
@@ -26,55 +24,74 @@
             $sidebar.css('width', left + 'px');
         });
 
+        // Set the connection select to the specified value
+        function setConnectionSelect(val) {
+            $connectionSelect.val(val);
+            $('option', $connectionSelect).prop('selected', false);
+            if (typeof val !== 'undefined' && val !== null) {
+                $(`option[value="${val}"]`, $connectionSelect).prop('selected', true);
+            }
+        }
+
+        // Set the connection select to "select" and clear the db list
+        function resetConnectionSelect() {
+            app.setCurrentConnection(null);
+            setConnectionSelect('select');
+            $dbLst.empty();
+        }
+
+        // Handle connection selection
         $connectionSelect.change(function () {
-            var selectedConnIdx = +($('.select-connection option:selected').val()); // eslint-disable-line no-extra-parens
+            var selectedConnId = $('.select-connection option:selected').val();
 
-            app.opts.selectedConnIdx = isNaN(selectedConnIdx) ? -1 : selectedConnIdx;
-            app.currentConnection = app.connections[app.opts.selectedConnIdx];
+            // Clear db list
+            if (selectedConnId === 'select') return resetConnectionSelect();
 
-            localStorage.setItem('options', JSON.stringify(app.opts));
-
-            if (app.currentConnection) {
-                renderDbList(app.currentConnection.dbs);
+            // Open connection dialog
+            if (selectedConnId === 'new') {
+                if (app.state.currentConnectionId) {
+                    // Go back to previously selected connection
+                    setConnectionSelect(app.state.currentConnectionId);
+                } else {
+                    setConnectionSelect('select');
+                }
+                app.emit('open-connection-info-modal');
             } else {
-                $dbLst.empty();
+                // List databases
+                var conn = app.getConnection(selectedConnId);
+                if (conn) {
+                    app.setCurrentConnection(conn);
+                    renderDbList(app.currentConnection.dbs);
+                } else {
+                    resetConnectionSelect();
+                }
             }
         });
 
-
-        app.on('connection-added', function () {
-            renderConnectionSelect();
-        }).on('connection-updated', function () {
+        app.on(['connection-added', 'connection-updated', 'connection-removed'], function () {
             renderConnectionSelect();
         });
 
         function renderConnectionSelect() {
-            $connectionSelect.html('<option value="-1">No Connection</option>');
-            app.connections.forEach(function (c, idx) {
-                $('<option value="' + idx + '">' + c.name + '</option>').appendTo($connectionSelect);
+            var selectedVal = $('option:selected', $connectionSelect).text;
+            $connectionSelect.html('<option value="select">Select Connection</option><option value="new">New...</option>');
+
+            app.connections.forEach(function (c) {
+                $('<option value="' + c.id + '">' + c.name + '</option>').appendTo($connectionSelect);
             });
 
-            $(`option[value="${app.opts.selectedConnIdx}"]`, $connectionSelect).prop('selected', true);
-            $connectionSelect.val(app.opts.selectedConnIdx);
+            if (app.currentConnection) {
+                setConnectionSelect(app.currentConnection.id);
+            } else {
+                resetConnectionSelect();
+            }
         }
 
         function renderDbList(dbLst) {
             $dbLst.empty();
 
             if (dbLst) {
-                var comparer = new Intl.Collator('en', {
-                    sensitivity: 'base',
-                    numeric: true
-                }).compare;
-
-                // Sort by database name, case insensitive and accounting for numerics
-                dbLst.sort(function (a, b) {
-                    return comparer(a.name, b.name);
-                });
-
                 dbLst.forEach(function (db, idx) {
-                    if (typeof db.checked !== 'boolean') db.checked = db.name !== 'master';
-
                     var $item = $(`<li class="db-lst-item active">
                             <input type="checkbox" ${db.checked ? 'checked' : ''}/><span class="db-name">${db.name}</span>
                         </li>`);
@@ -93,19 +110,6 @@
                 });
             }
         }
-
-        systemEvent.on('database-list', function (err, dbLst) {
-            loading.hide();
-            if (err) {
-                console.log(err);
-                return bsAlert('Error Listing Databases', err.message);
-            }
-            if (dbLst && dbLst.length) {
-                app.currentConnection.dbs = dbLst;
-                localStorage.setItem('connections', JSON.stringify(app.connections));
-                renderDbList(app.currentConnection.dbs);
-            }
-        });
 
         if (app.connections.length) renderConnectionSelect();
         if (app.currentConnection) renderDbList(app.currentConnection.dbs);
@@ -133,13 +137,44 @@
         (function () {
             // Refresh database list
             $('.sidebar-toolbar .refresh-databases-btn').click(function () {
-                if (app.opts.selectedConnIdx === -1) {
-                    bsAlert('No connection selected');
-                } else {
-                    if (app.currentConnection && app.currentConnection.raw) {
+                if (app.currentConnection) {
+                    if (app.currentConnection.raw) {
                         loading.show('Getting Databases...');
-                        scriptEvent.emit('get-databases', app.currentConnection.raw);
+                        scriptEvent.emit('list-databases', app.currentConnection.raw);
                     }
+                } else {
+                    bsAlert('No connection selected');
+                }
+            });
+
+            systemEvent.on('database-list', function (err, dbLst) {
+                loading.hide();
+                if (err) {
+                    console.log(err);
+                    return bsAlert('Error Listing Databases', err.message);
+                }
+                if (dbLst && dbLst.length) {
+                    // Pull out properties
+                    dbLst = dbLst.map(function (db) {
+                        return {
+                            name: db.name,
+                            create_date: db.create_date,
+                            compatibility_level: db.compatibility_level,
+                            is_read_only: db.is_read_only,
+                            state: db.state,    // 0 = ONLINE
+                            recovery_model: db.recovery_model,   // 1 = FULL
+                            is_encrypted: db.is_encrypted,
+                            // Don't check master by default
+                            checked: db.name !== 'master'
+                        };
+                    }).sort(function (a, b) {
+                        // Sort by database name, case insensitive and accounting for numerics
+                        return app.comparer(a.name, b.name);
+                    });
+
+                    app.currentConnection.dbs = dbLst;
+                    localStorage.setItem('connections', JSON.stringify(app.connections));
+                    renderDbList(app.currentConnection.dbs);
                 }
             });
 

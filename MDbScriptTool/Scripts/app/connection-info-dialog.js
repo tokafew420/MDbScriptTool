@@ -24,15 +24,15 @@
             $password.val('');
             $connStr.val('');
             $advanceContainer.collapse('hide');
-            $('option:not([value="-1"])', $selectConnections).remove();
-            $('option:first', $selectConnections).prop('selected', true);
+            $('option:not([value="new"])', $selectConnections).remove();
+            $('option[value="new"]', $selectConnections).prop('selected', true);
             $deleteBtn.addClass('hidden');
             $saveBtn.prop('disabled', true);
         }
 
         function initDlgValues() {
-            app.connections.forEach(function (connection, idx) {
-                $selectConnections.append(`<option value="${idx}">${connection.name}</option>`);
+            app.connections.forEach(function (conn) {
+                $selectConnections.append(`<option value="${conn.id}">${conn.name}</option>`);
             });
             $name.val('Server ' + (app.connections.length + 1));
         }
@@ -43,10 +43,14 @@
             reset();
         });
 
-        $selectConnections.change(function () {
-            var idx = +($selectConnections.val()); // eslint-disable-line no-extra-parens
+        app.on('open-connection-info-modal', function () {
+            $dlg.modal('show');
+        });
 
-            if (idx === -1) {
+        $selectConnections.change(function () {
+            var id = $selectConnections.val();
+
+            if (id === 'new') {
                 $deleteBtn.addClass('hidden');
                 $name.val('Server ' + (app.connections.length + 1));
                 $server.val('');
@@ -54,7 +58,7 @@
                 $password.val('');
                 $connStr.val('');
             } else {
-                var conn = app.connections[idx];
+                var conn = app.getConnection(id);
                 if (conn) {
                     $deleteBtn.removeClass('hidden');
                     $name.val(conn.name);
@@ -74,19 +78,19 @@
             if (err) return console.log(err);
 
             if (connBuilder['Data Source']) {
-                $server.val(connBuilder['Data Source']);
+                $server.val(connBuilder['Data Source']).change();
                 if (!$name.val()) {
-                    $name.val(connBuilder['Data Source']);
+                    $name.val(connBuilder['Data Source']).change();
                 }
             }
             if (connBuilder['Password']) {
-                $password.val(connBuilder['Password']);
+                $password.val(connBuilder['Password']).change();
             }
             if (connBuilder['User ID']) {
-                $username.val(connBuilder['User ID']);
+                $username.val(connBuilder['User ID']).change();
             }
             if (connectionString) {
-                $connStr.val(connectionString);
+                $connStr.val(connectionString).change();
             }
         });
 
@@ -96,6 +100,8 @@
                 $username.val() &&
                 $password.val()) {
                 $saveBtn.prop('disabled', false);
+            } else {
+                $saveBtn.prop('disabled', true);
             }
         });
 
@@ -104,64 +110,40 @@
         }, 500));
 
         $deleteBtn.click(function () {
-            var idx = +($selectConnections.val()); // eslint-disable-line no-extra-parens
-            if (idx !== -1) {
-                app.connections.splice(idx, 1);
-                if (idx === app.opts.selectedConnIdx) {
-                    opts.selectedConnIdx = -1;
-                    app.emit('connection-selected', app.opts.selectedConnIdx);
-                } else if (idx < opts.selectedConnIdx) {
-                    app.opts.selectedConnIdx--;
-                }
+            var id = $selectConnections.val();
+            if (id !== 'new') {
+                app.removeConnection(id);
                 reset();
                 initDlgValues();
-                window.localStorage.setItem('connections', JSON.stringify(app.connections));
             }
         });
 
         $saveBtn.click(function () {
-            var idx = +($selectConnections.val());  // eslint-disable-line no-extra-parens
-            if (idx === -1) {
-                app.connections.push({
+            var id = $selectConnections.val();
+
+            if (id === 'new') {
+                app.saveConnection({
+                    id: utils.guid(),
                     name: $name.val(),
                     server: $server.val(),
                     username: $username.val(),
                     password: $password.val(),
                     raw: $connStr.val()
                 });
-                // Sort connections by name
-                app.connections.sort(function (a, b) {
-                    var keyA = a.name.toLowerCase(),
-                        keyB = b.name.toLowerCase();
 
-                    if (keyA < keyB) return -1;
-                    if (keyA > keyB) return 1;
-                    return 0;
-                });
-
-                // Adjust selectedConnIdx
-                if (app.currentConnection) {
-                    idx = app.connections.indexOf(app.currentConnection);
-                    if (idx !== -1) {
-                        app.opts.selectedConnIdx = idx;
-                    }
-                }
-
-                app.emit('connection-added');
                 $dlg.modal('hide');
             } else {
-                var conn = app.connections[idx];
+                var conn = app.getConnection(id);
                 if (conn) {
                     conn.name = $name.val();
                     conn.server = $server.val();
                     conn.username = $username.val();
                     conn.password = $password.val();
                     conn.raw = $connStr.val();
-                    app.emit('connection-updated', conn, idx);
+
+                    app.saveConnection(conn);
                 }
             }
-
-            window.localStorage.setItem('connections', JSON.stringify(app.connections));
         });
     });
 }(window));

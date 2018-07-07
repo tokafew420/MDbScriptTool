@@ -20,7 +20,7 @@ namespace Tokafew420.MDbScriptTool
         public override bool OnBeforeBrowse(IWebBrowser browserControl, IBrowser browser, IFrame frame, IRequest request, bool isRedirect)
         {
             // If the url is Google open Default browser
-            if (!request.Url.StartsWith("fs://"))
+            if (request.Url.StartsWith("http://") || request.Url.StartsWith("https://"))
             {
                 // Open Google in Default browser
                 Process.Start(request.Url);

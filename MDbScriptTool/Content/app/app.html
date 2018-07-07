@@ -37,9 +37,9 @@
                     <li class="nav-item">
                         <a class="nav-link connection-menu-lnk" href="#" data-toggle="modal" data-target="#connection-info-modal">Connections</a>
                     </li>
-                    <li class="nav-item">
+                    <!--<li class="nav-item">
                         <a class="nav-link options-menu-lnk" href="#" data-toggle="modal" data-target="#options-modal">Options</a>
-                    </li>
+                    </li>-->
                 </ul>
             </div>
         </div>
@@ -57,7 +57,8 @@
                     </div>
                 </div>
                 <Select class="select-connection custom-select custom-select-sm">
-                    <option value="-1">No Connection</option>
+                    <option value="select">Select Connection</option>
+                    <option value="new">New...</option>
                 </Select>
             </div>
             <ul class="db-lst"></ul>
@@ -110,7 +111,7 @@
                             <label class="input-group-text" id="select-connection-lbl">Connections</label>
                         </div>
                         <select class="form-control custom-select select-connections" aria-label="Connections" aria-describedby="select-connections-lbl">
-                            <option value="-1" selected>New...</option>
+                            <option value="new" selected>New...</option>
                         </select>
                     </div>
                     <hr>

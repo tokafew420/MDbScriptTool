@@ -11,12 +11,18 @@
             constructor() {
                 this.events = [];
             }
-            on(event, listener) {
-                if (typeof this.events[event] !== 'object') {
-                    this.events[event] = [];
+            on(events, listener) {
+                var that = this;
+                if (typeof events === 'string') {
+                    events = [events];
                 }
+                events.forEach(function (event) {
+                    if (typeof that.events[event] !== 'object') {
+                        that.events[event] = [];
+                    }
 
-                this.events[event].push(listener);
+                    that.events[event].push(listener);
+                });
 
                 return this;
             }

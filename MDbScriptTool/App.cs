@@ -39,7 +39,7 @@ namespace Tokafew420.MDbScriptTool
 
             // Register event handlers
             _scriptEvent.On("parse-connection-string", ParseConnectionString);
-            _scriptEvent.On("get-databases", GetDatabases);
+            _scriptEvent.On("list-databases", GetDatabases);
             _scriptEvent.On("execute-sql", ExecuteSql);
         }
 
