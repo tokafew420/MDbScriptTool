@@ -59,7 +59,7 @@ hr {
     position: absolute;
     padding: 200px;
     background-color: rgba(0, 0, 0, 0.9); /* csslint allow: fallback-colors */
-    z-index: 1000;
+    z-index: 2000;
 }
 
     .loader-container .loader {

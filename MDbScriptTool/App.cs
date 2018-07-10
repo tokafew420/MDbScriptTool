@@ -6,15 +6,15 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Tokafew420.MDbScriptTool
 {
-    /// <summary>
-    /// An example of the application class.
-    /// </summary>
+
     internal class App
     {
         private Form _form;
@@ -22,6 +22,8 @@ namespace Tokafew420.MDbScriptTool
         private SystemEvent _systemEvent;
         private ScriptEvent _scriptEvent;
         private Regex _goRegex = new Regex(@"^\s*go\s*(--.*)*$", RegexOptions.IgnoreCase);
+        private static readonly Random _rnd = new Random();
+        private static readonly char[] padding = { '=' };
 
         /// <summary>
         /// Initalizes a new instance of App
@@ -39,68 +41,93 @@ namespace Tokafew420.MDbScriptTool
 
             // Register event handlers
             _scriptEvent.On("parse-connection-string", ParseConnectionString);
+            _scriptEvent.On("encrypt-password", EncryptPassword);
             _scriptEvent.On("list-databases", GetDatabases);
             _scriptEvent.On("execute-sql", ExecuteSql);
         }
 
-        /// <summary>
-        /// Handles the "test" event.
-        /// </summary>
-        /// <param name="args">The event parameters.</param>
-        /// <remarks>
-        /// If a name was passord, then reply with "Hello {name}", otherwise reply with a message indicating no name.
-        /// </remarks>
         internal void ParseConnectionString(object[] args)
         {
+            var replyMsgName = "connection-string-parsed";
+
             Debug.WriteLine("Event received: parse-connection-string");
 
-            if (args.Length > 3)
+            if (args != null && args.Length == 1)
             {
-                try
+                if (!string.IsNullOrWhiteSpace(args[0] as string))
                 {
-                    SqlConnectionStringBuilder builder = null;
-                    if (!string.IsNullOrWhiteSpace(args[0] as string))
+                    try
                     {
-                        try
-                        {
-                            builder = new SqlConnectionStringBuilder(args[0] as string);
-                        }
-                        catch (Exception) { }
+                        var builder = new SqlConnectionStringBuilder(args[0] as string);
+                        _systemEvent.Emit(replyMsgName, null, builder.ConnectionString, builder);
                     }
-                    if (builder == null) builder = new SqlConnectionStringBuilder();
-
-                    if (!string.IsNullOrWhiteSpace(args[1] as string)) builder.DataSource = args[1] as string;
-                    if (!string.IsNullOrWhiteSpace(args[2] as string)) builder.UserID = args[2] as string;
-                    if (!string.IsNullOrWhiteSpace(args[3] as string)) builder.Password = args[3] as string;
-
-                    _systemEvent.Emit("connection-string-parsed", null, builder.ConnectionString, builder);
-                }
-                catch (Exception e)
-                {
-                    _systemEvent.Emit("connection-string-parsed", e);
+                    catch (Exception e)
+                    {
+                        _systemEvent.Emit(replyMsgName, e);
+                    }
                 }
             }
         }
 
-        /// <summary>
-        /// Handles the "multi-args" event.
-        /// </summary>
-        /// <param name="args">The event parameters.</param>
-        /// <remarks>
-        /// Inspects the event parameters and responsd with a message indicating the type and value of each parameter.
-        /// This is a test/example of receiving/sending a message with multiple parameters.
-        /// </remarks>
+        internal void EncryptPassword(object[] args)
+        {
+            var replyMsgName = "password-encrypted";
+            var pass = "";
+
+            Debug.WriteLine("Event received: encrypt-password");
+
+            if (args != null && args.Length == 1)
+            {
+                if (!string.IsNullOrWhiteSpace(args[0] as string))
+                {
+                    pass = args[0] as string;
+
+                    try
+                    {
+                        // If we can decrypt then the arg is already encrypted
+                        // Then just return the arg
+                        Decrypt(pass);
+                        _systemEvent.Emit(replyMsgName, pass);
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+                        // Do Nothing
+                        Debug.WriteLine(e.ToString());
+                    }
+
+                    try
+                    {
+                        // Assume not encrypted
+                        var cipher = Encrypt(pass);
+                        _systemEvent.Emit(replyMsgName, cipher);
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+                        // Do nothing
+                        Debug.WriteLine(e.ToString());
+                    }
+                }
+            }
+
+            _systemEvent.Emit(replyMsgName, pass);
+        }
+
         internal void GetDatabases(object[] args)
         {
-            var replyEventName = "database-list";
+            var replyMsgName = "database-list";
 
             if (args != null && args.Length == 1)
             {
                 try
                 {
                     var connStr = args[0] as string;
-                    var builder = new SqlConnectionStringBuilder(connStr);
-                    builder.InitialCatalog = "master";
+                    var builder = new SqlConnectionStringBuilder(connStr)
+                    {
+                        InitialCatalog = "master"
+                    };
+                    builder.Password = TryDecrypt(builder.Password);
 
                     using (var conn = new SqlConnection(builder.ToString()))
                     {
@@ -112,14 +139,14 @@ namespace Tokafew420.MDbScriptTool
 
                             using (var reader = cmd.ExecuteReader())
                             {
-                                _systemEvent.Emit(replyEventName, null, SqlDataReaderToExpando(reader));
+                                _systemEvent.Emit(replyMsgName, null, SqlDataReaderToExpando(reader));
                             }
                         }
                     }
                 }
                 catch (Exception e)
                 {
-                    _systemEvent.Emit(replyEventName, e);
+                    _systemEvent.Emit(replyMsgName, e);
                 }
             }
         }
@@ -139,19 +166,12 @@ namespace Tokafew420.MDbScriptTool
             }
         }
 
-        /// <summary>
-        /// Handles the "complex-arg" event.
-        /// </summary>
-        /// <param name="args">The event parameters.</param>
-        /// <remarks>
-        /// Inspects the event parameter as a complex object and repsond with the objects properties (i.e. name, type, and value).
-        /// This is a test/example of receiving/sending a message with a complex object.
-        /// </remarks>
         private void ExecuteSql(object[] args)
         {
+            var replyMsgName = "sql-execute-complete";
             if (args == null || args.Length != 4)
             {
-                _systemEvent.Emit("sql-execute-complete", new ArgumentException("Invalid arguments"));
+                _systemEvent.Emit(replyMsgName, new ArgumentException("Invalid arguments"));
                 return;
             }
 
@@ -169,6 +189,7 @@ namespace Tokafew420.MDbScriptTool
                 {
                     var batches = GetSqlBatches(sql);
                     var builder = new SqlConnectionStringBuilder(connStr);
+                    builder.Password = TryDecrypt(builder.Password);
 
                     foreach (var db in dbs)
                     {
@@ -184,7 +205,7 @@ namespace Tokafew420.MDbScriptTool
             }
             catch (Exception e)
             {
-                _systemEvent.Emit("sql-execute-complete", e);
+                _systemEvent.Emit(replyMsgName, e);
             }
         }
 
@@ -255,6 +276,64 @@ namespace Tokafew420.MDbScriptTool
             if (count > 0)
             {
                 yield return string.Join("\n", lines, startIdx, count);
+            }
+        }
+
+        internal static string Encrypt(string clearText)
+        {
+            byte[] bytes;
+            var salt = new byte[32];
+
+            if (clearText == null)
+            {
+                bytes = new byte[0];
+            }
+            else
+            {
+                bytes = Encoding.UTF8.GetBytes(clearText);
+            }
+
+            _rnd.NextBytes(salt);
+
+            var cipher = ProtectedData.Protect(bytes, salt, DataProtectionScope.CurrentUser);
+            var final = new byte[cipher.Length + 32];
+
+            Buffer.BlockCopy(salt, 0, final, 0, 32);
+            Buffer.BlockCopy(cipher, 0, final, 32, cipher.Length);
+
+            return Convert.ToBase64String(final)
+                .TrimEnd(padding).Replace('+', '-').Replace('/', '_');
+        }
+
+        internal static string Decrypt(string cipher)
+        {
+            cipher = cipher
+                .Replace('_', '/').Replace('-', '+');
+            switch (cipher.Length % 4)
+            {
+                case 2: cipher += "=="; break;
+                case 3: cipher += "="; break;
+            }
+            var bytes = Convert.FromBase64String(cipher);
+            var salt = new byte[32];
+            var tmpCipher = new byte[bytes.Length - 32];
+
+            Buffer.BlockCopy(bytes, 0, salt, 0, 32);
+            Buffer.BlockCopy(bytes, 32, tmpCipher, 0, tmpCipher.Length);
+
+            return Encoding.UTF8.GetString(ProtectedData.Unprotect(tmpCipher, salt, DataProtectionScope.CurrentUser));
+        }
+
+        internal static string TryDecrypt(string cipher)
+        {
+            try
+            {
+                return Decrypt(cipher);
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+                return cipher;
             }
         }
     }
