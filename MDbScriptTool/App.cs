@@ -5,7 +5,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,7 +16,6 @@ using System.Windows.Forms;
 
 namespace Tokafew420.MDbScriptTool
 {
-
     internal class App
     {
         private Form _form;
@@ -40,10 +41,35 @@ namespace Tokafew420.MDbScriptTool
             _scriptEvent = scriptEvent ?? throw new ArgumentNullException("scriptEvent");
 
             // Register event handlers
+            _scriptEvent.On("get-versions", GetVersions);
             _scriptEvent.On("parse-connection-string", ParseConnectionString);
             _scriptEvent.On("encrypt-password", EncryptPassword);
             _scriptEvent.On("list-databases", GetDatabases);
             _scriptEvent.On("execute-sql", ExecuteSql);
+        }
+
+        /// <summary>
+        /// Get version numbers of the app and dependencies.
+        /// </summary>
+        internal void GetVersions(object[] args)
+        {
+            var replyMsgName = "versions";
+            var versions = new Versions();
+
+            try
+            {
+                var appVersion = Assembly.GetExecutingAssembly().GetName().Version;
+
+                versions.App = $"{appVersion.Major}.{appVersion.Minor}.{appVersion.Build}";
+
+                versions.Cef = FileVersionInfo.GetVersionInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "libcef.dll")).ProductVersion;
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e.ToString());
+            }
+
+            _systemEvent.Emit(replyMsgName, versions);
         }
 
         internal void ParseConnectionString(object[] args)
@@ -336,5 +362,14 @@ namespace Tokafew420.MDbScriptTool
                 return cipher;
             }
         }
+    }
+
+    /// <summary>
+    /// Container for version numbers.
+    /// </summary>
+    internal class Versions
+    {
+        public string App { get; set; } = "Unknown";
+        public string Cef { get; set; } = "Unknown";
     }
 }
