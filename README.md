@@ -18,6 +18,5 @@ is a pretty good tool,
 ## Running Solution ##
 
 On a fresh clone of the repository, Nuget only downloads the dependencies to the packages directory.
-To get the client files to "unpack" to the project directory you will need to open Nuget console and run `Update-Package -reinstall`.
+To get the client files to "unpack" to the project directory you will need to open Nuget console and run `Update-Package -reinstall -FileConflictAction OverwriteAll`.
 The install script of the package is what actually places the files into the project.
-When prompted with "**Do you want to overwrite it?**", enter "**A**" for *Yes to All*.

@@ -12,21 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A6CC168D-608F-4922-A123-D7C1A037DB51}"
-	ProjectSection(SolutionItems) = preProject
-		docs\index.html = docs\index.html
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{A438F294-74EB-432D-937B-07CAA4E17971}"
-	ProjectSection(SolutionItems) = preProject
-		docs\css\index.css = docs\css\index.css
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{40404948-7B2E-41B0-B0E7-ABB8B96BD8E0}"
-	ProjectSection(SolutionItems) = preProject
-		docs\js\index.js = docs\js\index.js
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -46,11 +31,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{A6CC168D-608F-4922-A123-D7C1A037DB51} = {FA187E30-8992-471A-9272-75FA55406FFF}
-		{A438F294-74EB-432D-937B-07CAA4E17971} = {A6CC168D-608F-4922-A123-D7C1A037DB51}
-		{40404948-7B2E-41B0-B0E7-ABB8B96BD8E0} = {A6CC168D-608F-4922-A123-D7C1A037DB51}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A99158F-E4DE-4C7F-B2B5-8F4A585C538C}

@@ -127,6 +127,8 @@
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -168,135 +170,12 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="Scripts\app\about-modal.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\esm\popper-utils.js" />
-    <Content Include="Scripts\esm\popper-utils.min.js" />
-    <Content Include="Scripts\esm\popper.js" />
-    <Content Include="Scripts\esm\popper.min.js" />
-    <Content Include="Scripts\jquery-3.3.1-vsdoc.js" />
-    <Content Include="Scripts\jquery-3.3.1.js" />
-    <Content Include="Scripts\jquery-3.3.1.min.js" />
-    <Content Include="Scripts\jquery-3.3.1.slim.js" />
-    <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
-    <Content Include="Scripts\jquery-ui-1.12.1.js" />
-    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
-    <Content Include="Scripts\popper-utils.js" />
-    <Content Include="Scripts\popper-utils.min.js" />
-    <Content Include="Scripts\popper.js" />
-    <Content Include="Scripts\popper.min.js" />
-    <Content Include="Scripts\umd\popper-utils.js" />
-    <Content Include="Scripts\umd\popper-utils.min.js" />
-    <Content Include="Scripts\umd\popper.js" />
-    <Content Include="Scripts\umd\popper.min.js" />
-    <EmbeddedResource Include="Program.resx">
-      <DependentUpon>Program.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Content Include="Content\app\css\result-slider.css" />
-    <Content Include="Content\app\css\content.css" />
-    <Content Include="Content\app\css\sidebar-slider.css" />
-    <Content Include="Content\app\css\sidebar.css" />
-    <Content Include="Content\app\css\navbar.css" />
-    <None Include="Content\bootstrap-grid.css.map" />
-    <None Include="Content\bootstrap-grid.min.css.map" />
-    <None Include="Content\bootstrap-reboot.css.map" />
-    <None Include="Content\bootstrap-reboot.min.css.map" />
-    <None Include="Content\bootstrap.css.map" />
-    <None Include="Content\bootstrap.min.css.map" />
-    <None Include="fonts\fontawesome-webfont.eot" />
-    <None Include="fonts\fontawesome-webfont.ttf" />
-    <None Include="fonts\fontawesome-webfont.woff" />
-    <None Include="fonts\fontawesome-webfont.woff2" />
-    <None Include="fonts\FontAwesome.otf" />
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <None Include="Scripts\bootstrap.bundle.js.map" />
-    <None Include="Scripts\bootstrap.bundle.min.js.map" />
-    <None Include="Scripts\bootstrap.js.map" />
-    <None Include="Scripts\bootstrap.min.js.map" />
-    <None Include="Scripts\codemirror-2.37\LICENSE" />
-    <None Include="Scripts\codemirror-2.37\mode\coffeescript\LICENSE" />
-    <None Include="Scripts\codemirror-2.37\mode\pascal\LICENSE" />
-    <None Include="Scripts\codemirror-2.37\mode\perl\LICENSE" />
-    <None Include="Scripts\codemirror-2.37\mode\ruby\LICENSE" />
-    <None Include="Scripts\codemirror-2.37\mode\r\LICENSE" />
-    <None Include="Scripts\codemirror-2.37\mode\sieve\LICENSE" />
-    <None Include="Scripts\codemirror-2.37\mode\xquery\LICENSE" />
-    <None Include="Scripts\codemirror-2.37\package.json" />
-    <None Include="Scripts\esm\popper-utils.js.map" />
-    <None Include="Scripts\esm\popper-utils.min.js.map" />
-    <None Include="Scripts\esm\popper.js.map" />
-    <None Include="Scripts\esm\popper.min.js.map" />
-    <None Include="Scripts\jquery-3.3.1.min.map" />
-    <None Include="Scripts\jquery-3.3.1.slim.min.map" />
-    <None Include="Scripts\popper-utils.js.map" />
-    <None Include="Scripts\popper-utils.min.js.map" />
-    <None Include="Scripts\popper.js.map" />
-    <None Include="Scripts\popper.min.js.map" />
-    <None Include="Scripts\README.md" />
-    <None Include="Scripts\umd\popper-utils.js.map" />
-    <None Include="Scripts\umd\popper-utils.min.js.map" />
-    <None Include="Scripts\umd\popper.js.map" />
-    <None Include="Scripts\umd\popper.min.js.map" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\font-awesome.css" />
-    <Content Include="Content\font-awesome.min.css" />
-    <Content Include="fonts\fontawesome-webfont.svg" />
-    <Content Include="laughing-man.ico" />
-    <Content Include="Content\app\app.html" />
-    <Content Include="Content\app\css\app.css" />
-    <Content Include="Scripts\app\content.js" />
-    <Content Include="Scripts\app\connection-info-dialog.js" />
-    <Content Include="Scripts\app\sidebar.js" />
-    <Content Include="Scripts\app\sidebar-slider.js" />
-    <Content Include="Scripts\app\navbar.js" />
-    <Content Include="Scripts\app\utils.js" />
-    <Content Include="Scripts\app\app.js" />
-    <Content Include="Scripts\app\core.js" />
     <Content Include="Scripts\codemirror-2.37\keymap\emacs.js" />
     <Content Include="Scripts\codemirror-2.37\keymap\vim.js" />
     <Content Include="Scripts\codemirror-2.37\lib\codemirror.css" />
@@ -406,6 +285,127 @@
     <Content Include="Scripts\codemirror-2.37\theme\twilight.css" />
     <Content Include="Scripts\codemirror-2.37\theme\vibrant-ink.css" />
     <Content Include="Scripts\codemirror-2.37\theme\xq-dark.css" />
+    <Content Include="Scripts\esm\popper-utils.js" />
+    <Content Include="Scripts\esm\popper-utils.min.js" />
+    <Content Include="Scripts\esm\popper.js" />
+    <Content Include="Scripts\esm\popper.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.intellisense.js" />
+    <Content Include="Scripts\jquery-3.3.1.js" />
+    <Content Include="Scripts\jquery-3.3.1.min.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.js" />
+    <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\popper-utils.js" />
+    <Content Include="Scripts\popper-utils.min.js" />
+    <Content Include="Scripts\popper.js" />
+    <Content Include="Scripts\popper.min.js" />
+    <Content Include="Scripts\umd\popper-utils.js" />
+    <Content Include="Scripts\umd\popper-utils.min.js" />
+    <Content Include="Scripts\umd\popper.js" />
+    <Content Include="Scripts\umd\popper.min.js" />
+    <EmbeddedResource Include="Program.resx">
+      <DependentUpon>Program.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Content Include="Content\app\css\result-slider.css" />
+    <Content Include="Content\app\css\content.css" />
+    <Content Include="Content\app\css\sidebar-slider.css" />
+    <Content Include="Content\app\css\sidebar.css" />
+    <Content Include="Content\app\css\navbar.css" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <None Include="Content\bootstrap-grid.css.map" />
+    <None Include="Content\bootstrap-grid.min.css.map" />
+    <None Include="Content\bootstrap-reboot.css.map" />
+    <None Include="Content\bootstrap-reboot.min.css.map" />
+    <None Include="Content\bootstrap.css.map" />
+    <None Include="Content\bootstrap.min.css.map" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Scripts\bootstrap.bundle.js.map" />
+    <None Include="Scripts\bootstrap.bundle.min.js.map" />
+    <None Include="Scripts\bootstrap.js.map" />
+    <None Include="Scripts\bootstrap.min.js.map" />
+    <None Include="Scripts\codemirror-2.37\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\coffeescript\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\pascal\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\perl\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\ruby\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\r\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\sieve\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\mode\xquery\LICENSE" />
+    <None Include="Scripts\codemirror-2.37\package.json" />
+    <None Include="Scripts\esm\popper-utils.js.map" />
+    <None Include="Scripts\esm\popper-utils.min.js.map" />
+    <None Include="Scripts\esm\popper.js.map" />
+    <None Include="Scripts\esm\popper.min.js.map" />
+    <None Include="Scripts\jquery-3.3.1.min.map" />
+    <None Include="Scripts\jquery-3.3.1.slim.min.map" />
+    <None Include="Scripts\popper-utils.js.map" />
+    <None Include="Scripts\popper-utils.min.js.map" />
+    <None Include="Scripts\popper.js.map" />
+    <None Include="Scripts\popper.min.js.map" />
+    <None Include="Scripts\README.md" />
+    <None Include="Scripts\umd\popper-utils.js.map" />
+    <None Include="Scripts\umd\popper-utils.min.js.map" />
+    <None Include="Scripts\umd\popper.js.map" />
+    <None Include="Scripts\umd\popper.min.js.map" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="laughing-man.ico" />
+    <Content Include="Content\app\app.html" />
+    <Content Include="Content\app\css\app.css" />
+    <Content Include="Scripts\app\content.js" />
+    <Content Include="Scripts\app\connection-info-dialog.js" />
+    <Content Include="Scripts\app\sidebar.js" />
+    <Content Include="Scripts\app\sidebar-slider.js" />
+    <Content Include="Scripts\app\navbar.js" />
+    <Content Include="Scripts\app\utils.js" />
+    <Content Include="Scripts\app\app.js" />
+    <Content Include="Scripts\app\core.js" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
