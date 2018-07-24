@@ -51,6 +51,7 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Get version numbers of the app and dependencies.
         /// </summary>
+        /// <param name="args">Ignored</param>
         internal void GetVersions(object[] args)
         {
             var replyMsgName = "versions";
@@ -66,17 +67,21 @@ namespace Tokafew420.MDbScriptTool
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.ToString());
+                Logger.Error(e.ToString());
             }
 
             _systemEvent.Emit(replyMsgName, versions);
         }
 
+        /// <summary>
+        /// Parses the connection string.
+        /// </summary>
+        /// <param name="args">Expects arg[0] to be a connection string.</param>
         internal void ParseConnectionString(object[] args)
         {
             var replyMsgName = "connection-string-parsed";
 
-            Debug.WriteLine("Event received: parse-connection-string");
+            Logger.Debug("Event received: parse-connection-string");
 
             if (args != null && args.Length == 1)
             {
@@ -100,7 +105,7 @@ namespace Tokafew420.MDbScriptTool
             var replyMsgName = "password-encrypted";
             var pass = "";
 
-            Debug.WriteLine("Event received: encrypt-password");
+            Logger.Debug("Event received: encrypt-password");
 
             if (args != null && args.Length == 1)
             {
@@ -119,7 +124,7 @@ namespace Tokafew420.MDbScriptTool
                     catch (Exception e)
                     {
                         // Do Nothing
-                        Debug.WriteLine(e.ToString());
+                        Logger.Error(e.ToString());
                     }
 
                     try
@@ -132,7 +137,7 @@ namespace Tokafew420.MDbScriptTool
                     catch (Exception e)
                     {
                         // Do nothing
-                        Debug.WriteLine(e.ToString());
+                        Logger.Error(e.ToString());
                     }
                 }
             }
@@ -238,7 +243,7 @@ namespace Tokafew420.MDbScriptTool
         private async Task ExecuteSqlBatches(string connectionString, string db, IEnumerable<string> batches, string id)
         {
             _systemEvent.Emit("sql-execute-begin", id, db);
-            Debug.WriteLine($"Begin batches for {db}");
+            Logger.Debug($"Begin batches for {db}");
 
             foreach (var batch in batches)
             {
@@ -247,7 +252,7 @@ namespace Tokafew420.MDbScriptTool
                     using (var conn = new SqlConnection(connectionString))
                     {
                         _systemEvent.Emit("sql-execute-connecting", id, db);
-                        Debug.WriteLine($"Connecting to {connectionString}");
+                        Logger.Debug($"Connecting to {connectionString}");
                         await conn.OpenAsync();
 
                         using (var cmd = conn.CreateCommand())
@@ -256,7 +261,7 @@ namespace Tokafew420.MDbScriptTool
                             cmd.CommandText = batch;
 
                             _systemEvent.Emit("sql-execute-executing", id, db);
-                            Debug.WriteLine($"Executing to {connectionString}");
+                            Logger.Debug($"Executing to {connectionString}");
 
                             using (var reader = await cmd.ExecuteReaderAsync())
                             {
@@ -266,7 +271,7 @@ namespace Tokafew420.MDbScriptTool
                                 } while (reader.NextResult());
 
                                 _systemEvent.Emit("sql-execute-batch-complete", id, db);
-                                Debug.WriteLine($"Completed batch {id} for {db}");
+                                Logger.Debug($"Completed batch {id} for {db}");
                             }
                         }
                     }
@@ -274,11 +279,18 @@ namespace Tokafew420.MDbScriptTool
             }
 
             _systemEvent.Emit("sql-execute-complete", id, db);
-            Debug.WriteLine($"Completed batches {id} for {db}");
+            Logger.Debug($"Completed batches {id} for {db}");
         }
 
+        /// <summary>
+        /// Break the SQL into batches that are delimited by GO.
+        /// </summary>
+        /// <param name="sql">The original SQL from the editor.</param>
+        /// <returns>An iterator that returns each SQL batch.</returns>
         private IEnumerable<string> GetSqlBatches(string sql)
         {
+            if (string.IsNullOrWhiteSpace(sql)) yield break;
+
             var startIdx = 0;
             var count = 0;
             var lines = sql.Split('\n');
@@ -305,6 +317,11 @@ namespace Tokafew420.MDbScriptTool
             }
         }
 
+        /// <summary>
+        /// Encrypts the clearText.
+        /// </summary>
+        /// <param name="clearText">The clear text to encrypt.</param>
+        /// <returns>The cipher text.</returns>
         internal static string Encrypt(string clearText)
         {
             byte[] bytes;
@@ -331,6 +348,11 @@ namespace Tokafew420.MDbScriptTool
                 .TrimEnd(padding).Replace('+', '-').Replace('/', '_');
         }
 
+        /// <summary>
+        /// Decrypts the cipher text.
+        /// </summary>
+        /// <param name="cipher">The cipher text to decrypt.</param>
+        /// <returns>The descrypted clear text.</returns>
         internal static string Decrypt(string cipher)
         {
             cipher = cipher
@@ -350,6 +372,11 @@ namespace Tokafew420.MDbScriptTool
             return Encoding.UTF8.GetString(ProtectedData.Unprotect(tmpCipher, salt, DataProtectionScope.CurrentUser));
         }
 
+        /// <summary>
+        /// Tries to decrypt the cipher text. If the decryption fails, then return the original cipher.
+        /// </summary>
+        /// <param name="cipher">The cipher to decrypt.</param>
+        /// <returns>The decrypted cipher if decryption is successful, otherwise the original cipher.</returns>
         internal static string TryDecrypt(string cipher)
         {
             try
@@ -358,7 +385,7 @@ namespace Tokafew420.MDbScriptTool
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.ToString());
+                Logger.Error(e.ToString());
                 return cipher;
             }
         }
@@ -369,7 +396,14 @@ namespace Tokafew420.MDbScriptTool
     /// </summary>
     internal class Versions
     {
+        /// <summary>
+        /// This application version.
+        /// </summary>
         public string App { get; set; } = "Unknown";
+
+        /// <summary>
+        /// The CEF dependency version.
+        /// </summary>
         public string Cef { get; set; } = "Unknown";
     }
 }

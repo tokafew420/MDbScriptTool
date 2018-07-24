@@ -1,5 +1,4 @@
 ﻿using CefSharp;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Tokafew420.MDbScriptTool
@@ -27,7 +26,7 @@ namespace Tokafew420.MDbScriptTool
         {
             isKeyboardShortcut = false;
 
-            Debug.WriteLine("OnPreKeyEvent: KeyType: {0} 0x{1:X} Modifiers: {2}", type, windowsKeyCode, modifiers);
+            //Logger.Debug("OnPreKeyEvent: KeyType: {0} 0x{1:X} Modifiers: {2}", type, windowsKeyCode, modifiers);
             // Debug.WriteLine("OnPreKeyEvent PreProcessControlState: {0}", state);
             if (type == KeyType.RawKeyDown)
             {
@@ -41,6 +40,7 @@ namespace Tokafew420.MDbScriptTool
                     case Keys.F5:
                         browser.Reload(modifiers == CefEventFlags.ShiftDown);
                         return true;
+
                     default:
                         break;
                 }
@@ -67,7 +67,7 @@ namespace Tokafew420.MDbScriptTool
         public bool OnKeyEvent(IWebBrowser browserControl, IBrowser browser, KeyType type, int windowsKeyCode, int nativeKeyCode, CefEventFlags modifiers, bool isSystemKey)
         {
             var result = false;
-            Debug.WriteLine("OnKeyEvent: KeyType: {0} 0x{1:X} Modifiers: {2}", type, windowsKeyCode, modifiers);
+            //Logger.Debug("OnKeyEvent: KeyType: {0} 0x{1:X} Modifiers: {2}", type, windowsKeyCode, modifiers);
             // TODO: Handle MessageNeeded cases here somehow.
 
             return result;

@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -21,12 +20,12 @@ namespace Tokafew420.MDbScriptTool
                 try
                 {
                     Directory.CreateDirectory(Program.DataDirectory);
-                    Debug.WriteLine("Created Data/ Directory");
+                    Logger.Debug("Created Data/ Directory");
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine("Failed to create Data/ directory");
-                    Debug.WriteLine(e.ToString());
+                    Logger.Error("Failed to create Data/ directory");
+                    Logger.Error(e.ToString());
                 }
             }
 
@@ -42,12 +41,12 @@ namespace Tokafew420.MDbScriptTool
                         Settings = new ConcurrentDictionary<string, object>(loadedSettings, StringComparer.OrdinalIgnoreCase);
                     }
 
-                    Debug.WriteLine("Loaded AppSettings");
+                    Logger.Debug("Loaded AppSettings");
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine("Failed to load AppSettings");
-                    Debug.WriteLine(e.ToString());
+                    Logger.Error("Failed to load AppSettings");
+                    Logger.Error(e.ToString());
                 }
             }
             else
@@ -55,12 +54,12 @@ namespace Tokafew420.MDbScriptTool
                 try
                 {
                     File.Create(_filePath);
-                    Debug.WriteLine("Created AppSettings");
+                    Logger.Debug("Created AppSettings");
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine("Failed to create AppSettings");
-                    Debug.WriteLine(e.ToString());
+                    Logger.Error("Failed to create AppSettings");
+                    Logger.Error(e.ToString());
                 }
             }
         }
@@ -105,16 +104,16 @@ namespace Tokafew420.MDbScriptTool
                 if (!Directory.Exists(Program.DataDirectory))
                 {
                     Directory.CreateDirectory(Program.DataDirectory);
-                    Debug.WriteLine("Created Data/ Directory");
+                    Logger.Debug("Created Data/ Directory");
                 }
 
                 File.WriteAllText(_filePath, JsonConvert.SerializeObject(Settings, new SettingsJsonConverter()), Encoding.UTF8);
-                Debug.WriteLine("Saved AppSettings");
+                Logger.Debug("Saved AppSettings");
             }
             catch (Exception e)
             {
-                Debug.WriteLine("Failed to save AppSetting");
-                Debug.WriteLine(e.ToString());
+                Logger.Error("Failed to save AppSetting");
+                Logger.Error(e.ToString());
             }
         }
 

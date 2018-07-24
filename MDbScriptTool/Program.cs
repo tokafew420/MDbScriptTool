@@ -75,6 +75,8 @@ namespace Tokafew420.MDbScriptTool
             _browser = new ChromiumWebBrowser(url.ToString());
             _systemEvent = new SystemEvent(_browser);
             _scriptEvent = new ScriptEvent(_browser);
+            Logger.Browser = _browser;
+            Logger.Level = Logger.LogLevel.All;
 
             // Register handlers.
             _browser.RequestHandler = new BrowserRequestHandler();
@@ -109,8 +111,8 @@ namespace Tokafew420.MDbScriptTool
             }
             catch (Exception err)
             {
-                Debug.WriteLine("Failed to apply AppSettings");
-                Debug.WriteLine(err.ToString());
+                Logger.Warn("Failed to apply AppSettings");
+                Logger.Warn(err.ToString());
             }
 
             // Initialize the app

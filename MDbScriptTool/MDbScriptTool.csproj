@@ -111,6 +111,7 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="SettingsJsonConverter.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="SystemEvent.cs" />
     <Compile Include="Program.cs">
       <SubType>Form</SubType>
