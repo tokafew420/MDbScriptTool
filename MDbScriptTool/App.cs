@@ -41,11 +41,13 @@ namespace Tokafew420.MDbScriptTool
             _scriptEvent = scriptEvent ?? throw new ArgumentNullException("scriptEvent");
 
             // Register event handlers
-            _scriptEvent.On("get-versions", GetVersions);
             _scriptEvent.On("parse-connection-string", ParseConnectionString);
             _scriptEvent.On("encrypt-password", EncryptPassword);
             _scriptEvent.On("list-databases", GetDatabases);
             _scriptEvent.On("execute-sql", ExecuteSql);
+            _scriptEvent.On("get-versions", GetVersions);
+            _scriptEvent.On("get-log-settings", GetLogSettings);
+            _scriptEvent.On("set-log-settings", SetLogSettings);
         }
 
         /// <summary>
@@ -54,6 +56,8 @@ namespace Tokafew420.MDbScriptTool
         /// <param name="args">Ignored</param>
         internal void GetVersions(object[] args)
         {
+            Logger.Debug("get-versions event received");
+
             var replyMsgName = "versions";
             var versions = new Versions();
 
@@ -67,7 +71,7 @@ namespace Tokafew420.MDbScriptTool
             }
             catch (Exception e)
             {
-                Logger.Error(e.ToString());
+                Logger.Warn(e.ToString());
             }
 
             _systemEvent.Emit(replyMsgName, versions);
@@ -387,6 +391,57 @@ namespace Tokafew420.MDbScriptTool
             {
                 Logger.Error(e.ToString());
                 return cipher;
+            }
+        }
+
+        /// <summary>
+        /// Get the logger settings for the UI. This is used to sync the configurations for the settings dialog.
+        /// </summary>
+        /// <param name="args">Ignored</param>
+        internal void GetLogSettings(object[] args)
+        {
+            Logger.Debug("get-log-settings event received");
+            var replyMsgName = "log-settings";
+
+            _systemEvent.Emit(replyMsgName, new
+            {
+                enabled = Logger.Browser != null,
+                debug = (Logger.Level & Logger.LogLevel.Debug) != Logger.LogLevel.None,
+                info = (Logger.Level & Logger.LogLevel.Info) != Logger.LogLevel.None,
+                warn = (Logger.Level & Logger.LogLevel.Warn) != Logger.LogLevel.None,
+                error = (Logger.Level & Logger.LogLevel.Error) != Logger.LogLevel.None
+            });
+        }
+
+        /// <summary>
+        /// Set the settings configured in the UI to the native logger.
+        /// </summary>
+        /// <param name="args">First arg is an object of logger settings.</param>
+        internal void SetLogSettings(object[] args)
+        {
+            Logger.Debug("set-log-settings event received");
+
+            if (args != null && args.Length == 1)
+            {
+                var settings = args[0] as dynamic;
+
+                if (settings != null)
+                {
+                    if (settings.enabled)
+                    {
+                        Logger.Browser = _browser;
+                    }
+                    else
+                    {
+                        Logger.Browser = null;
+                    }
+
+                    Logger.Level = Logger.LogLevel.None;
+                    if (settings.debug) Logger.Level = Logger.Level | Logger.LogLevel.Debug;
+                    if (settings.info) Logger.Level = Logger.Level | Logger.LogLevel.Info;
+                    if (settings.warn) Logger.Level = Logger.Level | Logger.LogLevel.Warn;
+                    if (settings.error) Logger.Level = Logger.Level | Logger.LogLevel.Error;
+                }
             }
         }
     }

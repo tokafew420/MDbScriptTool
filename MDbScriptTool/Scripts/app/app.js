@@ -6,6 +6,9 @@ var app = (function (window) {
     app.state = {
         currentConnectionId: ''
     };
+    app.settings = {
+        logging: {}
+    };
     app.uiState = {};
     app.connections = [];
     app.dbs = [];
@@ -84,9 +87,27 @@ var app = (function (window) {
         numeric: true
     }).compare;
 
+    //app.saveSettings = function () {
+    //    localStorage.setItem('settings', JSON.stringify(app.settings));
+    //};
+
     // Inits
 
     var savedData;
+
+    // Get saved settings
+    //try {
+    //    savedData = window.localStorage.getItem('settings');
+    //    if (savedData) {
+    //        var settings = JSON.parse(savedData);
+    //        if (typeof settings === 'object' && settings !== null) {
+    //            app.settings = settings;
+    //        }
+    //    }
+    //} catch (e) {
+    //    console.error('Failed to load saved settings.');
+    //    console.error(e);
+    //}
 
     // Get saved connections
     try {

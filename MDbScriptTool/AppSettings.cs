@@ -65,11 +65,24 @@ namespace Tokafew420.MDbScriptTool
         }
 
         /// <summary>
+        /// Get a value indicating whether the app settings exist.
+        /// </summary>
+        /// <param name="name">The settings key.</param>
+        /// <returns>true if a settings value was saved, otherwise false.</returns>
+        public static bool Exists(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key)) return false;
+
+            return Settings.ContainsKey(key);
+
+        }
+
+        /// <summary>
         /// Get the app setting specified by the key name.
         /// </summary>
         /// <typeparam name="T">The return type</typeparam>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="name">The settings key.</param>
+        /// <returns>The settings value.</returns>
         public static T Get<T>(string key)
         {
             if (string.IsNullOrWhiteSpace(key)) return default(T);
@@ -85,8 +98,8 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Set a value into the app settings.
         /// </summary>
-        /// <param name="key">The setting key.</param>
-        /// <param name="value">The setting value.</param>
+        /// <param name="key">The settings key.</param>
+        /// <param name="value">The settings value.</param>
         public static void Set(string key, object value)
         {
             if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException("key");

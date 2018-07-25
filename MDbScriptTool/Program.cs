@@ -108,6 +108,15 @@ namespace Tokafew420.MDbScriptTool
                 {
                     this.WindowState = FormWindowState.Maximized;
                 }
+
+                if (AppSettings.Exists("LogToBrowser") && !AppSettings.Get<bool>("LogToBrowser"))
+                {
+                    Logger.Browser = null;
+                }
+                if (AppSettings.Exists("LogLevel"))
+                {
+                    Logger.Level = AppSettings.Get<Logger.LogLevel>("LogLevel");
+                }
             }
             catch (Exception err)
             {
@@ -151,6 +160,8 @@ namespace Tokafew420.MDbScriptTool
                 AppSettings.Set("WindowSize", new System.Drawing.Size?(this.RestoreBounds.Size));
             }
             AppSettings.Set("WindowIsMaximized", this.WindowState == FormWindowState.Maximized);
+            AppSettings.Set("LogToBrowser", Logger.Browser != null);
+            AppSettings.Set("LogLevel", Logger.Level);
 
             AppSettings.Save();
         }

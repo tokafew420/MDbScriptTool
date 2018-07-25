@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="./css/sidebar-slider.css">
     <link rel="stylesheet" href="./css/content.css">
     <link rel="stylesheet" href="./css/result-slider.css">
+    <link rel="stylesheet" href="./css/settings-modal.css">
     <link rel="stylesheet" href="./css/about-modal.css">
     <!-- /build -->
 </head>
@@ -38,10 +39,13 @@
             <div class="collapse navbar-collapse" id="navbar-drawer">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link connection-menu-lnk" href="#" data-toggle="modal" data-target="#connection-info-modal">Connections</a>
+                        <a class="nav-link connection-menu-lnk" href="#" data-toggle="modal" data-target="#connection-info-modal"><i class="fa fa-plug"></i>&nbsp;Connections</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link about-menu-lnk" href="#" data-toggle="modal" data-target="#about-modal">About</a>
+                        <a class="nav-link settings-menu-lnk" href="#" data-toggle="modal" data-target="#settings-modal"><i class="fa fa-cog"></i>&nbsp;Settings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link about-menu-lnk" href="#" data-toggle="modal" data-target="#about-modal"><i class="fa fa-info-circle"></i>&nbsp;About</a>
                     </li>
                 </ul>
             </div>
@@ -177,6 +181,71 @@
             </div>
         </div>
     </div>
+    <!-- Settings dialog -->
+    <div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="settings-modal" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="connection-info-modal-title">Settings</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-dark table-sm">
+                        <tbody class="">
+                            <tr>
+                                <td>
+                                    <div class="custom-control custom-checkbox" data-toggle="tooltip" title="View logs from native code in browser console">
+                                        <input type="checkbox" class="custom-control-input" id="enable-logs">
+                                        <label class="custom-control-label" for="enable-logs">Enable Native Logs</label>
+                                    </div>
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="container-fluid log-flags">
+                                        <div class="row">
+                                            <div class="col-sm">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="enable-logs-debug">
+                                                    <label class="custom-control-label" for="enable-logs-debug">Debug</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="enable-logs-info">
+                                                    <label class="custom-control-label" for="enable-logs-info">Info</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="enable-logs-warn">
+                                                    <label class="custom-control-label" for="enable-logs-warn">Warn</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" class="custom-control-input" id="enable-logs-error">
+                                                    <label class="custom-control-label" for="enable-logs-error">Error</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary cancel-btn" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-outline-primary save-btn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- About dialog -->
     <div class="modal fade" id="about-modal" tabindex="-1" role="dialog" aria-labelledby="about-modal" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -231,7 +300,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary cancel-btn" data-dismiss="modal">Ok</button>
+                    <button type="button" class="btn btn-outline-secondary ok-btn" data-dismiss="modal">Ok</button>
                 </div>
             </div>
         </div>
@@ -273,6 +342,7 @@
     <script src="../../Scripts/app/sidebar-slider.js"></script>
     <script src="../../Scripts/app/content.js"></script>
     <script src="../../Scripts/app/connection-info-dialog.js"></script>
+    <script src="../../Scripts/app/settings-modal.js"></script>
     <script src="../../Scripts/app/about-modal.js"></script>
     <!-- /build -->
 </body>

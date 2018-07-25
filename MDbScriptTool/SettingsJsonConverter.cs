@@ -76,11 +76,8 @@ namespace Tokafew420.MDbScriptTool
                     writer.WriteStartObject();
                     writer.WritePropertyName("key");
                     serializer.Serialize(writer, kv.Key, stringType);
-                    if (!type.IsPrimitive)
-                    {
-                        writer.WritePropertyName("$type");
-                        serializer.Serialize(writer, type.AssemblyQualifiedName, stringType);
-                    }
+                    writer.WritePropertyName("$type");
+                    serializer.Serialize(writer, type.AssemblyQualifiedName, stringType);
                     writer.WritePropertyName("value");
                     serializer.Serialize(writer, kv.Value, type);
                     writer.WriteEndObject();

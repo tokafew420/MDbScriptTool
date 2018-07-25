@@ -1,19 +1,21 @@
 /* About Modal */
 
-#about-modal .modal-content .modal-body tbody tr {
-  border-top: none;
+#about-modal .modal-content .modal-body table {
+    table-layout: fixed;
 }
 
-  #about-modal .modal-content .modal-body tbody tr.dependency-versions-section {
-    background-color: #000000;
-  }
-
-  #about-modal .modal-content .modal-body tbody tr td {
+#about-modal .modal-content .modal-body tbody tr td {
     border-top: none;
     padding-bottom: 0;
     padding-top: 0;
-  }
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
     #about-modal .modal-content .modal-body tbody tr td:first-child {
-      width: 25px;
+        width: 96px;
     }
+
+#about-modal .modal-content .modal-body tbody .dependency-versions-section {
+    background-color: #000000;
+}
