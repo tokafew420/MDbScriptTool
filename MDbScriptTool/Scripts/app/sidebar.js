@@ -55,7 +55,7 @@
                 } else {
                     setConnectionSelect('select');
                 }
-                app.emit('open-connection-info-modal');
+                app.emit('open-connections-modal');
             } else {
                 // List databases
                 var conn = app.getConnection(selectedConnId);
@@ -93,7 +93,10 @@
             if (dbLst) {
                 dbLst.forEach(function (db, idx) {
                     var $item = $(`<li class="db-lst-item active">
-                            <input type="checkbox" ${db.checked ? 'checked' : ''}/><span class="db-name">${db.name}</span>
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="custom-control-input" id="${db.name + idx}" ${db.checked ? 'checked' : ''}>
+                                <label class="custom-control-label" for="${db.name + idx}">${db.name}</label>
+                            </div>
                         </li>`);
 
                     if (db.name === 'master') {

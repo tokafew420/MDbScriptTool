@@ -10,7 +10,7 @@
     var passwordRegex = new RegExp('Password=[^;]*;', 'i');
 
     $(function () {
-        var $dlg = $('#connection-info-modal');
+        var $dlg = $('#connections-modal');
         var $selectConnections = $('.select-connections', $dlg);
         var $name = $('.name', $dlg);
         var $server = $('.server', $dlg);
@@ -60,7 +60,7 @@
             reset();
         });
 
-        app.on('open-connection-info-modal', function () {
+        app.on('open-connections-modal', function () {
             $dlg.modal('show');
         });
 

@@ -39,7 +39,7 @@
             <div class="collapse navbar-collapse" id="navbar-drawer">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link connection-menu-lnk" href="#" data-toggle="modal" data-target="#connection-info-modal"><i class="fa fa-plug"></i>&nbsp;Connections</a>
+                        <a class="nav-link connection-menu-lnk" href="#" data-toggle="modal" data-target="#connections-modal"><i class="fa fa-plug"></i>&nbsp;Connections</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link settings-menu-lnk" href="#" data-toggle="modal" data-target="#settings-modal"><i class="fa fa-cog"></i>&nbsp;Settings</a>
@@ -68,11 +68,9 @@
                     <option value="new">New...</option>
                 </Select>
             </div>
-            <ul class="db-lst"></ul>
         </nav>
         <div id="content">
-            <div>
-            </div>
+            <ul class="db-lst"></ul>
         </div>
     </div>
     <div class="sidebar-slider">
@@ -103,11 +101,11 @@
     </div>
     <!-- Modals -->
     <!-- Connections dialog -->
-    <div class="modal fade" id="connection-info-modal" tabindex="-1" role="dialog" aria-labelledby="connection-info-modal" aria-hidden="true">
+    <div class="modal fade" id="connections-modal" tabindex="-1" role="dialog" aria-labelledby="connections-modal" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="connection-info-modal-title">Connections</h5>
+                    <h5 class="modal-title" id="connections-modal-title">Connections</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -186,7 +184,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="connection-info-modal-title">Settings</h5>
+                    <h5 class="modal-title" id="settings-modal-title">Settings</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -251,7 +249,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="connection-info-modal-title">About</h5>
+                    <h5 class="modal-title" id="about-modal-title">About</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -341,7 +339,7 @@
     <script src="../../Scripts/app/sidebar.js"></script>
     <script src="../../Scripts/app/sidebar-slider.js"></script>
     <script src="../../Scripts/app/content.js"></script>
-    <script src="../../Scripts/app/connection-info-dialog.js"></script>
+    <script src="../../Scripts/app/connections-modal.js"></script>
     <script src="../../Scripts/app/settings-modal.js"></script>
     <script src="../../Scripts/app/about-modal.js"></script>
     <!-- /build -->

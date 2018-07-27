@@ -42,8 +42,6 @@
                 margin-top: 406px;
                 margin-left: 4px;
                 overflow: auto;
-                padding: 4px;
-                padding-left: 12px;
                 position: absolute;
                 right: 0;
                 top: 0;
@@ -55,19 +53,39 @@
 
 /** Table result set **/
 
-.result-subpane .result-set tbody tr:hover {
-    background-color: rgba(0, 196, 255, 0.5) /* csslint allow: fallback-colors */
+.result-subpane .dbname {
+    padding: 2px 8px;
+    background-color: #141414;
+    color: #fff;
 }
 
-.result-subpane .result-set tbody tr td {
-    padding: 0 2px;
+.result-subpane .result-text {
+    border: 1px solid #141414;
+    padding: 2px 8px;
 }
 
-    .result-subpane .result-set tbody tr td.null {
-        background-color: #ffeca2;
-        font-style: italic;
+.result-subpane .result-set {
+    overflow: auto;
+}
+
+    .result-subpane .result-set .row-number {
+        background-color: #242424;
+        color: #fff;
     }
 
-.result-subpane .result-set tbody tr:hover td.null {
-    background-color: rgba(152, 245, 255, 0.80); /* csslint allow: fallback-colors */
-}
+    .result-subpane .result-set tbody tr:hover {
+        background-color: rgba(0, 196, 255, 0.5) /* csslint allow: fallback-colors */
+    }
+
+    .result-subpane .result-set tbody tr td {
+        padding: 0 2px;
+    }
+
+        .result-subpane .result-set tbody tr td.null {
+            background-color: #ffeca2;
+            font-style: italic;
+        }
+
+    .result-subpane .result-set tbody tr:hover td.null {
+        background-color: rgba(152, 245, 255, 0.80); /* csslint allow: fallback-colors */
+    }

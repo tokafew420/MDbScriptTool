@@ -78,19 +78,19 @@
 
             var $dbTable = $('#' + db, $resultPane);
             if ($dbTable.length === 0) {
-                $resultPane.append(`<div id="${db}">${db}</div>`);
+                $resultPane.append(`<div id="${db}"><div class="dbname">${db}</div></div>`);
                 $dbTable = $('#' + db, $resultPane);
             }
             if (result && result.length) {
-                var $table = $('<table class="result-set" border="1"><thead></thead><tbody></tbody></table>');
+                var $table = $('<div class="result-set"><table border="1"><thead><tr><th class="row-number"></th></tr></thead><tbody></tbody></table></div>');
                 var keys = Object.keys(result[0]);
 
-                $('thead', $table).append(keys.map(function (k) {
+                $('thead tr', $table).append(keys.map(function (k) {
                     return '<th>' + k + '</th>';
                 }).join());
 
-                $('tbody', $table).append(result.map(function (row) {
-                    return '<tr>' + keys.map(function (k) {
+                $('tbody', $table).append(result.map(function (row, idx) {
+                    return `<tr><td class="row-number">${idx}</td>` + keys.map(function (k) {
                         if (row[k] === null) {
                             return '<td class="null">NULL</td>';
                         } else {
@@ -100,6 +100,8 @@
                 }).join());
 
                 $dbTable.append($table);
+            } else {
+                $dbTable.append('<div class="result-text">Command(s) completed successfully</div>');
             }
         });
         systemEvent.on('sql-execute-complete', function (batchId, db) {
@@ -206,7 +208,7 @@
                     // Includes navbar (56px), toolbar (53.5), tabs (42px) = total (151.5px)
                     var top = Math.floor(ui.offset.top);
                     // Constrain movement (minimium is 150 height for editor subpane)
-                    if (top < 300) return false;
+                    if (top < 200) return false;
 
                     // Result subpane does not include navbar (top - navbar + slider)
 

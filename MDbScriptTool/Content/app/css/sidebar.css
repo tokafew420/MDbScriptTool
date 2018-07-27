@@ -1,7 +1,7 @@
 /* Sidebar */
 
 .sidebar {
-    background-color: #424242;
+    background-color: #141414;
     bottom: 0;
     left: 0;
     margin: 0;
@@ -19,20 +19,11 @@
         flex-wrap: nowrap;
     }
 
-    .sidebar .sidebar-nav .db-lst {
+    .sidebar #content .db-lst {
         list-style: none;
         margin: 0;
         padding: 0;
     }
-
-        .sidebar .sidebar-nav .db-lst .db-lst-item {
-            line-height: 14px;
-        }
-
-            .sidebar .sidebar-nav .db-lst .db-lst-item input[type=checkbox] {
-                margin: 0 3px;
-                vertical-align: middle;
-            }
 
     .sidebar .select-connection {
         margin-bottom: 8px;

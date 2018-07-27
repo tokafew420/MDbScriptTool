@@ -402,7 +402,7 @@
     <Content Include="Content\app\app.html" />
     <Content Include="Content\app\css\app.css" />
     <Content Include="Scripts\app\content.js" />
-    <Content Include="Scripts\app\connection-info-dialog.js" />
+    <Content Include="Scripts\app\connections-modal.js" />
     <Content Include="Scripts\app\sidebar.js" />
     <Content Include="Scripts\app\sidebar-slider.js" />
     <Content Include="Scripts\app\navbar.js" />

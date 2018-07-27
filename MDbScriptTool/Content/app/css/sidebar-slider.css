@@ -1,8 +1,8 @@
 /* Sidebar slider */
 .sidebar-slider {
     background-color: #c8c8c8;
-    border-left: solid #333333 2px;
-    border-right: solid #333333 2px;
+    border-left: solid #242424 2px;
+    border-right: solid #242424 2px;
     bottom: 0;
     left: 300px;
     margin: 0;
@@ -17,17 +17,17 @@
     }
 
     .sidebar-slider:hover {
-        border-left: solid #fff 2px;
-        border-right: solid #fff 2px;
+        border-left: solid #545454 2px;
+        border-right: solid #545454 2px;
         cursor: ew-resize;
     }
 
         .sidebar-slider:hover div {
-            background-color: #fff;
+            background-color: #d41111;
         }
 
     .sidebar-slider div {
-        background-color: #323232;
+        background-color: #242424;
         height: 56px;
         padding: 2px;
         position: relative;
