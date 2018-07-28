@@ -239,8 +239,19 @@
         });
 
         systemEvent.on('password-encrypted', function (cipher) {
+            var connStr = $connStr.val();
+
             _tmpConn.password = cipher;
-            $password.val(cipher).change();
+
+            if (passwordRegex.test(connStr)) {
+                _tmpConn.raw = connStr = connStr.replace(passwordRegex, 'Password=' + _tmpConn.password + ";");
+            } else {
+                _tmpConn.raw = connStr = `Password=${_tmpConn.password};${connStr}`;
+            }
+
+            $password.val(cipher);
+            $connStr.val(connStr);
+
             app.saveConnection(_tmpConn);
 
             if (_hideAfterSave) {

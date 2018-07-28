@@ -90,7 +90,7 @@
                 }).join());
 
                 $('tbody', $table).append(result.map(function (row, idx) {
-                    return `<tr><td class="row-number">${idx}</td>` + keys.map(function (k) {
+                    return `<tr><td class="row-number">${idx + 1}</td>` + keys.map(function (k) {
                         if (row[k] === null) {
                             return '<td class="null">NULL</td>';
                         } else {
