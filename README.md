@@ -2,6 +2,10 @@
 
 A tool to run SQL scripts against multiple MSSQL databases.
 
+
+[![GitHub (pre-)release](https://img.shields.io/github/release/tokafew420/MDbScriptTool/all.svg)](https://github.com/tokafew420/MDbScriptTool/releases) [![Github All Releases](https://img.shields.io/github/downloads/tokafew420/MDbScriptTool/total.svg)](https://github.com/tokafew420/MDbScriptTool/releases)
+
+
 ## Summary ##
 
 When you're working on a multi-tenant application, chances are you have multiple databases (one for each client).
@@ -15,8 +19,23 @@ is a pretty good tool,
 **OR** as the saying goes "*why pay for something when you can do it yourself?*"
 
 
+## Releases ##
+
+Download the latest release from [here](https://github.com/tokafew420/MDbScriptTool/releases). Then just unzip and run the `MDbScriptTool.exe`.
+
 ## Running Solution ##
 
-On a fresh clone of the repository, Nuget only downloads the dependencies to the packages directory.
-To get the client files to "unpack" to the project directory you will need to open Nuget console and run `Update-Package -reinstall -FileConflictAction OverwriteAll`.
-The install script of the package is what actually places the files into the project.
+On a fresh clone of the repository, Nuget only downloads the dependencies to the packages
+directory. The install script of the dependency package is what actually places the files into
+the project directories (i.e. `Scripts/`). To get the client files to "unpack" to the project
+directory you will need to open the NuGet console and run `Update-Package -reinstall -FileConflictAction OverwriteAll`.
+
+## Alternatives ##
+
+Here are some other alternatives.
+
+- Red Gate's [SQL Multi Script](https://www.red-gate.com/products/dba/sql-multi-script/) - Commerical tool
+- [ApexSQL Propagate 2018](https://www.apexsql.com/sql_tools_propagate.aspx) - Free Commercial tool
+- [xSQL Script Executor](https://www.xsql.com/products/script_executor/) - Free for Personal Use
+- [TakoDeploy](https://github.com/andreujuanc/TakoDeploy) - Open Source
+- [Sp_MSforeachDB](https://dba.stackexchange.com/a/908) - Undocumented procedure (Doesn't work on Azure)
