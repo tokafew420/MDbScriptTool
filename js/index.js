@@ -1,4 +1,4 @@
-(function ($) {
+(function (window, $) {
     "use strict"; // Start of use strict
 
     // Smooth scrolling using jQuery easing
@@ -39,5 +39,16 @@
     // Collapse the navbar when page is scrolled
     $(window).scroll(navbarCollapse);
 
+    $.get('https://api.github.com/repos/tokafew420/MDbScriptTool/releases', function (data) {
+        if (data && data.length) {
+            var $link = $('#latest-release');
+            $link.prop('href', data[0].html_url).text(data[0].tag_name);
+
+            if (data[0].assets && data[0].assets[0] && data[0].assets[0].browser_download_url) {
+                $link.prop('href', data[0].assets[0].browser_download_url);
+            }
+        }
+    });
+
     $('footer #year').text(new Date().getFullYear());
-})(jQuery); // End of use strict
+})(window, jQuery);

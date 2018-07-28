@@ -1,5 +1,6 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -7,7 +8,8 @@
     <meta name="author" content="tokafew420">
     <title>Multi Database Script Tool</title>
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4"
+        crossorigin="anonymous">
     <!-- Custom fonts for this template -->
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css">
@@ -15,12 +17,14 @@
     <!-- Custom styles for this template -->
     <link href="css/index.css" rel="stylesheet">
 </head>
+
 <body id="page-top">
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
         <div class="container">
             <a class="navbar-brand js-scroll-trigger" href="#page-top">MDbScriptTool</a>
-            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
@@ -38,12 +42,18 @@
                 <a href="#page-top" class="nav-link js-scroll-trigger">Home</a>
                 <nav class="nav-item">
                     <ul>
-                        <li><a href="#about" class="nav-link js-scroll-trigger">About</a></li>
-                        <li><a href="#download" class="nav-link js-scroll-trigger">Download</a></li>
+                        <li>
+                            <a href="#about" class="nav-link js-scroll-trigger">About</a>
+                        </li>
+                        <li>
+                            <a href="#download" class="nav-link js-scroll-trigger">Download</a>
+                        </li>
                     </ul>
                 </nav>
             </li>
-            <li><a href="#more" class="nav-link js-scroll-trigger">More</a></li>
+            <li>
+                <a href="#more" class="nav-link js-scroll-trigger">More</a>
+            </li>
         </ul>
     </nav>
     <!-- Intro Header -->
@@ -70,14 +80,14 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
-                    <h2>About MDScript Runner</h2>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                    <h2>About MDScriptTool</h2>
+                    <p>Working in a multi-tenant environment is challenging, and one of the many challenges is being able to
+                        quickly run a query (or patch script) across the entire client base. <strong>MDbScriptTool</strong> is a
+                        simple application that allows you to specify a connection, list all available databases, and run a script
+                        against any or all of them.
                     </p>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    </p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <p>Whether it's deployment, support, or analysis; having the correct tool for the job is the difference between
+                        having a good day vs a bad day.</p>
                 </div>
             </div>
         </div>
@@ -87,8 +97,9 @@
         <div class="container">
             <div class="col-lg-8 mx-auto">
                 <h2>Download MDbScriptTool</h2>
-                <p>Download the latest version <a href="https://github.com/tokafew420/MDbScriptTool/releases/download/v0.1.5-beta/MDbScriptTool-x64-v0.1.5.zip">v0.1.5</a> now to get started. Or check out 
-                the <a href="https://github.com/tokafew420/MDbScriptTool/releases">Releases</a> page for release notes and previous versions.</p>
+                <p>Download the latest version
+                    <a id="latest-release" href="https://github.com/tokafew420/MDbScriptTool/releases/">v0.1.5</a> now to get started. Or check out the
+                    <a href="https://github.com/tokafew420/MDbScriptTool/releases">Releases</a> page for release notes and previous versions.</p>
                 <p>If you want to always be up-to-update, consider cloning the Repo and building it yourself. (Requires VS2017)</p>
                 <a href="https://github.com/tokafew420/MDbScriptTool/releases" class="btn btn-default btn-lg">Visit Release Page</a>
             </div>
@@ -124,14 +135,21 @@
     <!-- Footer -->
     <footer>
         <div class="container text-center">
-            <p>Copyright &copy; Tokafew420 <span id="year">2018</span></p>
-            <p>GrayScale Template by <a href="https://startbootstrap.com/template-overviews/grayscale/">startbootstrap.com</a></p>
+            <p>Copyright &copy; Tokafew420
+                <span id="year">2018</span>
+            </p>
+            <p>GrayScale Template by
+                <a href="https://startbootstrap.com/template-overviews/grayscale/">startbootstrap.com</a>
+            </p>
         </div>
     </footer>
     <!-- Bootstrap core JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+        crossorigin="anonymous"></script>
 
     <!-- Plugin JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
@@ -139,4 +157,5 @@
     <!-- Custom scripts for this template -->
     <script src="js/index.js"></script>
 </body>
+
 </html>
