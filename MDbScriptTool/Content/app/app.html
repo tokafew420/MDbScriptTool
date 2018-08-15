@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="../themes/base/jquery-ui.min.css" />
     <link rel="stylesheet" href="../bootstrap.min.css">
     <link rel="stylesheet" href="../font-awesome.min.css">
-    <link rel="stylesheet" href="../../Scripts/codemirror-2.37/lib/codemirror.css">
-    <link rel="stylesheet" href="../../Scripts/codemirror-2.37/theme/twilight.css">
+    <link rel="stylesheet" href="../../Scripts/CodeMirror/lib/codemirror.css">
+    <link rel="stylesheet" href="../../Scripts/CodeMirror/theme/twilight.css">
     <!--App css -->
     <!-- build:css ./css/app.min.css -->
     <link rel="stylesheet" href="./css/app.css">
@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="./css/sidebar.css">
     <link rel="stylesheet" href="./css/sidebar-slider.css">
     <link rel="stylesheet" href="./css/content.css">
-    <link rel="stylesheet" href="./css/result-slider.css">
+    <link rel="stylesheet" href="./css/content-result.css">
+    <link rel="stylesheet" href="./css/instance-slider.css">
     <link rel="stylesheet" href="./css/settings-modal.css">
     <link rel="stylesheet" href="./css/about-modal.css">
     <!-- /build -->
@@ -89,13 +90,12 @@
                     <button type="button" class="btn btn-secondary save-file-btn"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
                 </div>
             </div>
-            <ul class="nav nav-tabs code-tabs ml-2" role="tablist">
+            <ul class="nav nav-tabs instance-tabs ml-2" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link plus-tab" role="tab" aria-controls="plus" aria-selected="false"><i class="fa fa-plus" aria-hidden="true"></i></a>
                 </li>
             </ul>
-            <div class="tab-content code-panes">
-                <div class="tab-pane"></div>
+            <div class="tab-content instance-containers">
             </div>
         </div>
     </div>
@@ -327,8 +327,8 @@
     <script src="../../Scripts/jquery-ui-1.12.1.min.js"></script>
     <script src="../../Scripts/umd/popper.min.js"></script>
     <script src="../../Scripts/bootstrap.min.js"></script>
-    <script src="../../Scripts/codemirror-2.37/lib/codemirror.js"></script>
-    <script src="../../Scripts/codemirror-2.37/mode/sql/sql.js"></script>
+    <script src="../../Scripts/CodeMirror/lib/codemirror.js"></script>
+    <script src="../../Scripts/CodeMirror/mode/sql/sql.js"></script>
     <!-- build:js ../../Scripts/app/app.min.js -->
     <!-- Main app  -->
     <script src="../../Scripts/app/core.js"></script>
@@ -337,8 +337,13 @@
     <!-- App components -->
     <script src="../../Scripts/app/navbar.js"></script>
     <script src="../../Scripts/app/sidebar.js"></script>
+    <script src="../../Scripts/app/sidebar-toolbar.js"></script>
     <script src="../../Scripts/app/sidebar-slider.js"></script>
     <script src="../../Scripts/app/content.js"></script>
+    <script src="../../Scripts/app/content-toolbar.js"></script>
+    <script src="../../Scripts/app/content-tabs.js"></script>
+    <script src="../../Scripts/app/editor.js"></script>
+    <script src="../../Scripts/app/result.js"></script>
     <script src="../../Scripts/app/connections-modal.js"></script>
     <script src="../../Scripts/app/settings-modal.js"></script>
     <script src="../../Scripts/app/about-modal.js"></script>

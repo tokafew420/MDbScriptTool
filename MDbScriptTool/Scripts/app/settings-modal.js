@@ -7,7 +7,7 @@ $(function () {
     // Sync logging settings
     scriptEvent.emit('get-log-settings');
     systemEvent.once('log-settings', function (settings) {
-        app.settings.logging = settings || {};
+        app.state.settings.logging = settings || {};
     });
 
     var $dlg = $('#settings-modal');
@@ -30,22 +30,22 @@ $(function () {
     });
 
     $saveBtn.click(function () {
-        app.settings.logging.enabled = $logging.is(':checked');
-        app.settings.logging.debug = $loggingDebug.is(':checked');
-        app.settings.logging.info = $loggingInfo.is(':checked');
-        app.settings.logging.warn = $loggingWarn.is(':checked');
-        app.settings.logging.error = $loggingError.is(':checked');
+        app.state.settings.logging.enabled = $logging.is(':checked');
+        app.state.settings.logging.debug = $loggingDebug.is(':checked');
+        app.state.settings.logging.info = $loggingInfo.is(':checked');
+        app.state.settings.logging.warn = $loggingWarn.is(':checked');
+        app.state.settings.logging.error = $loggingError.is(':checked');
 
-        scriptEvent.emit('set-log-settings', app.settings.logging);
+        scriptEvent.emit('set-log-settings', app.state.settings.logging);
 
         $dlg.modal('hide');
     });
 
     $dlg.on('show.bs.modal', function (evt) {
-        $logging.prop('checked', app.settings.logging.enabled).change();
-        $loggingDebug.prop('checked', app.settings.logging.debug);
-        $loggingInfo.prop('checked', app.settings.logging.info);
-        $loggingWarn.prop('checked', app.settings.logging.warn);
-        $loggingError.prop('checked', app.settings.logging.error);
+        $logging.prop('checked', app.state.settings.logging.enabled).change();
+        $loggingDebug.prop('checked', app.state.settings.logging.debug);
+        $loggingInfo.prop('checked', app.state.settings.logging.info);
+        $loggingWarn.prop('checked', app.state.settings.logging.warn);
+        $loggingError.prop('checked', app.state.settings.logging.error);
     });
 });

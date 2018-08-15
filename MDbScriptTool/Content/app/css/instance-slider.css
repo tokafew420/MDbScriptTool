@@ -1,6 +1,6 @@
 
 /* Sidebar slider */
-.result-slider {
+.instance-slider {
     background-color: #c8c8c8;
     border-bottom: solid #242424 2px;
     border-top: solid #242424 2px;
@@ -12,17 +12,17 @@
     z-index: 20;
 }
 
-    .result-slider:hover {
+    .instance-slider:hover {
         cursor: ns-resize;
         border-top: solid #545454 2px;
         border-bottom: solid #545454 2px;
     }
 
-        .result-slider:hover div {
+        .instance-slider:hover div {
             background-color: #d41111;
         }
 
-    .result-slider div {
+    .instance-slider div {
         background-color: #242424;
         height: 6px;
         margin-left: auto;

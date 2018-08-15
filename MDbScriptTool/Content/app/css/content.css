@@ -23,69 +23,17 @@
         flex-wrap: nowrap;
     }
 
-    .content .code-panes {
+    .content .instance-containers {
         height: calc(100% - 88px);
     }
 
-        .content .code-panes .tab-pane {
+        .content .instance-containers .instance {
             height: 100%;
         }
 
-            .content .code-panes .tab-pane .editor-subpane {
+            /* editor */
+
+            .content .instance-containers .instance .editor {
                 z-index: 10;
+                height: 300px;
             }
-
-            .content .code-panes .tab-pane .result-subpane {
-                bottom: 0;
-                color: #000;
-                left: 0;
-                margin-top: 406px;
-                margin-left: 4px;
-                overflow: auto;
-                position: absolute;
-                right: 0;
-                top: 0;
-            }
-
-                .content .code-panes .tab-pane .result-subpane table {
-                    white-space: nowrap;
-                }
-
-/** Table result set **/
-
-.result-subpane .dbname {
-    padding: 2px 8px;
-    background-color: #141414;
-    color: #fff;
-}
-
-.result-subpane .result-text {
-    border: 1px solid #141414;
-    padding: 2px 8px;
-}
-
-.result-subpane .result-set {
-    overflow: auto;
-}
-
-    .result-subpane .result-set .row-number {
-        background-color: #242424;
-        color: #fff;
-    }
-
-    .result-subpane .result-set tbody tr:hover {
-        background-color: rgba(0, 196, 255, 0.5) /* csslint allow: fallback-colors */
-    }
-
-    .result-subpane .result-set tbody tr td {
-        padding: 0 2px;
-    }
-
-        .result-subpane .result-set tbody tr td.null {
-            background-color: #ffeca2;
-            font-style: italic;
-        }
-
-    .result-subpane .result-set tbody tr:hover td.null {
-        background-color: rgba(152, 245, 255, 0.80); /* csslint allow: fallback-colors */
-    }

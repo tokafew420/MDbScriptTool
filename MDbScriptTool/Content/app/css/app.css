@@ -49,6 +49,14 @@ hr {
     border-top: 1px solid #e9ecef;
 }
 
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #f7611e;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #f7611e;
+}
+
 /** Loader **/
 .loader-container {
     top: 0;
@@ -66,7 +74,7 @@ hr {
         animation: spin .75s linear infinite;
         border: 16px solid #c8c8c8;
         border-radius: 50%;
-        border-top: 16px solid #1e28ad;
+        border-top: 16px solid #d41111;
         height: 120px;
         margin: 0 auto;
         width: 120px;
@@ -85,8 +93,4 @@ hr {
     100% {
         transform: rotate(360deg);
     }
-}
-
-.CodeMirror {
-    height: auto;
 }
