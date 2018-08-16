@@ -34,11 +34,11 @@
         app.state.ui.sidebarCollapsed = !!collapsed;
 
         if (app.state.ui.sidebarCollapsed) {
-            $('i', $sidebarToggle).removeClass('fa-arrow-circle-right')
-                .addClass('fa-arrow-circle-left');
-        } else {
             $('i', $sidebarToggle).removeClass('fa-arrow-circle-left')
                 .addClass('fa-arrow-circle-right');
+        } else {
+            $('i', $sidebarToggle).removeClass('fa-arrow-circle-right')
+                .addClass('fa-arrow-circle-left');
         }
 
         app.saveState('ui');
