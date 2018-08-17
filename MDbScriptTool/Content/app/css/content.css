@@ -23,9 +23,27 @@
         flex-wrap: nowrap;
     }
 
+    .content .instance-tabs {
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+
+        .content .instance-tabs .nav-link:not(.active) {
+            background-color: #747474;
+        }
+
+            .content .instance-tabs .nav-link:not(.active):not(:hover) {
+                border-color: #949494 #949494 #848484;
+            }
+
+        .content .instance-tabs .nav-link.plus-tab:not(.active) {
+            background-color: #a4a4a4;
+        }
+
     .content .instance-containers {
         height: calc(100% - 88px);
     }
+
 
         .content .instance-containers .instance {
             height: 100%;
@@ -37,3 +55,24 @@
                 z-index: 10;
                 height: 300px;
             }
+
+/* CodeMirror overrides */
+.CodeMirror-hscrollbar {
+    overflow-x: hidden;
+}
+
+.CodeMirror-vscrollbar {
+    overflow-y: hidden;
+}
+
+.CodeMirror:hover .CodeMirror-hscrollbar {
+    overflow-x: scroll;
+}
+
+.CodeMirror:hover .CodeMirror-vscrollbar {
+    overflow-y: scroll;
+}
+
+.CodeMirror-scrollbar-filler {
+    background-color: rgba(0, 0, 0, .2);
+}
