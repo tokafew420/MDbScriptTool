@@ -240,7 +240,7 @@
         }
     });
 
-    systemEvent.on('password-encrypted', function (cipher) {
+    systemEvent.on('password-encrypted', function (err, cipher) {
         var connStr = $connStr.val();
 
         _tmpConn.password = cipher;

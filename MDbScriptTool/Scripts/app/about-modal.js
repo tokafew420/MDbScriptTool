@@ -13,7 +13,7 @@
     var $codemirrorVersion = $('#codemirror-version', $dlg);
 
     // Set the version information from the .NET side.
-    systemEvent.on('versions', function (versions) {
+    systemEvent.on('versions', function (err, versions) {
         if (versions) {
             if (versions.App) {
                 $appVersion.text(versions.App);

@@ -54,10 +54,14 @@ namespace Tokafew420.MDbScriptTool
         /// Get version numbers of the app and dependencies.
         /// </summary>
         /// <param name="args">Ignored</param>
-        internal void GetVersions(object[] args)
+        /// <remarks>
+        /// Emits event: versions
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] <see cref="Versions"/>
+        /// </remarks>
+        private void GetVersions(object[] args)
         {
-            Logger.Debug("get-versions event received");
-
             var replyMsgName = "versions";
             var versions = new Versions();
 
@@ -68,139 +72,165 @@ namespace Tokafew420.MDbScriptTool
                 versions.App = $"{appVersion.Major}.{appVersion.Minor}.{appVersion.Build}";
 
                 versions.Cef = FileVersionInfo.GetVersionInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "libcef.dll")).ProductVersion;
+
+                _systemEvent.Emit(replyMsgName, null, versions);
             }
             catch (Exception e)
             {
                 Logger.Warn(e.ToString());
+                _systemEvent.Emit(replyMsgName, e, versions);
             }
-
-            _systemEvent.Emit(replyMsgName, versions);
         }
 
         /// <summary>
         /// Parses the connection string.
         /// </summary>
-        /// <param name="args">Expects arg[0] to be a connection string.</param>
-        internal void ParseConnectionString(object[] args)
+        /// <param name="args">Expects:
+        /// [0] - A connection string.</param>
+        /// <remarks>
+        /// Emits event: connection-string-parsed
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] The parsed connection string
+        /// [2] The connection string builder instance.
+        /// </remarks>
+        private void ParseConnectionString(object[] args)
         {
             var replyMsgName = "connection-string-parsed";
 
-            Logger.Debug("Event received: parse-connection-string");
-
-            if (args != null && args.Length == 1)
+            if (args == null || args.Length != 1 || string.IsNullOrWhiteSpace(args[0] as string))
             {
-                if (!string.IsNullOrWhiteSpace(args[0] as string))
-                {
-                    try
-                    {
-                        var builder = new SqlConnectionStringBuilder(args[0] as string);
-                        _systemEvent.Emit(replyMsgName, null, builder.ConnectionString, builder);
-                    }
-                    catch (Exception e)
-                    {
-                        _systemEvent.Emit(replyMsgName, e);
-                    }
-                }
+                _systemEvent.Emit(replyMsgName, new ArgumentNullException("connectionString"));
+                return;
+            }
+
+            var connStr = args[0] as string;
+
+            try
+            {
+                var builder = new SqlConnectionStringBuilder(args[0] as string);
+                _systemEvent.Emit(replyMsgName, null, builder.ConnectionString, builder);
+            }
+            catch (Exception e)
+            {
+                _systemEvent.Emit(replyMsgName, e);
             }
         }
 
-        internal void EncryptPassword(object[] args)
+        /// <summary>
+        /// Encrypts the password.
+        /// </summary>
+        /// <param name="args">Expects:
+        /// [0] The password to encrypt.
+        /// </param>
+        /// <remarks>
+        /// Emits event: password-ecrypted
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] The encrypted password.
+        /// </remarks>
+        private void EncryptPassword(object[] args)
         {
             var replyMsgName = "password-encrypted";
-            var pass = "";
 
-            Logger.Debug("Event received: encrypt-password");
-
-            if (args != null && args.Length == 1)
+            if (args == null | args.Length != 1 || string.IsNullOrWhiteSpace(args[0] as string))
             {
-                if (!string.IsNullOrWhiteSpace(args[0] as string))
-                {
-                    pass = args[0] as string;
+                _systemEvent.Emit(replyMsgName, new ArgumentNullException("password"));
+                return;
+            }
+            var pass = args[0] as string;
 
-                    try
-                    {
-                        // If we can decrypt then the arg is already encrypted
-                        // Then just return the arg
-                        Decrypt(pass);
-                        _systemEvent.Emit(replyMsgName, pass);
-                        return;
-                    }
-                    catch (Exception e)
-                    {
-                        // Do Nothing
-                        Logger.Error(e.ToString());
-                    }
-
-                    try
-                    {
-                        // Assume not encrypted
-                        var cipher = Encrypt(pass);
-                        _systemEvent.Emit(replyMsgName, cipher);
-                        return;
-                    }
-                    catch (Exception e)
-                    {
-                        // Do nothing
-                        Logger.Error(e.ToString());
-                    }
-                }
+            try
+            {
+                // If we can decrypt then the arg is already encrypted
+                // Then just return the arg
+                Decrypt(pass);
+                _systemEvent.Emit(replyMsgName, null, pass);
+                return;
+            }
+            catch (Exception e)
+            {
+                // Do Nothing
+                Logger.Error(e.ToString());
             }
 
-            _systemEvent.Emit(replyMsgName, pass);
+            try
+            {
+                // Assume not encrypted
+                var cipher = Encrypt(pass);
+                _systemEvent.Emit(replyMsgName, null, cipher);
+            }
+            catch (Exception e)
+            {
+                // Do nothing
+                Logger.Error(e.ToString());
+                _systemEvent.Emit(replyMsgName, e);
+            }
+
         }
 
-        internal void GetDatabases(object[] args)
+        /// <summary>
+        /// Get a list of databases using the given connection string.
+        /// </summary>
+        /// <param name="args">Expects:
+        /// [0] The connection string.
+        /// </param>
+        /// <remarks>
+        /// Emits event: database-list
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] An array of databases.
+        /// </remarks>
+        private void GetDatabases(object[] args)
         {
             var replyMsgName = "database-list";
 
-            if (args != null && args.Length == 1)
+            if (args == null || args.Length != 1 || string.IsNullOrWhiteSpace(args[0] as string))
             {
-                try
+                _systemEvent.Emit(replyMsgName, new ArgumentNullException("connectionString"));
+                return;
+            }
+
+            var connStr = args[0] as string;
+
+            try
+            {
+                var builder = new SqlConnectionStringBuilder(connStr)
                 {
-                    var connStr = args[0] as string;
-                    var builder = new SqlConnectionStringBuilder(connStr)
-                    {
-                        InitialCatalog = "master"
-                    };
-                    builder.Password = TryDecrypt(builder.Password);
+                    InitialCatalog = "master"
+                };
+                builder.Password = TryDecrypt(builder.Password);
 
-                    using (var conn = new SqlConnection(builder.ToString()))
+                using (var conn = new SqlConnection(builder.ToString()))
+                {
+                    conn.Open();
+                    using (var cmd = conn.CreateCommand())
                     {
-                        conn.Open();
-                        using (var cmd = conn.CreateCommand())
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.CommandText = "SELECT * FROM sys.databases";
+
+                        using (var reader = cmd.ExecuteReader())
                         {
-                            cmd.CommandType = System.Data.CommandType.Text;
-                            cmd.CommandText = "SELECT * FROM sys.databases";
-
-                            using (var reader = cmd.ExecuteReader())
-                            {
-                                _systemEvent.Emit(replyMsgName, null, SqlDataReaderToExpando(reader));
-                            }
+                            _systemEvent.Emit(replyMsgName, null, SqlDataReaderToExpando(reader));
                         }
                     }
                 }
-                catch (Exception e)
-                {
-                    _systemEvent.Emit(replyMsgName, e);
-                }
             }
-        }
-
-        private IEnumerable<dynamic> SqlDataReaderToExpando(SqlDataReader reader)
-        {
-            var count = reader.FieldCount;
-
-            while (reader.Read())
+            catch (Exception e)
             {
-                var expandoObject = new ExpandoObject() as IDictionary<string, object>;
-
-                for (var i = 0; i < count; i++)
-                    expandoObject.Add(reader.GetName(i), reader[i]);
-
-                yield return expandoObject;
+                _systemEvent.Emit(replyMsgName, e);
             }
         }
 
+        /// <summary>
+        /// Execute the sql commands(s);
+        /// </summary>
+        /// <param name="args">Expects:
+        /// [0] The connection string
+        /// [1] The list of databases
+        /// [2] The sql to execute
+        /// [3] A batch id.
+        /// </param>
         private void ExecuteSql(object[] args)
         {
             var replyMsgName = "sql-execute-complete";
@@ -244,9 +274,84 @@ namespace Tokafew420.MDbScriptTool
             }
         }
 
-        private async Task ExecuteSqlBatches(string connectionString, string db, IEnumerable<string> batches, string id)
+        /// <summary>
+        /// Get the logger settings for the UI. This is used to sync the configurations for the settings dialog.
+        /// </summary>
+        /// <param name="args">Ignored</param>
+        /// <remarks>
+        /// Emits event: log-settings
+        /// Event params: 
+        /// [0] Always null
+        /// [1] The log settings
+        /// </remarks>
+        private void GetLogSettings(object[] args)
         {
-            _systemEvent.Emit("sql-execute-begin", id, db);
+            var replyMsgName = "log-settings";
+
+            _systemEvent.Emit(replyMsgName, null, new
+            {
+                enabled = Logger.Browser != null,
+                debug = (Logger.Level & Logger.LogLevel.Debug) != Logger.LogLevel.None,
+                info = (Logger.Level & Logger.LogLevel.Info) != Logger.LogLevel.None,
+                warn = (Logger.Level & Logger.LogLevel.Warn) != Logger.LogLevel.None,
+                error = (Logger.Level & Logger.LogLevel.Error) != Logger.LogLevel.None
+            });
+        }
+
+        /// <summary>
+        /// Set the settings configured in the UI to the native logger.
+        /// </summary>
+        /// <param name="args">Expects:
+        /// [0] An object of logger settings
+        /// </param>
+        /// <remarks>
+        /// Emits event: log-settings-saved
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// </remarks>
+        private void SetLogSettings(object[] args)
+        {
+            var replyMsgName = "log-settings-saved";
+
+            if (args == null && args.Length != 1)
+            {
+                _systemEvent.Emit(replyMsgName, new ArgumentNullException("logSettings"));
+                return;
+            }
+            var settings = args[0] as dynamic;
+
+            if (settings != null)
+            {
+                if (settings.enabled)
+                {
+                    Logger.Browser = _browser;
+                }
+                else
+                {
+                    Logger.Browser = null;
+                }
+
+                Logger.Level = Logger.LogLevel.None;
+                if (settings.debug) Logger.Level = Logger.Level | Logger.LogLevel.Debug;
+                if (settings.info) Logger.Level = Logger.Level | Logger.LogLevel.Info;
+                if (settings.warn) Logger.Level = Logger.Level | Logger.LogLevel.Warn;
+                if (settings.error) Logger.Level = Logger.Level | Logger.LogLevel.Error;
+
+                _systemEvent.Emit(replyMsgName);
+            }
+        }
+
+        /// <summary>
+        /// Executes each sql batch and emits the results.
+        /// </summary>
+        /// <param name="connectionString">The connection string.</param>
+        /// <param name="db">The database list.</param>
+        /// <param name="batches">A list of sql batches</param>
+        /// <param name="id">The entire batch id</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        internal async Task ExecuteSqlBatches(string connectionString, string db, IEnumerable<string> batches, string id)
+        {
+            _systemEvent.Emit("sql-execute-begin", null, id, db);
             Logger.Debug($"Begin batches for {db}");
 
             foreach (var batch in batches)
@@ -255,7 +360,7 @@ namespace Tokafew420.MDbScriptTool
                 {
                     using (var conn = new SqlConnection(connectionString))
                     {
-                        _systemEvent.Emit("sql-execute-connecting", id, db);
+                        _systemEvent.Emit("sql-execute-connecting", null, id, db);
                         Logger.Debug($"Connecting to {connectionString}");
                         await conn.OpenAsync();
 
@@ -264,17 +369,17 @@ namespace Tokafew420.MDbScriptTool
                             cmd.CommandType = CommandType.Text;
                             cmd.CommandText = batch;
 
-                            _systemEvent.Emit("sql-execute-executing", id, db);
+                            _systemEvent.Emit("sql-execute-executing", null, id, db);
                             Logger.Debug($"Executing to {connectionString}");
 
                             using (var reader = await cmd.ExecuteReaderAsync())
                             {
                                 do
                                 {
-                                    _systemEvent.Emit("sql-execute-result", id, db, SqlDataReaderToExpando(reader));
+                                    _systemEvent.Emit("sql-execute-result", null, id, db, SqlDataReaderToExpando(reader));
                                 } while (reader.NextResult());
 
-                                _systemEvent.Emit("sql-execute-batch-complete", id, db);
+                                _systemEvent.Emit("sql-execute-batch-complete", null, id, db);
                                 Logger.Debug($"Completed batch {id} for {db}");
                             }
                         }
@@ -282,8 +387,28 @@ namespace Tokafew420.MDbScriptTool
                 }
             }
 
-            _systemEvent.Emit("sql-execute-complete", id, db);
+            _systemEvent.Emit("sql-execute-complete", null, id, db);
             Logger.Debug($"Completed batches {id} for {db}");
+        }
+
+        /// <summary>
+        /// Converts the SqlDataReader instance into a list of objects.
+        /// </summary>
+        /// <param name="reader">The data reader</param>
+        /// <returns>The list of objects.</returns>
+        internal IEnumerable<dynamic> SqlDataReaderToExpando(IDataReader reader)
+        {
+            var count = reader.FieldCount;
+
+            while (reader.Read())
+            {
+                var expandoObject = new ExpandoObject() as IDictionary<string, object>;
+
+                for (var i = 0; i < count; i++)
+                    expandoObject.Add(reader.GetName(i), reader[i]);
+
+                yield return expandoObject;
+            }
         }
 
         /// <summary>
@@ -291,7 +416,7 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         /// <param name="sql">The original SQL from the editor.</param>
         /// <returns>An iterator that returns each SQL batch.</returns>
-        private IEnumerable<string> GetSqlBatches(string sql)
+        internal IEnumerable<string> GetSqlBatches(string sql)
         {
             if (string.IsNullOrWhiteSpace(sql)) yield break;
 
@@ -394,56 +519,6 @@ namespace Tokafew420.MDbScriptTool
             }
         }
 
-        /// <summary>
-        /// Get the logger settings for the UI. This is used to sync the configurations for the settings dialog.
-        /// </summary>
-        /// <param name="args">Ignored</param>
-        internal void GetLogSettings(object[] args)
-        {
-            Logger.Debug("get-log-settings event received");
-            var replyMsgName = "log-settings";
-
-            _systemEvent.Emit(replyMsgName, new
-            {
-                enabled = Logger.Browser != null,
-                debug = (Logger.Level & Logger.LogLevel.Debug) != Logger.LogLevel.None,
-                info = (Logger.Level & Logger.LogLevel.Info) != Logger.LogLevel.None,
-                warn = (Logger.Level & Logger.LogLevel.Warn) != Logger.LogLevel.None,
-                error = (Logger.Level & Logger.LogLevel.Error) != Logger.LogLevel.None
-            });
-        }
-
-        /// <summary>
-        /// Set the settings configured in the UI to the native logger.
-        /// </summary>
-        /// <param name="args">First arg is an object of logger settings.</param>
-        internal void SetLogSettings(object[] args)
-        {
-            Logger.Debug("set-log-settings event received");
-
-            if (args != null && args.Length == 1)
-            {
-                var settings = args[0] as dynamic;
-
-                if (settings != null)
-                {
-                    if (settings.enabled)
-                    {
-                        Logger.Browser = _browser;
-                    }
-                    else
-                    {
-                        Logger.Browser = null;
-                    }
-
-                    Logger.Level = Logger.LogLevel.None;
-                    if (settings.debug) Logger.Level = Logger.Level | Logger.LogLevel.Debug;
-                    if (settings.info) Logger.Level = Logger.Level | Logger.LogLevel.Info;
-                    if (settings.warn) Logger.Level = Logger.Level | Logger.LogLevel.Warn;
-                    if (settings.error) Logger.Level = Logger.Level | Logger.LogLevel.Error;
-                }
-            }
-        }
     }
 
     /// <summary>

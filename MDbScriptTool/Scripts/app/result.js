@@ -7,7 +7,7 @@
 (function (window) {
     var $content = $('.content');
 
-    systemEvent.on('sql-execute-result', function (batchId, db, result) {
+    systemEvent.on('sql-execute-result', function (err, batchId, db, result) {
         var $pane = $('#' + batchId);
         var $resultPane = $('.result', $pane);
 

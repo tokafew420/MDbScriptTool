@@ -41,6 +41,8 @@ namespace Tokafew420.MDbScriptTool
         {
             if (name == null) throw new ArgumentNullException("name");
 
+            Logger.Debug($"Event: {name}");
+
             var actionList = _listeners.FirstOrDefault(l => l.Key == name).Value;
 
             if (actionList != null)

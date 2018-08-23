@@ -38,7 +38,7 @@
         }
     });
 
-    systemEvent.on('sql-execute-begin', function (id, db) {
+    systemEvent.on('sql-execute-begin', function (err, id, db) {
         var instance = app.utils.findBy(app.state.instances, 'id', id);
 
         if (!instance) {
@@ -50,7 +50,7 @@
         instance.pending++;
     });
 
-    systemEvent.on('sql-execute-complete', function (id, db) {
+    systemEvent.on('sql-execute-complete', function (err, id, db) {
         var instance = app.utils.findBy(app.state.instances, 'id', id);
 
         if (instance) {

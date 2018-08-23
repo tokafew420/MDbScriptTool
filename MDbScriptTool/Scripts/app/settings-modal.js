@@ -6,7 +6,7 @@
 $(function () {
     // Sync logging settings
     scriptEvent.emit('get-log-settings');
-    systemEvent.once('log-settings', function (settings) {
+    systemEvent.once('log-settings', function (err, settings) {
         app.state.settings.logging = settings || {};
     });
 
