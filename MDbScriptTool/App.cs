@@ -231,27 +231,43 @@ namespace Tokafew420.MDbScriptTool
         /// [2] The sql to execute
         /// [3] A batch id.
         /// </param>
+        /// <remarks>
+        /// Emits event: sql-exe-complete
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] The sql execute batch id
+        /// 
+        /// Emits event: sql-exe-begin
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] The sql execute batch id
+        /// [2] The number of databases.
+        /// </remarks>
         private void ExecuteSql(object[] args)
         {
-            var replyMsgName = "sql-execute-complete";
+            var replyMsgName = "sql-exe-complete";
             if (args == null || args.Length != 4)
             {
                 _systemEvent.Emit(replyMsgName, new ArgumentException("Invalid arguments"));
                 return;
             }
 
+            var connStr = args[0] as string;
+            var dbs = (args[1] as List<object>).OfType<string>();
+            var sql = args[2] as string;
+            var id = args[3] as string;
+
             try
             {
-                var connStr = args[0] as string;
-                var dbs = (args[1] as List<object>).OfType<string>();
-                var sql = args[2] as string;
-                var id = args[3] as string;
+                var dbCt = dbs.Count();
 
                 if (!string.IsNullOrWhiteSpace(connStr) &&
-                    dbs.Count() > 0 &&
+                    dbCt > 0 &&
                     !string.IsNullOrWhiteSpace(sql) &&
                     !string.IsNullOrWhiteSpace(id))
                 {
+                    _systemEvent.Emit("sql-exe-begin", null, id, dbCt);
+
                     var batches = GetSqlBatches(sql);
                     var builder = new SqlConnectionStringBuilder(connStr);
                     builder.Password = TryDecrypt(builder.Password);
@@ -267,10 +283,14 @@ namespace Tokafew420.MDbScriptTool
                         }
                     }
                 }
+                else
+                {
+                    _systemEvent.Emit(replyMsgName, null, id);
+                }
             }
             catch (Exception e)
             {
-                _systemEvent.Emit(replyMsgName, e);
+                _systemEvent.Emit(replyMsgName, e, id);
             }
         }
 
@@ -349,18 +369,58 @@ namespace Tokafew420.MDbScriptTool
         /// <param name="batches">A list of sql batches</param>
         /// <param name="id">The entire batch id</param>
         /// <returns>A task representing the asynchronous operation.</returns>
+        /// <remarks>
+        /// Emits event: sql-exe-db-begin
+        /// Emits event: sql-exe-db-complete
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] The sql execute batch id
+        /// [2] The database name
+        /// [3] The number of batches
+        /// 
+        /// Emits event: sql-exe-db-batch-begin
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] The sql execute batch id
+        /// [2] The database name.
+        /// [3] The number of batches.
+        /// 
+        /// Emits event: sql-exe-db-batch-connecting
+        /// Emits event: sql-exe-db-batch-executing
+        /// Emits event: sql-exe-db-batch-complete
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] The sql execute batch id
+        /// [2] The database name.
+        /// [3] The batch number.
+        /// 
+        /// Emits event: sql-exe-db-batch-result
+        /// Event params: 
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] The sql execute batch id
+        /// [2] The database name.
+        /// [3] The batch number.
+        /// [4] The resultset.
+        /// </remarks>
         internal async Task ExecuteSqlBatches(string connectionString, string db, IEnumerable<string> batches, string id)
         {
-            _systemEvent.Emit("sql-execute-begin", null, id, db);
+            _systemEvent.Emit("sql-exe-db-begin", null, id, db);
             Logger.Debug($"Begin batches for {db}");
+
+            batches = batches.Where(b => !string.IsNullOrWhiteSpace(b));
+
+            var batchCt = batches.Count();
+            var batchNum = 0;
 
             foreach (var batch in batches)
             {
-                if (!string.IsNullOrWhiteSpace(batch))
+                _systemEvent.Emit("sql-exe-db-batch-begin", null, id, db, batchNum);
+
+                try
                 {
                     using (var conn = new SqlConnection(connectionString))
                     {
-                        _systemEvent.Emit("sql-execute-connecting", null, id, db);
+                        _systemEvent.Emit("sql-exe-db-batch-connecting", null, id, db, batchNum);
                         Logger.Debug($"Connecting to {connectionString}");
                         await conn.OpenAsync();
 
@@ -369,25 +429,32 @@ namespace Tokafew420.MDbScriptTool
                             cmd.CommandType = CommandType.Text;
                             cmd.CommandText = batch;
 
-                            _systemEvent.Emit("sql-execute-executing", null, id, db);
+                            _systemEvent.Emit("sql-exe-db-batch-executing", null, id, db, batchNum);
                             Logger.Debug($"Executing to {connectionString}");
 
                             using (var reader = await cmd.ExecuteReaderAsync())
                             {
                                 do
                                 {
-                                    _systemEvent.Emit("sql-execute-result", null, id, db, ConvertToResultset(reader));
+                                    _systemEvent.Emit("sql-exe-db-batch-result", null, id, db, batchNum, ConvertToResultset(reader));
                                 } while (reader.NextResult());
-
-                                _systemEvent.Emit("sql-execute-batch-complete", null, id, db);
-                                Logger.Debug($"Completed batch {id} for {db}");
                             }
                         }
                     }
                 }
+                catch (Exception e)
+                {
+                    _systemEvent.Emit("sql-exe-db-batch-result", e, id, db, batchNum);
+                    Logger.Error(e.ToString());
+                }
+
+                _systemEvent.Emit("sql-exec-db-batch-complete", null, id, db, batchNum);
+                Logger.Debug($"Completed batch {id} for {db}");
+
+                batchNum++;
             }
 
-            _systemEvent.Emit("sql-execute-complete", null, id, db);
+            _systemEvent.Emit("sql-exe-db-complete", null, id, db, batchCt);
             Logger.Debug($"Completed batches {id} for {db}");
         }
 

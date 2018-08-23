@@ -38,24 +38,37 @@
         }
     });
 
-    systemEvent.on('sql-execute-begin', function (err, id, db) {
+    systemEvent.on('sql-exe-db-begin', function (err, id, db) {
         var instance = app.utils.findBy(app.state.instances, 'id', id);
 
-        if (!instance) {
-            app.state.instances.push(instance = {
-                id: id,
-                pending: 0
-            });
+        if (instance) {
+            instance.pending++;
         }
-        instance.pending++;
     });
 
-    systemEvent.on('sql-execute-complete', function (err, id, db) {
+    systemEvent.on('sql-exe-db-complete', function (err, id, db) {
         var instance = app.utils.findBy(app.state.instances, 'id', id);
 
         if (instance) {
             instance.pending--;
             if (instance.pending === 0 && $('.instance-containers .instance.active', $content).attr('id') === id) {
+                $executeBtn.prop('disabled', false);
+            }
+        }
+    });
+
+    // This event only fires when the entire batch failed to execute.
+    systemEvent.on('sql-exe-complete', function (err, id, db) {
+        if (err) {
+            console.log(err);
+            bsAlert(err.Message, 'Error Executing SQL');
+        }
+
+        var instance = app.utils.findBy(app.state.instances, 'id', id);
+
+        if (instance) {
+            instance.pending = 0;
+            if ($('.instance-containers .instance.active', $content).attr('id') === id) {
                 $executeBtn.prop('disabled', false);
             }
         }

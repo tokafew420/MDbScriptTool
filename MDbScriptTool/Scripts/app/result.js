@@ -7,8 +7,28 @@
 (function (window) {
     var $content = $('.content');
 
-    systemEvent.on('sql-execute-result', function (err, batchId, db, result) {
-        console.log(result);
+    // Formats a SQLError to show only relevant information.
+    function formatSqlError(errs) {
+        return errs.map(function (e) {
+            var msg1 = [];
+            var msg = [];
+            if (typeof e.Class === 'number') msg1.push('Class: ' + e.Class); // Severity level 
+            if (e.Number) msg1.push('Number: ' + e.Number);  // Ignore 0
+            if (e.State) msg1.push('State: ' + e.State); // Ignore 0
+
+            if (msg1.length) {
+                msg.push(msg1.join(' '));
+            }
+
+            if (typeof e.LineNumber === 'number') msg.push('Line number: ' + e.LineNumber);
+            if (e.Procedure) msg.push('Procedure: ' + e.Procedure);
+            if (e.Message) msg.push(e.Message);
+
+            return msg.join('\n');
+        });
+    }
+
+    systemEvent.on('sql-exe-db-batch-result', function (err, batchId, db, batchNum, result) {
         var $pane = $('#' + batchId);
         var $resultPane = $('.result', $pane);
 
@@ -17,7 +37,14 @@
             $resultPane.append(`<div id="${db}"><div class="dbname">${db}</div></div>`);
             $dbTable = $('#' + db, $resultPane);
         }
-        if (result && result.length) {
+
+        if (err) {
+            if (err.Errors && err.Errors.length) {
+                $dbTable.append(`<div class="result-text"><pre class="text-danger">${formatSqlError(err.Errors).join('\n\n')}</pre></div>`);
+            } else {
+                $dbTable.append(`<div class="result-text text-danger">${err.Message}</div>`);
+            }
+        } else if (result && result.length && result[0].length) {
             var $table = $('<div class="result-set"><table border="1"><thead><tr><th class="row-number"></th></tr></thead><tbody></tbody></table></div>');
 
             $('thead tr', $table).append(result[0].map(function (columnName) {
