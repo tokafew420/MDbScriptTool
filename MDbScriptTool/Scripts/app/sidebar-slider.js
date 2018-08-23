@@ -33,9 +33,9 @@
     // Toggle collapse on navbar's sidebar toggle click
     app.on('navbar-sidebar-toggled', function (collapsed) {
         if (collapsed) {
-            $sidebarSlider.addClass('animating').addClass('collapsed');
+            $sidebarSlider.addClass('collapsed');
         } else {
-            $sidebarSlider.removeClass('animating').removeClass('collapsed');
+            $sidebarSlider.removeClass('collapsed');
         }
     });
 }(window));

@@ -10,9 +10,9 @@
     // Toggle collapse on navbar's sidebar toggle click
     app.on('navbar-sidebar-toggled', function (collapsed) {
         if (collapsed) {
-            $content.addClass('animating').addClass('full');
+            $content.addClass('full');
         } else {
-            $content.removeClass('animating').removeClass('full');
+            $content.removeClass('full');
         }
     });
 
