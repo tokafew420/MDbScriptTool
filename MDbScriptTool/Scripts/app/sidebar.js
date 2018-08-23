@@ -1,6 +1,5 @@
 ﻿/// <reference path="utils.js" />
-/// <reference path="app.js" />
-
+/// <reference path="app.js" />
 /**
  * Sidebar
  */
@@ -9,13 +8,21 @@
     var $connectionSelect = $('.select-connection', $sidebar);
     var $dbLst = $('.db-lst', $sidebar);
 
+    var removeAnimateTimer;
+
     // Toggle collapse on navbar's sidebar toggle click
     app.on('navbar-sidebar-toggled', function (collapsed) {
+        clearTimeout(removeAnimateTimer);
+
         if (collapsed) {
-            $sidebar.addClass('collapsed');
+            $sidebar.addClass('animate-250').addClass('collapsed');
         } else {
-            $sidebar.removeClass('collapsed');
+            $sidebar.addClass('animate-250').removeClass('collapsed');
         }
+
+        removeAnimateTimer = setTimeout(function () {
+            $sidebar.removeClass('animate-250');
+        }, 300);
     });
 
     // Resize sidebar on slider dragger
@@ -64,13 +71,13 @@
     // Save state on db toggles
     $dbLst.on('change', '.db-lst-item input[type="checkbox"]', app.utils.debounce(function () {
         app.saveState('connections');
-    }, 1000))
+    }, 1000));
 
     systemEvent.on('database-list', function (err, dbs) {
         loading.hide();
         if (err) {
             console.log(err);
-            return bsAlert('Error Listing Databases', err.message);
+            return bsAlert(err.Message, 'Error Listing Databases');
         }
         if (dbs && dbs.length) {
             // Pull out properties

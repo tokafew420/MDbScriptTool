@@ -30,12 +30,19 @@
         }
     });
 
+    var removeAnimateTimer;
     // Toggle collapse on navbar's sidebar toggle click
     app.on('navbar-sidebar-toggled', function (collapsed) {
+        clearTimeout(removeAnimateTimer);
+
         if (collapsed) {
-            $sidebarSlider.addClass('collapsed');
+            $sidebarSlider.addClass('animate-250').addClass('collapsed');
         } else {
-            $sidebarSlider.removeClass('collapsed');
+            $sidebarSlider.addClass('animate-250').removeClass('collapsed');
         }
+
+        removeAnimateTimer = setTimeout(function () {
+            $sidebarSlider.removeClass('animate-250');
+        }, 300);
     });
 }(window));

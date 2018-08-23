@@ -164,3 +164,7 @@ hr {
 ::-webkit-scrollbar-corner {
     background-color: rgba(0, 0, 0, .2);
 }
+
+.animate-250 {
+    transition: all ease-out 0.25s;
+}

@@ -7,13 +7,21 @@
 (function (window) {
     var $content = $('.content');
 
+    var removeAnimateTimer;
+
     // Toggle collapse on navbar's sidebar toggle click
     app.on('navbar-sidebar-toggled', function (collapsed) {
+        clearTimeout(removeAnimateTimer);
+
         if (collapsed) {
-            $content.addClass('full');
+            $content.addClass('animate-250').addClass('full');
         } else {
-            $content.removeClass('full');
+            $content.addClass('animate-250').removeClass('full');
         }
+
+        removeAnimateTimer = setTimeout(function () {
+            $content.removeClass('animate-250');
+        }, 300);
     });
 
     // Adjust margins when sidebar slider is dragged
