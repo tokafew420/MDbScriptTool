@@ -8,6 +8,7 @@
     var $content = $('.content');
 
     systemEvent.on('sql-execute-result', function (err, batchId, db, result) {
+        console.log(result);
         var $pane = $('#' + batchId);
         var $resultPane = $('.result', $pane);
 
@@ -18,18 +19,22 @@
         }
         if (result && result.length) {
             var $table = $('<div class="result-set"><table border="1"><thead><tr><th class="row-number"></th></tr></thead><tbody></tbody></table></div>');
-            var keys = Object.keys(result[0]);
 
-            $('thead tr', $table).append(keys.map(function (k) {
-                return '<th>' + k + '</th>';
+            $('thead tr', $table).append(result[0].map(function (columnName) {
+                return '<th>' + columnName + '</th>';
             }).join());
 
             $('tbody', $table).append(result.map(function (row, idx) {
-                return `<tr><td class="row-number">${idx + 1}</td>` + keys.map(function (k) {
-                    if (row[k] === null) {
+                if (idx === 0) {
+                    // Skip the header row
+                    return '';
+                }
+
+                return `<tr><td class="row-number">${idx}</td>` + row.map(function (data) {
+                    if (data === null) {
                         return '<td class="null">NULL</td>';
                     } else {
-                        return '<td>' + app.utils.escapeHtml(row[k]) + '</td>';
+                        return '<td>' + app.utils.escapeHtml(data) + '</td>';
                     }
                 }).join() + '</tr>';
             }).join());

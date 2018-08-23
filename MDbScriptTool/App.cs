@@ -211,7 +211,7 @@ namespace Tokafew420.MDbScriptTool
 
                         using (var reader = cmd.ExecuteReader())
                         {
-                            _systemEvent.Emit(replyMsgName, null, SqlDataReaderToExpando(reader));
+                            _systemEvent.Emit(replyMsgName, null, ConvertToExpando(reader));
                         }
                     }
                 }
@@ -376,7 +376,7 @@ namespace Tokafew420.MDbScriptTool
                             {
                                 do
                                 {
-                                    _systemEvent.Emit("sql-execute-result", null, id, db, SqlDataReaderToExpando(reader));
+                                    _systemEvent.Emit("sql-execute-result", null, id, db, ConvertToResultset(reader));
                                 } while (reader.NextResult());
 
                                 _systemEvent.Emit("sql-execute-batch-complete", null, id, db);
@@ -392,11 +392,11 @@ namespace Tokafew420.MDbScriptTool
         }
 
         /// <summary>
-        /// Converts the SqlDataReader instance into a list of objects.
+        /// Converts the DataReader instance into a list of objects.
         /// </summary>
         /// <param name="reader">The data reader</param>
         /// <returns>The list of objects.</returns>
-        internal IEnumerable<dynamic> SqlDataReaderToExpando(IDataReader reader)
+        internal IEnumerable<dynamic> ConvertToExpando(IDataReader reader)
         {
             var count = reader.FieldCount;
 
@@ -408,6 +408,37 @@ namespace Tokafew420.MDbScriptTool
                     expandoObject.Add(reader.GetName(i), reader[i]);
 
                 yield return expandoObject;
+            }
+        }
+
+        /// <summary>
+        /// Converts the DataReader instance into a list of objects arrays.
+        /// </summary>
+        /// <param name="reader">The data reader</param>
+        /// <returns>The list of objects arrays.</returns>
+        /// <remarks>The first row contains the column names.</remarks>
+        internal IEnumerable<object[]> ConvertToResultset(IDataReader reader)
+        {
+            var count = reader.FieldCount;
+            var i = 0;
+
+            var columnNames = new object[count];
+            for (; i < count; i++)
+            {
+                columnNames[i] = reader.GetName(i);
+            }
+
+            // Return header
+            yield return columnNames;
+
+            while (reader.Read())
+            {
+                var row = new object[count];
+
+                for (i = 0; i < count; i++)
+                    row[i] = reader[i];
+
+                yield return row;
             }
         }
 
@@ -518,7 +549,6 @@ namespace Tokafew420.MDbScriptTool
                 return cipher;
             }
         }
-
     }
 
     /// <summary>
