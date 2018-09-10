@@ -53,7 +53,7 @@
      */
     utils.escapeHtml = function (html) {
         if (typeof html === 'string') {
-            return html.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
         return html;
     };
