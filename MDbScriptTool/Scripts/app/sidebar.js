@@ -7,6 +7,7 @@
     var $sidebar = $('.sidebar');
     var $connectionSelect = $('.select-connection', $sidebar);
     var $dbLst = $('.db-lst', $sidebar);
+    var $search = $('.db-search', $sidebar);
 
     var removeAnimateTimer;
 
@@ -33,13 +34,14 @@
 
     function renderDbList(dbLst) {
         $dbLst.empty();
+        $search.val('');
 
         if (dbLst) {
             dbLst.forEach(function (db, idx) {
                 var $item = $(`<li class="db-lst-item active">
                             <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="${db.name + idx}" ${db.checked ? 'checked' : ''}>
-                                <label class="custom-control-label" for="${db.name + idx}">${db.name}</label>
+                                <input type="checkbox" class="custom-control-input" id="${db.name}" ${db.checked ? 'checked' : ''}>
+                                <label class="custom-control-label" for="${db.name}">${db.name}</label>
                             </div>
                         </li>`);
 
@@ -54,6 +56,10 @@
                     db.checked = $(this).is(':checked');
                 });
             });
+
+            app.utils.show($search.parent());
+        } else {
+            app.utils.hide($search.parent());
         }
     }
 
@@ -114,6 +120,25 @@
             }
         }
     });
+
+    // Filter db list when entering search text
+    $search.on('keydown change', app.utils.debounce(function () {
+        var searchTxt = $search.val().trim().toLowerCase();
+
+        if (searchTxt) {
+            $('.db-lst-item', $dbLst).each(function () {
+                var $item = $(this);
+
+                if ($('label', $item).text().toLowerCase().indexOf(searchTxt) !== -1) {
+                    app.utils.show($item);
+                } else {
+                    app.utils.hide($item);
+                }
+            });
+        } else {
+            app.utils.show('.db-lst-item', $dbLst);
+        }
+    }, 200));
 
     // Initializations
     if (app.state.currentConnection) renderDbList(app.state.currentConnection.dbs);

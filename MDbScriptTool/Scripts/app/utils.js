@@ -1,5 +1,4 @@
-﻿(function (window) {
-    var app = window.app = window.app || {};
+﻿(function (app, window, $) {
     /**
      * @type {object} A collection of utility functions.
      */
@@ -56,6 +55,16 @@
             return html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         }
         return html;
+    };
+
+    /**
+     * Hides the element by adding the .hidden class.
+     * 
+     * @param {any} selectors List of any valid jQuery selector.
+     * @returns {any} The jQuery wrapped selector.
+     */
+    utils.hide = function () {
+        return $.apply(null, arguments).addClass('hidden');
     };
 
     /**
@@ -118,4 +127,15 @@
 
         return arr[idx];
     };
-}(window));
+
+    /**
+     * Shows the element hidden by hide() by removing the .hidden class.
+     * 
+     * @param {any} selectors List of any valid jQuery selector.
+     * @returns {any} The jQuery wrapped selector.
+     */
+    utils.show = function () {
+        return $.apply(null, arguments).removeClass('hidden');
+    };
+
+}(window.app = window.app || {}, window, window.jQuery));
