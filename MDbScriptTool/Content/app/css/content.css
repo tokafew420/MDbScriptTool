@@ -25,6 +25,7 @@
 
     .content .instance-tabs {
         flex-wrap: nowrap;
+        font-size: 0.85em;
         white-space: nowrap;
     }
 
@@ -57,6 +58,10 @@
             }
 
 /* CodeMirror overrides */
+.CodeMirror {
+    font-size: 0.95em;
+}
+
 .CodeMirror-hscrollbar {
     overflow-x: hidden;
 }
