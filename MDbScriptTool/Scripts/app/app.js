@@ -201,6 +201,24 @@
     }
 
     $(function () {
+        // Initialize addons
+        var addon = app.state.settings.addonJs;
+        if (addon) {
+            if (addon.indexOf('http') !== 0) {
+                // Add guid to disable chrome caching
+                addon += '?' + app.utils.guid();
+            }
+            $('body').append(`<script src="${addon}"></script>`);
+        }
+        addon = app.state.settings.addonCss;
+        if (addon) {
+            if (addon.indexOf('http') !== 0) {
+                // Add guid to disable chrome caching
+                addon += '?' + app.utils.guid();
+            }
+            $('head').append(`<link rel="stylesheet" href="${addon}" />`);
+        }
+
         // Set the current connection
         if (app.state.currentConnectionId) {
             app.setCurrentConnection(app.getConnection(app.state.currentConnectionId));

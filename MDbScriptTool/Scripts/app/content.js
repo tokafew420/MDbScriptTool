@@ -4,7 +4,7 @@
 /**
  * Content panel. Contains the editor and the result set(s).
  */
-(function (window) {
+(function (app, window, $) {
     var $content = $('.content');
 
     var removeAnimateTimer;
@@ -28,4 +28,9 @@
     app.on('sidebar-slider-dragged', function (left) {
         $content.css('margin-left', (left + 6) + 'px'); // eslint-disable-line no-extra-parens
     });
-}(window));
+
+    // Adjust the instance container height
+    var $instanceContainer = $('.instance-containers', $content);
+    var containerTop = $instanceContainer.position().top;
+    $instanceContainer.css('height', `calc(100% - ${containerTop}px)`);
+}(app, window, window.jQuery));

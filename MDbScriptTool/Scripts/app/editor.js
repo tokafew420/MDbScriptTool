@@ -4,7 +4,7 @@
 /**
  * Editor instance
  */
-(function (window) {
+(function (app, window, $) {
     var $content = $('.content');
 
     app.on('new-instance', function (instance) {
@@ -48,29 +48,41 @@
             $dynoStyle.appendTo($tabContent);
             $resultSlider = $('.instance-slider', $tabContent);
 
+            var navbarHeight = $('body .navbar').outerHeight(true);
+            // Includes the navbar, content padding, toolbar, and tab
+            var instanceContainerOffset = $('.instance-containers', $content).offset().top;
+
+            function resizeEditor(event, ui) {
+                // Current top (position: absolute)
+                var top = Math.floor(ui.offset.top);
+                // Constrain movement (minimium is 150 height for editor subpane)
+                if (top < 200) return false;
+
+                // Result subpane does not include navbar (top - navbar + slider)
+
+                // Result slider is 10px = 2 * (border 2px + padding 3px)
+                $dynoStyle.html(`#${instance.id} .editor {
+                            height: ${top - instanceContainerOffset + 1}px;
+                        }
+                        #${instance.id} .result {
+                            margin-top: ${top - navbarHeight + 9}px;
+                        }`);
+
+                editor.setSize('100%', `${top - instanceContainerOffset + 1}px`);
+            }
+
+            // Initilaize position before any drag
+            resizeEditor(null, {
+                offset: {
+                    // 300 is the initial editor height
+                    top: instanceContainerOffset + 300
+                }
+            });
+
             $resultSlider.draggable({
                 axis: 'y',
                 containment: 'parent',
-                drag: function (event, ui) {
-                    // Current top (position: absolute)
-                    // Includes navbar (56px), toolbar (53.5), tabs (42px) = total (151.5px)
-                    var top = Math.floor(ui.offset.top);
-                    // Constrain movement (minimium is 150 height for editor subpane)
-                    if (top < 200) return false;
-
-                    // Result subpane does not include navbar (top - navbar + slider)
-
-                    // Result slider is 10px 2 x (border 2px + padding 3px)
-                    // Only partially hide it
-                    $dynoStyle.html(`#${instance.id} .editor {
-                            height: ${top - 151}px;
-                        }
-                        #${instance.id} .result {
-                            margin-top: ${top - 56 + 9}px;
-                        }`);
-
-                    editor.setSize('100%', `${top - 151}px`);
-                }
+                drag: resizeEditor
             });
         })();
     });
@@ -86,4 +98,4 @@
             }
         }
     });
-}(window));
+}(app, window, window.jQuery));

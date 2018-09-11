@@ -3,7 +3,7 @@
 /**
  * Sidebar
  */
-(function (window) {
+(function (app, window, $) {
     var $sidebar = $('.sidebar');
     var $connectionSelect = $('.select-connection', $sidebar);
     var $dbLst = $('.db-lst', $sidebar);
@@ -58,6 +58,8 @@
             });
 
             app.utils.show($search.parent());
+
+            app.emit('db-list-rendered', dbLst);
         } else {
             app.utils.hide($search.parent());
         }
@@ -142,4 +144,4 @@
 
     // Initializations
     if (app.state.currentConnection) renderDbList(app.state.currentConnection.dbs);
-}(window));
+}(app, window, window.jQuery));

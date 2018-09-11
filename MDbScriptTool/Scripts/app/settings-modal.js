@@ -16,6 +16,9 @@ $(function () {
     var $loggingInfo = $('#enable-logs-info', $dlg);
     var $loggingWarn = $('#enable-logs-warn', $dlg);
     var $loggingError = $('#enable-logs-error', $dlg);
+    var $addonJs = $('#addon-js', $dlg);
+    var $addonCss = $('#addon-css', $dlg);
+
     var $saveBtn = $('.save-btn', $dlg);
 
     $('[data-toggle="tooltip"]', $dlg).tooltip();
@@ -38,7 +41,32 @@ $(function () {
 
         scriptEvent.emit('set-log-settings', app.state.settings.logging);
 
+        // If check add-on values change
+        var addonChanged = false;
+        var addonJs = $addonJs.val().trim().toLowerCase();
+        if (addonJs !== app.state.settings.addonJs) {
+            app.state.settings.addonJs = addonJs;
+            addonChanged = true;
+        }
+        var addonCss = $addonCss.val().trim().toLowerCase();
+        if (addonCss !== app.state.settings.addonCss) {
+            app.state.settings.addonCss = addonCss;
+            addonChanged = true;
+        }
+
         $dlg.modal('hide');
+
+        if (addonChanged) {
+            app.saveState('settings');
+            bsAlert('AddOn Script and CSS file will be apply on next reload.', {
+                cancel: 'Later',
+                ok: 'Reload'
+            }, function (reload) {
+                if (reload) {
+                    window.location.reload(true);
+                }
+            });
+        }
     });
 
     $dlg.on('show.bs.modal', function (evt) {
@@ -47,5 +75,7 @@ $(function () {
         $loggingInfo.prop('checked', app.state.settings.logging.info);
         $loggingWarn.prop('checked', app.state.settings.logging.warn);
         $loggingError.prop('checked', app.state.settings.logging.error);
+        $addonJs.val(app.state.settings.addonJs);
+        $addonCss.val(app.state.settings.addonCss);
     });
 });
