@@ -22,7 +22,7 @@
     ],
     "minify": {
       "enabled": true,
-      "renameLocals": false
+      "renameLocals": true
     },
     "sourceMap": true
   }

@@ -7,7 +7,9 @@
     var $sidebar = $('.sidebar');
     var $connectionSelect = $('.select-connection', $sidebar);
     var $dbLst = $('.db-lst', $sidebar);
-    var $search = $('.db-search', $sidebar);
+    var $filterInputGrp = $('#db-filter', $sidebar);
+    var $filterInput = $('#db-filter-input', $filterInputGrp);
+    var $filterClear = $('#db-filter-clear', $filterInputGrp);
 
     var removeAnimateTimer;
 
@@ -34,7 +36,7 @@
 
     function renderDbList(dbLst) {
         $dbLst.empty();
-        $search.val('');
+        $filterInput.val('');
 
         if (dbLst) {
             dbLst.forEach(function (db, idx) {
@@ -57,11 +59,11 @@
                 });
             });
 
-            app.utils.show($search.parent());
+            app.utils.show($filterInputGrp);
 
             app.emit('db-list-rendered', dbLst);
         } else {
-            app.utils.hide($search.parent());
+            app.utils.hide($filterInputGrp);
         }
     }
 
@@ -124,10 +126,11 @@
     });
 
     // Filter db list when entering search text
-    $search.on('keydown change', app.utils.debounce(function () {
-        var searchTxt = $search.val().trim().toLowerCase();
+    $filterInput.on('keydown change input', app.utils.debounce(function () {
+        var searchTxt = $filterInput.val().trim().toLowerCase();
 
         if (searchTxt) {
+            $filterInputGrp.addClass('has-search-term');
             $('.db-lst-item', $dbLst).each(function () {
                 var $item = $(this);
 
@@ -138,9 +141,14 @@
                 }
             });
         } else {
+            $filterInputGrp.removeClass('has-search-term');
             app.utils.show('.db-lst-item', $dbLst);
         }
     }, 200));
+
+    $filterClear.on('click', function () {
+        $filterInput.val('').change();
+    });
 
     // Initializations
     if (app.state.currentConnection) renderDbList(app.state.currentConnection.dbs);

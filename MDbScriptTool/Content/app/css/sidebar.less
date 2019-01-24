@@ -27,4 +27,29 @@
     .select-connection {
         margin-bottom: 8px;
     }
+
+    #db-filter {
+        #db-filter-input {
+            border-radius: .2rem;
+        }
+
+        #db-filter-clear {
+            display: none;
+
+            button {
+                color: @accent-0;
+            }
+        }
+
+        &.has-search-term {
+            #db-filter-input {
+                border-top-right-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+
+            #db-filter-clear {
+                display: flex;
+            }
+        }
+    }
 }
