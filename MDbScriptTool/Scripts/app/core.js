@@ -1,9 +1,4 @@
 ﻿(function (window) {
-    // Register script event object that interops with the .Net side.
-    (async function () {
-        await CefSharp.BindObjectAsync("scriptEvent");
-    })();
-
     // Event Emitter polyfill if needed
     // https://gist.github.com/mudge/5830382
     if (typeof window.EventEmitter !== 'function') {
@@ -144,9 +139,9 @@
 
     // Setup loading div
     window.loading = (function () {
-        $container = $('.loader-container');
-        $spinner = $('.loader', $container);
-        $msg = $('.msg', $container);
+        var $container = $('.loader-container');
+        var $spinner = $('.loader', $container);
+        var $msg = $('.msg', $container);
 
         return {
             show: function (opts) {

@@ -121,9 +121,30 @@
     </Compile>
     <Compile Include="ScriptEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Content Include="Content\app\css\content-result.css" />
-    <Content Include="Content\app\css\settings-modal.css" />
-    <Content Include="Content\app\css\about-modal.css" />
+    <Content Include="app.html">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>app.tt</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\app.css" />
+    <Content Include="Content\app.min.css">
+      <DependentUpon>app.css</DependentUpon>
+    </Content>
+    <None Include="app.tt.html">
+      <DependentUpon>app.tt</DependentUpon>
+    </None>
+    <None Include="bundleconfig.json" />
+    <None Include="bundleconfig.json.bindings">
+      <DependentUpon>bundleconfig.json</DependentUpon>
+    </None>
+    <None Include="Content\app\css\content-result.less" />
+    <None Include="Content\app\css\settings-modal.less" />
+    <None Include="Content\app\css\about-modal.less" />
+    <Content Include="app.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>app.html</LastGenOutput>
+    </Content>
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-reboot.css" />
@@ -174,6 +195,7 @@
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="Scripts\app.min.js" />
     <Content Include="Scripts\app\content-tabs.js" />
     <Content Include="Scripts\app\content-toolbar.js" />
     <Content Include="Scripts\app\result.js" />
@@ -623,23 +645,29 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Content Include="Content\app\css\instance-slider.css" />
-    <Content Include="Content\app\css\content.css" />
-    <Content Include="Content\app\css\sidebar-slider.css" />
-    <Content Include="Content\app\css\sidebar.css" />
-    <Content Include="Content\app\css\navbar.css" />
+    <None Include="Content\app\css\content.less" />
+    <None Include="Content\app\css\slider.less" />
+    <None Include="Content\app\css\sidebar.less" />
+    <None Include="Content\app\css\navbar.less" />
     <Content Include="fonts\fontawesome-webfont.eot" />
     <Content Include="fonts\fontawesome-webfont.ttf" />
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\FontAwesome.otf" />
+    <None Include="compilerconfig.json" />
+    <None Include="compilerconfig.json.defaults">
+      <DependentUpon>compilerconfig.json</DependentUpon>
+    </None>
+    <None Include="Content\app\css\app.less" />
     <None Include="Content\bootstrap-grid.css.map" />
     <None Include="Content\bootstrap-grid.min.css.map" />
     <None Include="Content\bootstrap-reboot.css.map" />
     <None Include="Content\bootstrap-reboot.min.css.map" />
     <None Include="Content\bootstrap.css.map" />
     <None Include="Content\bootstrap.min.css.map" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -649,6 +677,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Scripts\app.min.js.map">
+      <DependentUpon>app.min.js</DependentUpon>
+    </None>
     <None Include="Scripts\bootstrap.bundle.js.map" />
     <None Include="Scripts\bootstrap.bundle.min.js.map" />
     <None Include="Scripts\bootstrap.js.map" />
@@ -693,8 +724,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="laughing-man.ico" />
-    <Content Include="Content\app\app.html" />
-    <Content Include="Content\app\css\app.css" />
     <Content Include="Scripts\app\content.js" />
     <Content Include="Scripts\app\connections-modal.js" />
     <Content Include="Scripts\app\sidebar.js" />
@@ -707,7 +736,31 @@
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- Optionally make the import portable across VS versions -->
+  <PropertyGroup>
+    <!-- Get the Visual Studio version - defaults to 10: -->
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <!-- Keep the next element all on one line: -->
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <!-- Run the Transform task at the start of every build -->
+    <TransformOnBuild>true</TransformOnBuild>
+    <!-- -->
+    <OverwriteReadOnlyOutputFiles>true</OverwriteReadOnlyOutputFiles>
+    <!-- Transform every template every time -->
+    <TransformOutOfDateOnly>false</TransformOutOfDateOnly>
+  </PropertyGroup>
+  <!-- This is the important line: -->
+  <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" />
+  <ItemGroup>
+    <T4ParameterValues Include="BuildConfiguration">
+      <Value>$(Configuration)</Value>
+      <Visible>false</Visible>
+    </T4ParameterValues>
+  </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>ECHO Copying directories to output
 ECHO Command: xcopy "$(ProjectDir)Content" "$(TargetDir)Content" /S /I /Y

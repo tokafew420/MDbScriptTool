@@ -1,29 +1,30 @@
 /* Sidebar */
 
 .sidebar {
-    background-color: #141414;
+    background-color: @dark-1;
     bottom: 0;
     left: 0;
     margin: 0;
     position: absolute;
     top: 56px;
+    white-space: nowrap;
     width: 300px;
-}
 
-    .sidebar.collapsed {
+    &.collapsed {
         margin-left: -306px;
     }
 
-    .sidebar .sidebar-toolbar {
+    .sidebar-toolbar {
         flex-wrap: nowrap;
     }
 
-    .sidebar #content .db-lst {
+    #content .db-lst {
         list-style: none;
         margin: 0;
         padding: 0;
     }
 
-    .sidebar .select-connection {
+    .select-connection {
         margin-bottom: 8px;
     }
+}

@@ -5,7 +5,7 @@
  * Sidebar slider
  */
 (function (window) {
-    var $sidebarSlider = $('.sidebar-slider');
+    var $sidebarSlider = $('.slider.slider-v');
     var $dynoStyle = $('<style/>');
     $dynoStyle.appendTo($('head'));
 
@@ -22,7 +22,7 @@
             $dynoStyle.html(`.sidebar.collapsed {
                 margin-left: -${left + 6}px;
             }
-            .sidebar-slider.collapsed {
+            .slider.slider-v.collapsed {
                 margin-left: -${left + 6}px;
             }`);
 

@@ -1,0 +1,29 @@
+[
+  {
+    "outputFileName": "Scripts/app.min.js",
+    // https://github.com/madskristensen/BundlerMinifier/issues/201
+    "includeInProject": false,
+    "inputFiles": [
+      "Scripts/app/core.js",
+      "Scripts/app/app.js",
+      "Scripts/app/utils.js",
+      "Scripts/app/navbar.js",
+      "Scripts/app/sidebar.js",
+      "Scripts/app/sidebar-toolbar.js",
+      "Scripts/app/sidebar-slider.js",
+      "Scripts/app/content.js",
+      "Scripts/app/content-toolbar.js",
+      "Scripts/app/content-tabs.js",
+      "Scripts/app/editor.js",
+      "Scripts/app/result.js",
+      "Scripts/app/connections-modal.js",
+      "Scripts/app/settings-modal.js",
+      "Scripts/app/about-modal.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": false
+    },
+    "sourceMap": true
+  }
+]

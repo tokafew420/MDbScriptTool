@@ -12,7 +12,7 @@
 
         var $tabContent = $(`<div class="tab-pane instance fade" id="${instance.id}" role="tabpanel" aria-labelledby="${instance.id}-tab">
                     <div class="editor"></div>
-                    <div class="instance-slider">
+                    <div class="slider slider-h">
                         <div></div>
                     </div>
                     <div class="result"></div>
@@ -46,7 +46,7 @@
         (function () {
             var $dynoStyle = $('<style/>');
             $dynoStyle.appendTo($tabContent);
-            $resultSlider = $('.instance-slider', $tabContent);
+            $resultSlider = $('.slider', $tabContent);
 
             var navbarHeight = $('body .navbar').outerHeight(true);
             // Includes the navbar, content padding, toolbar, and tab

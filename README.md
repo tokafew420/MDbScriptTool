@@ -30,6 +30,8 @@ directory. The install script of the dependency package is what actually places 
 the project directories (i.e. `Scripts/`). To get the client files to "unpack" to the project
 directory you will need to open the NuGet console and run `Update-Package -reinstall -FileConflictAction OverwriteAll`.
 
+The [Web Essentials 2017](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebExtensionPack2017) extension is used to compile `css` and `js` files for releases. Install the extension from the VS market place.
+
 ## Alternatives ##
 
 Here are some other alternatives.

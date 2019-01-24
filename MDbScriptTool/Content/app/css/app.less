@@ -1,0 +1,230 @@
+﻿// Dark color grades
+@dark-0: #000000;
+@dark-1: #141414;
+@dark-2: #242424;
+@dark-4: #545454;
+// Dark transparent color grades
+@dark-tran-1: rgba(0, 0, 0, .1);
+@dark-tran-2: rgba(0, 0, 0, .2);
+@dark-tran-3: rgba(0, 0, 0, .3);
+@dark-tran-4: rgba(0, 0, 0, .4);
+@dark-tran-5: rgba(0, 0, 0, .5);
+@dark-tran-6: rgba(0, 0, 0, .6);
+@dark-tran-7: rgba(0, 0, 0, .7);
+@dark-tran-8: rgba(0, 0, 0, .8);
+@dark-tran-9: rgba(0, 0, 0, .9);
+// Light color grades
+@light-0: #ffffff;
+@light-1: #c8c8c8;
+@light-2: #a4a4a4;
+@light-3: #949494;
+@light-4: #848484;
+@light-5: #747474;
+// Accent color
+@accent-0: #d41111;
+// Second accent color
+@accent2-0: #f7611e;
+
+html, body {
+    background-color: @light-1;
+    height: 100%;
+}
+
+body {
+    -webkit-box-pack: center; /* csslint allow: compatible-vendor-prefixes */
+    color: @light-0;
+    font-size: 14px;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: @dark-1;
+}
+
+.modal-header .close {
+    color: @light-0;
+}
+
+/* Links */
+a,
+a:focus,
+a:hover {
+    color: @light-0;
+}
+
+/* Custom default button */
+.btn-secondary,
+.btn-secondary:hover,
+.btn-secondary:focus {
+    color: #333;
+    text-shadow: none; /* Prevent inheritance from `body` */
+    background-color: @light-0;
+    border: .05rem solid @light-0;
+}
+
+.animating {
+    transition: all ease-out .5s;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Bootstrap overrides */
+hr {
+    border-top: 1px solid #e9ecef;
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+    background-color: @accent2-0;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    background-color: @accent2-0;
+}
+
+.custom-control-label::before {
+    transition: none;
+}
+
+/* CodeMirror overrides */
+.CodeMirror {
+    font-size: 0.95em;
+
+    &-hscrollbar {
+        overflow-x: hidden;
+    }
+
+    &-vscrollbar {
+        overflow-y: hidden;
+    }
+
+    &:hover .CodeMirror-hscrollbar {
+        overflow-x: scroll;
+    }
+
+    &:hover .CodeMirror-vscrollbar {
+        overflow-y: scroll;
+    }
+
+    &-scrollbar-filler {
+        background-color: rgba(0, 0, 0, .2);
+    }
+}
+
+/** Loader **/
+.loader-container {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    display: none;
+    position: absolute;
+    padding: 200px;
+    background-color: @dark-tran-9;
+    z-index: 2000;
+
+    .loader {
+        animation: spin .75s linear infinite;
+        border: 16px solid @light-1;
+        border-radius: 50%;
+        border-top: 16px solid @accent-0;
+        height: 120px;
+        margin: 0 auto;
+        width: 120px;
+    }
+
+    .msg {
+        font-size: 24px;
+        text-align: center;
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Custom scrollbar */
+.scrollable {
+    overflow: hidden;
+
+    &:hover {
+        overflow: overlay;
+    }
+}
+
+.scrollable-x {
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+    &:hover {
+        overflow-x: overlay;
+        overflow-y: hidden;
+    }
+}
+
+.scrollable-y {
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+    &:hover {
+        overflow-x: hidden;
+        overflow-y: overlay;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+
+    &-button {
+        display: none;
+    }
+
+    &-track {
+        background-color: @accent-0;
+        background-clip: content-box;
+    }
+
+    &-track:horizontal {
+        border-top: 2px solid @dark-tran-2;
+        border-bottom: 2px solid @dark-tran-2;
+    }
+
+    &-track:vertical {
+        border-left: 2px solid @dark-tran-2;
+        border-right: 2px solid @dark-tran-2;
+    }
+
+    &-thumb {
+        border-radius: 2px;
+        background: rgba(255, 255, 255, .75);
+
+        &:hover {
+            background: @light-0;
+            -webkit-box-shadow: inset 0 0 1px 1px @dark-tran-4;
+        }
+    }
+
+    &-corner {
+        background-color: @dark-tran-2;
+    }
+}
+
+.animate-250 {
+    transition: all ease-out 0.25s;
+}
+
+@import "navbar.less";
+@import "sidebar.less";
+@import "slider.less";
+@import "content.less";
+@import "content-result.less";
+@import "settings-modal.less";
+@import "about-modal.less";

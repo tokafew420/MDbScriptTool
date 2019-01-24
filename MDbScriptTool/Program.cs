@@ -70,7 +70,7 @@ namespace Tokafew420.MDbScriptTool
         private void AppForm_Load(object sender, EventArgs e)
         {
             // The main entry point for the browser page is index.html
-            var url = new Uri(string.Format("fs:///{0}Content/app/app.html", AppDirectory));
+            var url = new Uri(string.Format("fs:///{0}app.html", AppDirectory));
 
             _browser = new ChromiumWebBrowser(url.ToString());
             _systemEvent = new SystemEvent(_browser);

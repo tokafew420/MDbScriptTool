@@ -300,3 +300,10 @@ __pycache__/
 /MDbScriptTool/Scripts/index.d.ts
 /MDbScriptTool/Scripts/bootstrap*
 /MDbScriptTool/Data
+
+# Generated files
+/MDbScriptTool/Scripts/app.min.js
+/MDbScriptTool/Scripts/app.min.js.map
+/MDbScriptTool/Content/app.css
+/MDbScriptTool/Content/app.min.css
+/MDbScriptTool/app.html

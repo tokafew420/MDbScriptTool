@@ -1,0 +1,56 @@
+/* Result set */
+.content .result {
+    bottom: 0;
+    color: @dark-0;
+    font-size: 0.85em;
+    left: 0;
+    margin-top: 406px;
+    margin-left: 4px;
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    top: 0;
+
+    table {
+        /** Table result set **/
+        white-space: nowrap;
+    }
+
+    .dbname {
+        padding: 2px 8px;
+        background-color: @dark-1;
+        color: @light-0;
+    }
+
+    .result-text {
+        border: 1px solid @dark-1;
+        padding: 2px 8px;
+    }
+
+    .result-set {
+        overflow: auto;
+
+        .row-number {
+            background-color: @dark-2;
+            color: @light-0;
+        }
+
+
+        tbody tr td {
+            padding: 0 2px;
+
+            &.null {
+                background-color: #ffeca2;
+                font-style: italic;
+            }
+        }
+
+        tbody tr:hover {
+            background-color: rgba(0, 196, 255, 0.5);
+
+            &td.null {
+                background-color: rgba(152, 245, 255, 0.80); /* csslint allow: fallback-colors */
+            }
+        }
+    }
+}

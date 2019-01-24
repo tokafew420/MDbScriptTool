@@ -23,7 +23,7 @@
 
             if (sql && sql !== '') {
                 if (app.state.currentConnection) {
-                    var dbs = (app.state.currentConnection.dbs || []).filter(d => d.checked);
+                    var dbs = (app.state.currentConnection.dbs || []).filter(function(d) { return d.checked; });
 
                     if (dbs.length) {
                         $('.result', $activeInstance).empty();
@@ -31,7 +31,7 @@
                         var id = $activeInstance.attr('id');
 
                         app.emit('execute-sql', id);
-                        scriptEvent.emit('execute-sql', app.state.currentConnection.raw, dbs.map(db => db.name), sql, id);
+                        scriptEvent.emit('execute-sql', app.state.currentConnection.raw, dbs.map(function (db) { return db.name; }), sql, id);
                     }
                 }
             }
