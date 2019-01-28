@@ -150,11 +150,11 @@
         var connStr = $connStr.val();
 
         if (connStr) {
-            scriptEvent.emit('parse-connection-string', connStr);
+            os.emit('parse-connection-string', connStr);
         }
     }, 100));
 
-    systemEvent.on('connection-string-parsed', function (err, connectionString, connBuilder) {
+    os.on('connection-string-parsed', function (err, connectionString, connBuilder) {
         if (err) {
             $connStr.addClass('is-invalid');
             return console.log(err);
@@ -215,7 +215,7 @@
                     raw: $connStr.val()
                 };
 
-                scriptEvent.emit('encrypt-password', $password.val());
+                os.emit('encrypt-password', $password.val());
 
             } else {
                 var conn = app.getConnection(id);
@@ -231,7 +231,7 @@
 
                     _tmpConn = conn;
 
-                    scriptEvent.emit('encrypt-password', $password.val());
+                    os.emit('encrypt-password', $password.val());
                 }
             }
         } else {
@@ -240,7 +240,7 @@
         }
     });
 
-    systemEvent.on('password-encrypted', function (err, cipher) {
+    os.on('password-encrypted', function (err, cipher) {
         var connStr = $connStr.val();
 
         _tmpConn.password = cipher;

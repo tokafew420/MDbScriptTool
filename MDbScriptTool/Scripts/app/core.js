@@ -57,9 +57,6 @@
         };
     }
 
-    // Define global system event emitter.
-    window.systemEvent = new EventEmitter();
-
     // Setup alert dialog
     window.bsDialog = window.bsDialog || (function () {
         var $alertDlg = $('#alert-modal');

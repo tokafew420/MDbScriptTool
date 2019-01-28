@@ -302,8 +302,10 @@ __pycache__/
 /MDbScriptTool/Data
 
 # Generated files
-/MDbScriptTool/Scripts/app.min.js
-/MDbScriptTool/Scripts/app.min.js.map
+/MDbScriptTool/app.html
 /MDbScriptTool/Content/app.css
 /MDbScriptTool/Content/app.min.css
-/MDbScriptTool/app.html
+/MDbScriptTool/Scripts/app.min.js
+/MDbScriptTool/Scripts/app.min.js.map
+/MDbScriptTool/Scripts/app-core.min.js.map
+/MDbScriptTool/Scripts/app-core.min.js

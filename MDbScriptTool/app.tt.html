@@ -344,12 +344,6 @@
         <div class="loader"></div>
         <div class="msg"></div>
     </div>
-    <script>
-        // Register script event object that interops with the .Net side.
-        (async function () {
-            await CefSharp.BindObjectAsync("scriptEvent");
-        })();
-    </script>
     <!-- External Libs -->
     <script src="./Scripts/jquery-3.3.1.min.js"></script>
     <script src="./Scripts/jquery-ui-1.12.1.min.js"></script>
@@ -358,8 +352,30 @@
     <script src="./Scripts/CodeMirror/lib/codemirror.js"></script>
     <script src="./Scripts/CodeMirror/mode/sql/sql.js"></script>
     <!--<# if (config =="Debug") { #>-->
-    <!-- Main app  -->
+    <!-- Core app to load first -->
     <script src="./Scripts/app/core.js"></script>
+    <!--<# } else { #>-->
+    <!-- Core app to load first -->
+    <script src="./Scripts/app-core.minjs"></script>
+    <!--<# } #>-->
+    <script>
+        (function (window) {
+            // Register script event object that interops with the .Net side.
+            (async function () {
+                await CefSharp.BindObjectAsync("uiEvent");
+            })();
+
+            var os = window.os = new EventEmitter();
+            // Copy the os.emit function to another property so that .NET side can call it
+            // then replace the os.emit with the uiEvent's emit() function.
+            // This will send all emit events (from script) to the .NET side and the browser
+            // can listen for event (replies) with the same API convention.
+            os._emit = os.emit.bind(os);
+            os.emit = uiEvent.emit;
+        }(window));
+    </script>
+    <!--<# if (config =="Debug") { #>-->
+    <!-- Main app  -->
     <script src="./Scripts/app/utils.js"></script>
     <script src="./Scripts/app/app.js"></script>
     <!-- App components -->

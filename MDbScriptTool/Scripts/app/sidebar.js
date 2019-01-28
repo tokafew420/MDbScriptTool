@@ -83,7 +83,7 @@
         app.saveState('connections');
     }, 1000));
 
-    systemEvent.on('database-list', function (err, dbs) {
+    os.on('database-list', function (err, dbs) {
         loading.hide();
         if (err) {
             console.log(err);

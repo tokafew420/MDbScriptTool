@@ -9,15 +9,15 @@ namespace Tokafew420.MDbScriptTool
     /// <summary>
     /// A class that is emit events in the Javascript environment.
     /// </summary>
-    public class SystemEvent
+    public class OsEvent : IEvent
     {
-        private ChromiumWebBrowser _browser = null;
+        private readonly ChromiumWebBrowser _browser = null;
 
         /// <summary>
-        /// Initializes a new instance of SystemEvent.
+        /// Initializes a new instance of OsEvent.
         /// </summary>
         /// <param name="browser">The browser instance.</param>
-        public SystemEvent(ChromiumWebBrowser browser)
+        public OsEvent(ChromiumWebBrowser browser)
         {
             _browser = browser ?? throw new ArgumentNullException("browser");
         }
@@ -34,7 +34,22 @@ namespace Tokafew420.MDbScriptTool
             args = (new object[] { name }).Concat(args).ToArray();
 
             // This will get eval in chrome
-            _browser.ExecuteScriptAsync($"window.systemEvent.emit.apply(window.systemEvent, {JsonConvert.SerializeObject(args)})");
+            _browser.ExecuteScriptAsync($"window.os._emit.apply(window.os, {JsonConvert.SerializeObject(args)})");
+        }
+
+        public void On(string name, Action<object[]> handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Once(string name, Action<object[]> handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveListener(string name, Action<object[]> handler)
+        {
+            throw new NotImplementedException();
         }
     }
 }

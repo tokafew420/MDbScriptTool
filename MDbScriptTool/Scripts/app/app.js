@@ -1,8 +1,6 @@
 ﻿/// <reference path="utils.js" />
 
-(function (window) {
-    var app = window.app = window.app || {};
-
+(function (window, app, os, $) {
     // Inherit event emitter
     EventEmitter.call(app);
     Object.assign(app, EventEmitter.prototype);
@@ -233,4 +231,4 @@
             app.newInstance();
         }
     });
-}(window));
+}(window, window.app = window.app || {}, window.os, jQuery));

@@ -11,16 +11,16 @@ namespace Tokafew420.MDbScriptTool
     /// <summary>
     /// A class that is used handle javascript events. This class is registered as a javascript object.
     /// </summary>
-    public class ScriptEvent
+    public class UiEvent : IEvent
     {
-        private ChromiumWebBrowser _browser = null;
-        private IDictionary<string, List<Action<object[]>>> _listeners = null;
+        private readonly ChromiumWebBrowser _browser = null;
+        private readonly IDictionary<string, List<Action<object[]>>> _listeners = null;
 
         /// <summary>
-        /// Initializes a new instance of ScriptEvent.
+        /// Initializes a new instance of UiEvent.
         /// </summary>
         /// <param name="browser">The browser instance.</param>
-        public ScriptEvent(ChromiumWebBrowser browser)
+        public UiEvent(ChromiumWebBrowser browser)
         {
             _browser = browser ?? throw new ArgumentNullException("browser");
             _listeners = new Dictionary<string, List<Action<object[]>>>();

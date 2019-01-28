@@ -110,16 +110,17 @@
     <Compile Include="App.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="Options.cs" />
+    <Compile Include="IEvent.cs" />
     <Compile Include="SettingsJsonConverter.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="SystemEvent.cs" />
+    <Compile Include="OsEvent.cs" />
     <Compile Include="Program.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Program.Designer.cs">
       <DependentUpon>Program.cs</DependentUpon>
     </Compile>
-    <Compile Include="ScriptEvent.cs" />
+    <Compile Include="UiEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Content Include="app.html">
       <AutoGen>True</AutoGen>
@@ -137,6 +138,9 @@
     <None Include="bundleconfig.json" />
     <None Include="bundleconfig.json.bindings">
       <DependentUpon>bundleconfig.json</DependentUpon>
+    </None>
+    <None Include="compilerconfig.json.bindings">
+      <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
     <None Include="Content\app\css\content-result.less" />
     <None Include="Content\app\css\settings-modal.less" />

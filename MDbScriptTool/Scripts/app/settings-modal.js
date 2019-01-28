@@ -5,8 +5,8 @@
  */
 $(function () {
     // Sync logging settings
-    scriptEvent.emit('get-log-settings');
-    systemEvent.once('log-settings', function (err, settings) {
+    os.emit('get-log-settings');
+    os.once('log-settings', function (err, settings) {
         app.state.settings.logging = settings || {};
     });
 
@@ -39,7 +39,7 @@ $(function () {
         app.state.settings.logging.warn = $loggingWarn.is(':checked');
         app.state.settings.logging.error = $loggingError.is(':checked');
 
-        scriptEvent.emit('set-log-settings', app.state.settings.logging);
+        os.emit('set-log-settings', app.state.settings.logging);
 
         // If check add-on values change
         var addonChanged = false;

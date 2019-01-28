@@ -28,7 +28,7 @@
         });
     }
 
-    systemEvent.on('sql-exe-db-batch-result', function (err, batchId, db, batchNum, result) {
+    os.on('sql-exe-db-batch-result', function (err, batchId, db, batchNum, result) {
         var $pane = $('#' + batchId);
         var $resultPane = $('.result', $pane);
 

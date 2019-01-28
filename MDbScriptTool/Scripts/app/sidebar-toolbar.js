@@ -14,7 +14,7 @@
         if (app.state.currentConnection) {
             if (app.state.currentConnection.raw) {
                 loading.show('Getting Databases...');
-                scriptEvent.emit('list-databases', app.state.currentConnection.raw);
+                os.emit('list-databases', app.state.currentConnection.raw);
             }
         } else {
             bsAlert('No connection selected');

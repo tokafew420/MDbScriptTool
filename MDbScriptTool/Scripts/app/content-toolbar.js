@@ -31,14 +31,14 @@
                         var id = $activeInstance.attr('id');
 
                         app.emit('execute-sql', id);
-                        scriptEvent.emit('execute-sql', app.state.currentConnection.raw, dbs.map(function (db) { return db.name; }), sql, id);
+                        os.emit('execute-sql', app.state.currentConnection.raw, dbs.map(function (db) { return db.name; }), sql, id);
                     }
                 }
             }
         }
     });
 
-    systemEvent.on('sql-exe-db-begin', function (err, id, db) {
+    os.on('sql-exe-db-begin', function (err, id, db) {
         var instance = app.utils.findBy(app.state.instances, 'id', id);
 
         if (instance) {
@@ -46,7 +46,7 @@
         }
     });
 
-    systemEvent.on('sql-exe-db-complete', function (err, id, db) {
+    os.on('sql-exe-db-complete', function (err, id, db) {
         var instance = app.utils.findBy(app.state.instances, 'id', id);
 
         if (instance) {
@@ -58,7 +58,7 @@
     });
 
     // This event only fires when the entire batch failed to execute.
-    systemEvent.on('sql-exe-complete', function (err, id, db) {
+    os.on('sql-exe-complete', function (err, id, db) {
         if (err) {
             console.log(err);
             bsAlert(err.Message, 'Error Executing SQL');

@@ -20,34 +20,33 @@ namespace Tokafew420.MDbScriptTool
     {
         private Form _form;
         private ChromiumWebBrowser _browser;
-        private SystemEvent _systemEvent;
-        private ScriptEvent _scriptEvent;
         private Regex _goRegex = new Regex(@"^\s*go\s*(--.*)*$", RegexOptions.IgnoreCase);
         private static readonly Random _rnd = new Random();
         private static readonly char[] padding = { '=' };
+
+        public OsEvent OsEvent { get; set; }
+        public UiEvent UiEvent { get; set; }
 
         /// <summary>
         /// Initalizes a new instance of App
         /// </summary>
         /// <param name="form"></param>
         /// <param name="browser"></param>
-        /// <param name="systemEvent"></param>
-        /// <param name="scriptEvent"></param>
-        internal App(Form form, ChromiumWebBrowser browser, SystemEvent systemEvent, ScriptEvent scriptEvent)
+        internal App(Form form, ChromiumWebBrowser browser)
         {
-            _form = form ?? throw new ArgumentNullException("form");
-            _browser = browser ?? throw new ArgumentNullException("browser");
-            _systemEvent = systemEvent ?? throw new ArgumentNullException("systemEvent");
-            _scriptEvent = scriptEvent ?? throw new ArgumentNullException("scriptEvent");
+            _form = form ?? throw new ArgumentNullException(nameof(form));
+            _browser = browser ?? throw new ArgumentNullException(nameof(browser));
+            OsEvent = new OsEvent(browser);
+            UiEvent = new UiEvent(browser);
 
             // Register event handlers
-            _scriptEvent.On("parse-connection-string", ParseConnectionString);
-            _scriptEvent.On("encrypt-password", EncryptPassword);
-            _scriptEvent.On("list-databases", GetDatabases);
-            _scriptEvent.On("execute-sql", ExecuteSql);
-            _scriptEvent.On("get-versions", GetVersions);
-            _scriptEvent.On("get-log-settings", GetLogSettings);
-            _scriptEvent.On("set-log-settings", SetLogSettings);
+            UiEvent.On("parse-connection-string", ParseConnectionString);
+            UiEvent.On("encrypt-password", EncryptPassword);
+            UiEvent.On("list-databases", GetDatabases);
+            UiEvent.On("execute-sql", ExecuteSql);
+            UiEvent.On("get-versions", GetVersions);
+            UiEvent.On("get-log-settings", GetLogSettings);
+            UiEvent.On("set-log-settings", SetLogSettings);
         }
 
         /// <summary>
@@ -56,7 +55,7 @@ namespace Tokafew420.MDbScriptTool
         /// <param name="args">Ignored</param>
         /// <remarks>
         /// Emits event: versions
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] <see cref="Versions"/>
         /// </remarks>
@@ -73,12 +72,12 @@ namespace Tokafew420.MDbScriptTool
 
                 versions.Cef = FileVersionInfo.GetVersionInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "libcef.dll")).ProductVersion;
 
-                _systemEvent.Emit(replyMsgName, null, versions);
+                OsEvent.Emit(replyMsgName, null, versions);
             }
             catch (Exception e)
             {
                 Logger.Warn(e.ToString());
-                _systemEvent.Emit(replyMsgName, e, versions);
+                OsEvent.Emit(replyMsgName, e, versions);
             }
         }
 
@@ -89,7 +88,7 @@ namespace Tokafew420.MDbScriptTool
         /// [0] - A connection string.</param>
         /// <remarks>
         /// Emits event: connection-string-parsed
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] The parsed connection string
         /// [2] The connection string builder instance.
@@ -100,7 +99,7 @@ namespace Tokafew420.MDbScriptTool
 
             if (args == null || args.Length != 1 || string.IsNullOrWhiteSpace(args[0] as string))
             {
-                _systemEvent.Emit(replyMsgName, new ArgumentNullException("connectionString"));
+                OsEvent.Emit(replyMsgName, new ArgumentNullException("connectionString"));
                 return;
             }
 
@@ -109,11 +108,11 @@ namespace Tokafew420.MDbScriptTool
             try
             {
                 var builder = new SqlConnectionStringBuilder(args[0] as string);
-                _systemEvent.Emit(replyMsgName, null, builder.ConnectionString, builder);
+                OsEvent.Emit(replyMsgName, null, builder.ConnectionString, builder);
             }
             catch (Exception e)
             {
-                _systemEvent.Emit(replyMsgName, e);
+                OsEvent.Emit(replyMsgName, e);
             }
         }
 
@@ -125,7 +124,7 @@ namespace Tokafew420.MDbScriptTool
         /// </param>
         /// <remarks>
         /// Emits event: password-ecrypted
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] The encrypted password.
         /// </remarks>
@@ -135,7 +134,7 @@ namespace Tokafew420.MDbScriptTool
 
             if (args == null | args.Length != 1 || string.IsNullOrWhiteSpace(args[0] as string))
             {
-                _systemEvent.Emit(replyMsgName, new ArgumentNullException("password"));
+                OsEvent.Emit(replyMsgName, new ArgumentNullException("password"));
                 return;
             }
             var pass = args[0] as string;
@@ -145,7 +144,7 @@ namespace Tokafew420.MDbScriptTool
                 // If we can decrypt then the arg is already encrypted
                 // Then just return the arg
                 Decrypt(pass);
-                _systemEvent.Emit(replyMsgName, null, pass);
+                OsEvent.Emit(replyMsgName, null, pass);
                 return;
             }
             catch (Exception e)
@@ -158,15 +157,14 @@ namespace Tokafew420.MDbScriptTool
             {
                 // Assume not encrypted
                 var cipher = Encrypt(pass);
-                _systemEvent.Emit(replyMsgName, null, cipher);
+                OsEvent.Emit(replyMsgName, null, cipher);
             }
             catch (Exception e)
             {
                 // Do nothing
                 Logger.Error(e.ToString());
-                _systemEvent.Emit(replyMsgName, e);
+                OsEvent.Emit(replyMsgName, e);
             }
-
         }
 
         /// <summary>
@@ -177,7 +175,7 @@ namespace Tokafew420.MDbScriptTool
         /// </param>
         /// <remarks>
         /// Emits event: database-list
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] An array of databases.
         /// </remarks>
@@ -187,7 +185,7 @@ namespace Tokafew420.MDbScriptTool
 
             if (args == null || args.Length != 1 || string.IsNullOrWhiteSpace(args[0] as string))
             {
-                _systemEvent.Emit(replyMsgName, new ArgumentNullException("connectionString"));
+                OsEvent.Emit(replyMsgName, new ArgumentNullException("connectionString"));
                 return;
             }
 
@@ -211,14 +209,14 @@ namespace Tokafew420.MDbScriptTool
 
                         using (var reader = cmd.ExecuteReader())
                         {
-                            _systemEvent.Emit(replyMsgName, null, ConvertToExpando(reader));
+                            OsEvent.Emit(replyMsgName, null, ConvertToExpando(reader));
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                _systemEvent.Emit(replyMsgName, e);
+                OsEvent.Emit(replyMsgName, e);
             }
         }
 
@@ -233,12 +231,12 @@ namespace Tokafew420.MDbScriptTool
         /// </param>
         /// <remarks>
         /// Emits event: sql-exe-complete
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] The sql execute batch id
-        /// 
+        ///
         /// Emits event: sql-exe-begin
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] The sql execute batch id
         /// [2] The number of databases.
@@ -248,7 +246,7 @@ namespace Tokafew420.MDbScriptTool
             var replyMsgName = "sql-exe-complete";
             if (args == null || args.Length != 4)
             {
-                _systemEvent.Emit(replyMsgName, new ArgumentException("Invalid arguments"));
+                OsEvent.Emit(replyMsgName, new ArgumentException("Invalid arguments"));
                 return;
             }
 
@@ -266,7 +264,7 @@ namespace Tokafew420.MDbScriptTool
                     !string.IsNullOrWhiteSpace(sql) &&
                     !string.IsNullOrWhiteSpace(id))
                 {
-                    _systemEvent.Emit("sql-exe-begin", null, id, dbCt);
+                    OsEvent.Emit("sql-exe-begin", null, id, dbCt);
 
                     var batches = GetSqlBatches(sql);
                     var builder = new SqlConnectionStringBuilder(connStr);
@@ -285,12 +283,12 @@ namespace Tokafew420.MDbScriptTool
                 }
                 else
                 {
-                    _systemEvent.Emit(replyMsgName, null, id);
+                    OsEvent.Emit(replyMsgName, null, id);
                 }
             }
             catch (Exception e)
             {
-                _systemEvent.Emit(replyMsgName, e, id);
+                OsEvent.Emit(replyMsgName, e, id);
             }
         }
 
@@ -300,7 +298,7 @@ namespace Tokafew420.MDbScriptTool
         /// <param name="args">Ignored</param>
         /// <remarks>
         /// Emits event: log-settings
-        /// Event params: 
+        /// Event params:
         /// [0] Always null
         /// [1] The log settings
         /// </remarks>
@@ -308,7 +306,7 @@ namespace Tokafew420.MDbScriptTool
         {
             var replyMsgName = "log-settings";
 
-            _systemEvent.Emit(replyMsgName, null, new
+            OsEvent.Emit(replyMsgName, null, new
             {
                 enabled = Logger.Browser != null,
                 debug = (Logger.Level & Logger.LogLevel.Debug) != Logger.LogLevel.None,
@@ -326,7 +324,7 @@ namespace Tokafew420.MDbScriptTool
         /// </param>
         /// <remarks>
         /// Emits event: log-settings-saved
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// </remarks>
         private void SetLogSettings(object[] args)
@@ -335,7 +333,7 @@ namespace Tokafew420.MDbScriptTool
 
             if (args == null && args.Length != 1)
             {
-                _systemEvent.Emit(replyMsgName, new ArgumentNullException("logSettings"));
+                OsEvent.Emit(replyMsgName, new ArgumentNullException("logSettings"));
                 return;
             }
             var settings = args[0] as dynamic;
@@ -357,7 +355,7 @@ namespace Tokafew420.MDbScriptTool
                 if (settings.warn) Logger.Level = Logger.Level | Logger.LogLevel.Warn;
                 if (settings.error) Logger.Level = Logger.Level | Logger.LogLevel.Error;
 
-                _systemEvent.Emit(replyMsgName);
+                OsEvent.Emit(replyMsgName);
             }
         }
 
@@ -372,30 +370,30 @@ namespace Tokafew420.MDbScriptTool
         /// <remarks>
         /// Emits event: sql-exe-db-begin
         /// Emits event: sql-exe-db-complete
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] The sql execute batch id
         /// [2] The database name
         /// [3] The number of batches
-        /// 
+        ///
         /// Emits event: sql-exe-db-batch-begin
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] The sql execute batch id
         /// [2] The database name.
         /// [3] The number of batches.
-        /// 
+        ///
         /// Emits event: sql-exe-db-batch-connecting
         /// Emits event: sql-exe-db-batch-executing
         /// Emits event: sql-exe-db-batch-complete
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] The sql execute batch id
         /// [2] The database name.
         /// [3] The batch number.
-        /// 
+        ///
         /// Emits event: sql-exe-db-batch-result
-        /// Event params: 
+        /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] The sql execute batch id
         /// [2] The database name.
@@ -404,7 +402,7 @@ namespace Tokafew420.MDbScriptTool
         /// </remarks>
         internal async Task ExecuteSqlBatches(string connectionString, string db, IEnumerable<string> batches, string id)
         {
-            _systemEvent.Emit("sql-exe-db-begin", null, id, db);
+            OsEvent.Emit("sql-exe-db-begin", null, id, db);
             Logger.Debug($"Begin batches for {db}");
 
             batches = batches.Where(b => !string.IsNullOrWhiteSpace(b));
@@ -414,13 +412,13 @@ namespace Tokafew420.MDbScriptTool
 
             foreach (var batch in batches)
             {
-                _systemEvent.Emit("sql-exe-db-batch-begin", null, id, db, batchNum);
+                OsEvent.Emit("sql-exe-db-batch-begin", null, id, db, batchNum);
 
                 try
                 {
                     using (var conn = new SqlConnection(connectionString))
                     {
-                        _systemEvent.Emit("sql-exe-db-batch-connecting", null, id, db, batchNum);
+                        OsEvent.Emit("sql-exe-db-batch-connecting", null, id, db, batchNum);
                         Logger.Debug($"Connecting to {connectionString}");
                         await conn.OpenAsync();
 
@@ -429,14 +427,14 @@ namespace Tokafew420.MDbScriptTool
                             cmd.CommandType = CommandType.Text;
                             cmd.CommandText = batch;
 
-                            _systemEvent.Emit("sql-exe-db-batch-executing", null, id, db, batchNum);
+                            OsEvent.Emit("sql-exe-db-batch-executing", null, id, db, batchNum);
                             Logger.Debug($"Executing to {connectionString}");
 
                             using (var reader = await cmd.ExecuteReaderAsync())
                             {
                                 do
                                 {
-                                    _systemEvent.Emit("sql-exe-db-batch-result", null, id, db, batchNum, ConvertToResultset(reader));
+                                    OsEvent.Emit("sql-exe-db-batch-result", null, id, db, batchNum, ConvertToResultset(reader));
                                 } while (reader.NextResult());
                             }
                         }
@@ -444,17 +442,17 @@ namespace Tokafew420.MDbScriptTool
                 }
                 catch (Exception e)
                 {
-                    _systemEvent.Emit("sql-exe-db-batch-result", e, id, db, batchNum);
+                    OsEvent.Emit("sql-exe-db-batch-result", e, id, db, batchNum);
                     Logger.Error(e.ToString());
                 }
 
-                _systemEvent.Emit("sql-exec-db-batch-complete", null, id, db, batchNum);
+                OsEvent.Emit("sql-exec-db-batch-complete", null, id, db, batchNum);
                 Logger.Debug($"Completed batch {id} for {db}");
 
                 batchNum++;
             }
 
-            _systemEvent.Emit("sql-exe-db-complete", null, id, db, batchCt);
+            OsEvent.Emit("sql-exe-db-complete", null, id, db, batchCt);
             Logger.Debug($"Completed batches {id} for {db}");
         }
 

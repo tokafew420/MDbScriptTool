@@ -12,8 +12,6 @@ namespace Tokafew420.MDbScriptTool
     public partial class Program : Form
     {
         private ChromiumWebBrowser _browser;
-        private ScriptEvent _scriptEvent;
-        private SystemEvent _systemEvent;
         private static bool _runningInVs = false;
         private static string _appDir;
         private static string _dataDir;
@@ -73,16 +71,17 @@ namespace Tokafew420.MDbScriptTool
             var url = new Uri(string.Format("fs:///{0}app.html", AppDirectory));
 
             _browser = new ChromiumWebBrowser(url.ToString());
-            _systemEvent = new SystemEvent(_browser);
-            _scriptEvent = new ScriptEvent(_browser);
             Logger.Browser = _browser;
             Logger.Level = Logger.LogLevel.All;
+
+            // Initialize the app
+            var app = new App(this, _browser);
 
             // Register handlers.
             _browser.RequestHandler = new BrowserRequestHandler();
             _browser.KeyboardHandler = new KeyboardHandler();
-            // Register the scriptEvent class with JS
-            _browser.JavascriptObjectRepository.Register("scriptEvent", _scriptEvent, true, BindingOptions.DefaultBinder);
+            // Register the uiEvent class with JS
+            _browser.JavascriptObjectRepository.Register("uiEvent", app.UiEvent, true, BindingOptions.DefaultBinder);
 
             MainPanel.Controls.Add(_browser);
 
@@ -123,9 +122,6 @@ namespace Tokafew420.MDbScriptTool
                 Logger.Warn("Failed to apply AppSettings");
                 Logger.Warn(err.ToString());
             }
-
-            // Initialize the app
-            new App(this, _browser, _systemEvent, _scriptEvent);
         }
 
         protected override void WndProc(ref Message m)

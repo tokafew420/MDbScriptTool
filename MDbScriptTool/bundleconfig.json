@@ -1,10 +1,22 @@
 [
   {
+    "outputFileName": "Scripts/app-core.min.js",
+    // https://github.com/madskristensen/BundlerMinifier/issues/201
+    "includeInProject": false,
+    "inputFiles": [
+      "Scripts/app/core.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": true
+  },
+  {
     "outputFileName": "Scripts/app.min.js",
     // https://github.com/madskristensen/BundlerMinifier/issues/201
     "includeInProject": false,
     "inputFiles": [
-      "Scripts/app/core.js",
       "Scripts/app/app.js",
       "Scripts/app/utils.js",
       "Scripts/app/navbar.js",

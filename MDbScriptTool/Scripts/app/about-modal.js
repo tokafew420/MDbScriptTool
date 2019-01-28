@@ -13,7 +13,7 @@
     var $codemirrorVersion = $('#codemirror-version', $dlg);
 
     // Set the version information from the .NET side.
-    systemEvent.on('versions', function (err, versions) {
+    os.on('versions', function (err, versions) {
         if (versions) {
             if (versions.App) {
                 $appVersion.text(versions.App);
@@ -67,7 +67,7 @@
     }
 
     $dlg.one('show.bs.modal', function (evt) {
-        scriptEvent.emit('get-versions');
+        os.emit('get-versions');
         setChromiumVersion();
         setJQueryVersion();
         setBootstrapVersion();
