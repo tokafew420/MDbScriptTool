@@ -7,9 +7,10 @@
     var $sidebar = $('.sidebar');
     var $connectionSelect = $('.select-connection', $sidebar);
     var $dbLst = $('.db-lst', $sidebar);
-    var $filterInputGrp = $('#db-filter', $sidebar);
-    var $filterInput = $('#db-filter-input', $filterInputGrp);
-    var $filterClear = $('#db-filter-clear', $filterInputGrp);
+    var $filterInputGrp = $('#db-list-filter', $sidebar);
+    var $filterInput = $('#db-list-filter-input', $filterInputGrp);
+    var $filterClear = $('#db-list-filter-clear', $filterInputGrp);
+    var $filterText = $('#db-list-filter-text', $filterInputGrp);
 
     var removeAnimateTimer;
 
@@ -33,10 +34,29 @@
         $sidebar.css('width', left + 'px');
     });
 
+    var updateFilterText = app.utils.debounce(function () {
+        if (app.state.currentConnection.dbs) {
+            var matchedTxt = '';
+            var visible;
+            var total = app.state.currentConnection.dbs.length;
+            var selected = app.state.currentConnection.dbs.filter(function (d) { return d.checked; }).length;
+
+            if ($filterInput.val()) {
+                visible = $('.db-lst-item input[type="checkbox"]:visible', $dbLst).length;
+                matchedTxt = `Matched <strong>${visible}</strong> - `;
+            } else {
+                visible = total;
+            }
+
+            $filterText.html(`${matchedTxt}Selected <strong>${selected}</strong>/<strong>${total}</strong>`);
+
+            app.emit('db-list-selection-changed', total, selected, visible || total);
+        }
+    }, 200);
 
     function renderDbList(dbLst) {
         $dbLst.empty();
-        $filterInput.val('');
+        $filterInput.val('').change();
 
         if (dbLst) {
             dbLst.forEach(function (db, idx) {
@@ -60,7 +80,7 @@
             });
 
             app.utils.show($filterInputGrp);
-
+            updateFilterText();
             app.emit('db-list-rendered', dbLst);
         } else {
             app.utils.hide($filterInputGrp);
@@ -70,18 +90,29 @@
     app.on('toggle-all-databases', function (checked) {
         checked = !!checked;
 
-        $('.db-lst-item input[type="checkbox"]', $dbLst).prop('checked', checked);
-        app.state.currentConnection.dbs.forEach(function (db) {
-            db.checked = checked;
-        });
-
-        app.saveState('connections');
+        $('.db-lst-item input[type="checkbox"]', $dbLst).prop('checked', checked).change();
     });
+
+    // Update selected db text
+    $dbLst.on('change', '.db-lst-item input[type="checkbox"]', updateFilterText);
 
     // Save state on db toggles
     $dbLst.on('change', '.db-lst-item input[type="checkbox"]', app.utils.debounce(function () {
         app.saveState('connections');
     }, 1000));
+
+    app.on('sort-db-list', function (asc) {
+        asc = asc ? 1 : -1;
+        var dbs = $('.db-lst-item', $dbLst).filter(function () {
+            return $('label', $(this)).text() !== 'master';
+        }).get().sort(function (a, b) {
+            return app.utils.compare($('label', a).text(), $('label', b).text()) * asc;
+        });
+
+        $.each(dbs, function(idx, db) {
+            $dbLst.append(db);
+        });
+    });
 
     os.on('database-list', function (err, dbs) {
         loading.hide();
@@ -144,6 +175,7 @@
             $filterInputGrp.removeClass('has-search-term');
             app.utils.show('.db-lst-item', $dbLst);
         }
+        updateFilterText();
     }, 200));
 
     $filterClear.on('click', function () {

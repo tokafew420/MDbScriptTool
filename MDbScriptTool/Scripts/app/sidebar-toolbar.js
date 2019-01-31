@@ -4,7 +4,7 @@
 /**
  * Sidebar toolbar
  */
-(function (window) {
+(function (app, window, $) {
     var $sidebar = $('.sidebar');
     var $toolbar = $('.sidebar-toolbar', $sidebar);
     var $connectionSelect = $('.select-connection', $sidebar);
@@ -21,14 +21,46 @@
         }
     });
 
-    // Select all databases
-    $('.check-all-databases-btn', $toolbar).click(function () {
-        app.emit('toggle-all-databases', true);
+    // Toggle all databases selection
+    $('.toggle-all-db-btn', $toolbar).click(function () {
+        var $this = $(this);
+        var $i = $('i', $this);
+
+        if ($i.hasClass('fa-check-square-o')) {
+            app.emit('toggle-all-databases', true);
+            $i.removeClass('fa-check-square-o').addClass('fa-square-o');
+        } else {
+            app.emit('toggle-all-databases', false);
+            $i.removeClass('fa-square-o').addClass('fa-check-square-o');
+        }
     });
 
-    // Unselect all databases
-    $('.uncheck-all-databases-btn', $toolbar).click(function () {
-        app.emit('toggle-all-databases', false);
+    // Reset select all icon. Only "unselect all" when all dbs are selected.
+    app.on('db-list-selection-changed', function (total, selected, visible) {
+        if (total === selected) {
+            $('.toggle-all-db-btn i', $toolbar).removeClass('fa-check-square-o').addClass('fa-square-o');
+        } else {
+            $('.toggle-all-db-btn i', $toolbar).removeClass('fa-square-o').addClass('fa-check-square-o');
+        }
+    });
+
+    // Sort database list
+    $('.sort-db-list-btn', $toolbar).click(function () {
+        var $this = $(this);
+        var $i = $('i', $this);
+
+        if ($i.hasClass('fa-sort-alpha-asc')) {
+            app.emit('sort-db-list', false);
+            $i.removeClass('fa-sort-alpha-asc').addClass('fa-sort-alpha-desc');
+        } else {
+            app.emit('sort-db-list', true);
+            $i.removeClass('fa-sort-alpha-desc').addClass('fa-sort-alpha-asc');
+        }
+    });
+
+    // Reset to sort asc icon
+    app.on('db-list-rendered', function (dbLst) {
+        $('.sort-db-list-btn i', $toolbar).removeClass('fa-sort-alpha-desc').addClass('fa-sort-alpha-asc');
     });
 
     // Set the connection select to the specified value
@@ -104,4 +136,4 @@
 
     // Initialization
     if (app.state.connections.length) renderConnectionSelect();
-}(window));
+}(app, window, window.jQuery));

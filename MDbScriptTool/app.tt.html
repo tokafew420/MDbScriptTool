@@ -54,8 +54,8 @@
                 <div class="btn-toolbar sidebar-toolbar mb-2" role="toolbar" aria-label="Main Connection Toolbar">
                     <div class="btn-group mr-2" role="group" aria-label="First group">
                         <button type="button" class="btn btn-sm btn-secondary refresh-databases-btn"><i class="fa fa-refresh" aria-hidden="true"></i></button>
-                        <button type="button" class="btn btn-sm btn-secondary check-all-databases-btn"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
-                        <button type="button" class="btn btn-sm btn-secondary uncheck-all-databases-btn"><i class="fa fa-square-o" aria-hidden="true"></i></button>
+                        <button type="button" class="btn btn-sm btn-secondary toggle-all-db-btn"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
+                        <button type="button" class="btn btn-sm btn-secondary sort-db-list-btn"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i></button>
                     </div>
                 </div>
                 <Select class="select-connection custom-select custom-select-sm">
@@ -65,13 +65,16 @@
             </div>
         </nav>
         <div id="content">
-            <div id="db-filter" class="input-group input-group-sm mb-2 hidden">
-                <input id="db-filter-input" type="search" class="form-control" placeholder="Search">
-                <div id="db-filter-clear" class="input-group-append">
-                    <button class="btn btn-secondary" type="button">
-                        <i class="fa fa-remove"></i>
-                    </button>
+            <div id="db-list-filter" class="hidden">
+                <div class="input-group input-group-sm mb-2">
+                    <input id="db-list-filter-input" type="search" class="form-control" placeholder="Search">
+                    <div id="db-list-filter-clear" class="input-group-append">
+                        <button class="btn btn-secondary" type="button">
+                            <i class="fa fa-remove"></i>
+                        </button>
+                    </div>
                 </div>
+                <small id="db-list-filter-text" class="form-text"></small>
             </div>
             <ul class="db-lst"></ul>
         </div>
