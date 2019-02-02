@@ -30,26 +30,41 @@
     .result-set {
         overflow: auto;
 
-        .row-number {
-            background-color: @dark-2;
-            color: @light-0;
-        }
+        table {
+            margin-bottom: 0;
 
-
-        tbody tr td {
-            padding: 0 2px;
-
-            &.null {
-                background-color: #ffeca2;
-                font-style: italic;
+            td, th {
+                padding: 2px 4px;
+                vertical-align: middle;
             }
-        }
 
-        tbody tr:hover {
-            background-color: rgba(0, 196, 255, 0.5);
+            tbody {
+                tr {
+                    th.row-number {
+                        background-color: @dark-2;
+                    }
 
-            &td.null {
-                background-color: rgba(152, 245, 255, 0.80); /* csslint allow: fallback-colors */
+                    td {
+                        &.null {
+                            background-color: @dark-4;
+                            font-style: italic;
+                        }
+                    }
+
+                    &:nth-of-type(odd) td {
+                        &.null {
+                            background-color: @light-5;
+                        }
+                    }
+
+                    &:hover {
+                        background-color: rgba(0, 196, 255, 0.5);
+
+                        td.null {
+                            background-color: rgba(40, 160, 173, 0.8);
+                        }
+                    }
+                }
             }
         }
     }

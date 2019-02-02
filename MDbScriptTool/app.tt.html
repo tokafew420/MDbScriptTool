@@ -363,18 +363,18 @@
     <!--<# } #>-->
     <script>
         (function (window) {
-            // Register script event object that interops with the .Net side.
-            (async function () {
-                await CefSharp.BindObjectAsync("uiEvent");
-            })();
-
             var os = window.os = new EventEmitter();
             // Copy the os.emit function to another property so that .NET side can call it
             // then replace the os.emit with the uiEvent's emit() function.
             // This will send all emit events (from script) to the .NET side and the browser
             // can listen for event (replies) with the same API convention.
             os._emit = os.emit.bind(os);
-            os.emit = uiEvent.emit;
+
+            // Register script event object that interops with the .Net side.
+            (async function () {
+                await CefSharp.BindObjectAsync("uiEvent");
+                os.emit = uiEvent.emit;
+            })();
         }(window));
     </script>
     <!--<# if (config =="Debug") { #>-->

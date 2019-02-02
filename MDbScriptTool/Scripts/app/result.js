@@ -45,7 +45,7 @@
                 $dbTable.append(`<div class="result-text text-danger">${err.Message}</div>`);
             }
         } else if (result && result.length && result[0].length) {
-            var $table = $('<div class="result-set"><table border="1"><thead><tr><th class="row-number"></th></tr></thead><tbody></tbody></table></div>');
+            var $table = $('<div class="result-set"><table class="table table-sm table-striped table-hover table-dark table-bordered"><thead><tr><th class="row-number"></th></tr></thead><tbody></tbody></table></div>');
 
             $('thead tr', $table).append(result[0].map(function (columnName) {
                 return '<th>' + columnName + '</th>';
@@ -57,7 +57,7 @@
                     return '';
                 }
 
-                return `<tr><td class="row-number">${idx}</td>` + row.map(function (data) {
+                return `<tr><th class="row-number">${idx}</th>` + row.map(function (data) {
                     if (data === null) {
                         return '<td class="null">NULL</td>';
                     } else {
