@@ -318,22 +318,62 @@
         }
 
         $(function () {
-            // Initialize addons
-            var addon = app.state.settings.addonJs;
-            if (addon) {
-                if (addon.indexOf('http') !== 0) {
-                    // Add guid to disable chrome caching
-                    addon += '?' + app.guid();
-                }
-                $('body').append(`<script src="${addon}"></script>`);
+            function alertError(err) {
+                app.alert('<p>Failed to load custom script: </p>' +
+                    '<p class="text-danger">' + err.message + '</p>', {
+                        html: true
+                    });
             }
-            addon = app.state.settings.addonCss;
-            if (addon) {
-                if (addon.indexOf('http') !== 0) {
+            function alertGlobalError(message, source, lineno, colno, err) {
+                app.alert('<p>Failed to load custom script: </p>' +
+                    '<p class="text-danger">' + message + '</p>' +
+                    '<div><strong>Source: </strong>' + source + '</div>' +
+                    '<div><strong>Line: </strong>' + lineno + '</div>' +
+                    '<div><strong>Column: </strong>' + colno + '</div>', {
+                        html: true
+                    });
+            }
+
+            // Initialize addons
+            var addonJs = app.state.settings.addonJs;
+            if (addonJs) {
+                if (addonJs.indexOf('http') !== 0) {
+                    // Append filesystem schema
                     // Add guid to disable chrome caching
-                    addon += '?' + app.guid();
+                    addonJs = 'fs://' + addonJs + '?' + app.guid();
                 }
-                $('head').append(`<link rel="stylesheet" href="${addon}" />`);
+                $.ajax({
+                    type: "GET",
+                    dataType: "text",
+                    url: addonJs
+                }).always(function (res, textStatus, jqXhr) {
+                    if (textStatus === 'success') {
+                        res = `(function (window, app, os, $) {
+                            try { ${res} } catch (err) { (${alertError.toString()}(err)); }
+                        }(window, window.app = window.app || {}, window.os, jQuery));`;
+
+                        var $onerror = $(`<script>window.onerror = ${alertGlobalError.toString()};</script>`);
+                        var $cleanup = $(`<script>window.onerror = null;</script>`);
+
+                        $('body').append($onerror);
+                        $('body').append(`<script>${res}</script>`);
+                        $('body').append($cleanup);
+
+                        $onerror.remove();
+                        $cleanup.remove();
+                    } else {
+                        app.alert(`Failed to load custom script: [${app.state.settings.addonJs}]`);
+                    }
+                });
+            }
+            var addonCss = app.state.settings.addonCss;
+            if (addonCss) {
+                if (addonCss.indexOf('http') !== 0) {
+                    // Append filesystem schema
+                    // Add guid to disable chrome caching
+                    addonCss = 'fs://' + addonCss + '?' + app.guid();
+                }
+                $('head').append(`<link rel="stylesheet" href="${addonCss}" />`);
             }
 
             // Set the current connection

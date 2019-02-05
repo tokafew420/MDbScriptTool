@@ -195,6 +195,11 @@ a:hover {
     transition: all ease-out 0.25s;
 }
 
+// Hide default input search cancel 'X' button
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+}
+
 @import "navbar.less";
 @import "sidebar.less";
 @import "slider.less";
