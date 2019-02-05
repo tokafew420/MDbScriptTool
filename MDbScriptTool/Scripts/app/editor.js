@@ -1,5 +1,4 @@
-﻿/// <reference path="utils.js" />
-/// <reference path="app.js" />
+﻿/// <reference path="app.js" />
 
 /**
  * Editor instance
@@ -37,7 +36,7 @@
             editor.setValue(instance.code);
         }
 
-        editor.on('change', app.utils.debounce(function () {
+        editor.on('change', app.debounce(function () {
             instance.code = editor.getValue();
             app.saveState('instances');
         }, 1000));

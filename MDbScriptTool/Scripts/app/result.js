@@ -1,5 +1,4 @@
-﻿/// <reference path="utils.js" />
-/// <reference path="app.js" />
+﻿/// <reference path="app.js" />
 
 /**
  * Result pane in each instance
@@ -61,7 +60,7 @@
                     if (data === null) {
                         return '<td class="null">NULL</td>';
                     } else {
-                        return '<td>' + app.utils.escapeHtml(data) + '</td>';
+                        return '<td>' + app.escapeHtml(data) + '</td>';
                     }
                 }).join() + '</tr>';
             }).join());

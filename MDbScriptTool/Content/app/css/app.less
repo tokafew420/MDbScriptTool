@@ -24,6 +24,7 @@
 @accent-0: #d41111;
 // Second accent color
 @accent2-0: #f7611e;
+@accent2-1: #d75921;
 
 html, body {
     background-color: @light-1;
@@ -52,39 +53,12 @@ a:hover {
     color: @light-0;
 }
 
-/* Custom default button */
-.btn-secondary,
-.btn-secondary:hover,
-.btn-secondary:focus {
-    color: #333;
-    text-shadow: none; /* Prevent inheritance from `body` */
-    background-color: @light-0;
-    border: .05rem solid @light-0;
-}
-
 .animating {
     transition: all ease-out .5s;
 }
 
 .hidden {
     display: none;
-}
-
-/* Bootstrap overrides */
-hr {
-    border-top: 1px solid #e9ecef;
-}
-
-.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
-    background-color: @accent2-0;
-}
-
-.custom-control-input:checked ~ .custom-control-label::before {
-    background-color: @accent2-0;
-}
-
-.custom-control-label::before {
-    transition: none;
 }
 
 /* CodeMirror overrides */

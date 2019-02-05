@@ -18,7 +18,6 @@
     "includeInProject": false,
     "inputFiles": [
       "Scripts/app/app.js",
-      "Scripts/app/utils.js",
       "Scripts/app/navbar.js",
       "Scripts/app/sidebar.js",
       "Scripts/app/sidebar-toolbar.js",

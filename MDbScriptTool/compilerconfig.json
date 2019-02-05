@@ -8,5 +8,15 @@
     "options": {
       "sourceMap": true
     }
+  },
+  {
+    "outputFile": "Content/bootstrap.css",
+    "inputFile": "Content/bootstrap.scss",
+    "minify": {
+      "enabled": true
+    },
+    "options": {
+      "sourceMap": true
+    }
   }
 ]

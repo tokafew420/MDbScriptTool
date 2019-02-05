@@ -1,5 +1,4 @@
-﻿/// <reference path="utils.js" />
-/// <reference path="app.js" />
+﻿/// <reference path="app.js" />
 
 /**
  * Sidebar toolbar
@@ -13,11 +12,11 @@
     $('.refresh-databases-btn', $toolbar).click(function () {
         if (app.state.currentConnection) {
             if (app.state.currentConnection.raw) {
-                loading.show('Getting Databases...');
+                app.loading.show('Getting Databases...');
                 os.emit('list-databases', app.state.currentConnection.raw);
             }
         } else {
-            bsAlert('No connection selected');
+            app.alert('No connection selected');
         }
     });
 

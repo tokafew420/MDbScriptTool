@@ -1,5 +1,4 @@
-﻿/// <reference path="utils.js" />
-/// <reference path="app.js" />
+﻿/// <reference path="app.js" />
 /**
  * Sidebar
  */
@@ -34,7 +33,7 @@
         $sidebar.css('width', left + 'px');
     });
 
-    var updateFilterText = app.utils.debounce(function () {
+    var updateFilterText = app.debounce(function () {
         if (app.state.currentConnection.dbs) {
             var matchedTxt = '';
             var visible;
@@ -79,11 +78,11 @@
                 });
             });
 
-            app.utils.show($filterInputGrp);
+            app.show($filterInputGrp);
             updateFilterText();
             app.emit('db-list-rendered', dbLst);
         } else {
-            app.utils.hide($filterInputGrp);
+            app.hide($filterInputGrp);
         }
     }
 
@@ -97,7 +96,7 @@
     $dbLst.on('change', '.db-lst-item input[type="checkbox"]', updateFilterText);
 
     // Save state on db toggles
-    $dbLst.on('change', '.db-lst-item input[type="checkbox"]', app.utils.debounce(function () {
+    $dbLst.on('change', '.db-lst-item input[type="checkbox"]', app.debounce(function () {
         app.saveState('connections');
     }, 1000));
 
@@ -106,7 +105,7 @@
         var dbs = $('.db-lst-item', $dbLst).filter(function () {
             return $('label', $(this)).text() !== 'master';
         }).get().sort(function (a, b) {
-            return app.utils.compare($('label', a).text(), $('label', b).text()) * asc;
+            return app.compare($('label', a).text(), $('label', b).text()) * asc;
         });
 
         $.each(dbs, function(idx, db) {
@@ -115,10 +114,10 @@
     });
 
     os.on('database-list', function (err, dbs) {
-        loading.hide();
+        app.loading.hide();
         if (err) {
             console.log(err);
-            return bsAlert(err.Message, 'Error Listing Databases');
+            return app.alert(err.Message, 'Error Listing Databases');
         }
         if (dbs && dbs.length) {
             // Pull out properties
@@ -136,7 +135,7 @@
                 };
             }).sort(function (a, b) {
                 // Sort by database name, case insensitive and accounting for numerics
-                return app.utils.compare(a.name, b.name);
+                return app.compare(a.name, b.name);
             });
 
             app.state.currentConnection.dbs = dbs;
@@ -157,7 +156,7 @@
     });
 
     // Filter db list when entering search text
-    $filterInput.on('keydown change input', app.utils.debounce(function () {
+    $filterInput.on('keydown change input', app.debounce(function () {
         var searchTxt = $filterInput.val().trim().toLowerCase();
 
         if (searchTxt) {
@@ -166,14 +165,14 @@
                 var $item = $(this);
 
                 if ($('label', $item).text().toLowerCase().indexOf(searchTxt) !== -1) {
-                    app.utils.show($item);
+                    app.show($item);
                 } else {
-                    app.utils.hide($item);
+                    app.hide($item);
                 }
             });
         } else {
             $filterInputGrp.removeClass('has-search-term');
-            app.utils.show('.db-lst-item', $dbLst);
+            app.show('.db-lst-item', $dbLst);
         }
         updateFilterText();
     }, 200));

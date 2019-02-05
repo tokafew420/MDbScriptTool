@@ -1,0 +1,32 @@
+/* The purpose of this file is to override the font file path and also to allow you
+   to override bootstrap variables in variables.less. When the bootstrap is updated,
+   no changes will need to be made except to regenerate the CSS from this file. */
+
+$primary: #f7611e;
+$secondary: #f8f9fa; /* $gray-100 */
+
+@import "bootstrap-4.2.1/scss/bootstrap.scss";
+
+
+/* Remove native arrow in select input. https://github.com/comfy/comfy-bootstrap-form/issues/11 */
+.custom-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Custom checkbox control is slow with the transitiion */
+.custom-control-label::before {
+    transition: none;
+}
+
+/* Add rounded corners to controls that is followed by invalid text span */
+.input-group > .form-control.no-prepend:not(:last-child),
+.input-group > .custom-select.no-prepend:not(:last-child) {
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+hr {
+    border-top: 1px solid $gray-200;
+}
+

@@ -1,5 +1,4 @@
-﻿/// <reference path="utils.js" />
-/// <reference path="app.js" />
+﻿/// <reference path="app.js" />
 
 /**
  * Sidebar slider

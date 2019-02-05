@@ -1,5 +1,4 @@
-﻿/// <reference path="utils.js" />
-/// <reference path="app.js" />
+﻿/// <reference path="app.js" />
 
 /**
  * Content panel instance tabs.
@@ -47,7 +46,7 @@
         }
 
         // Remove instance
-        var instanceIdx = app.utils.indexBy(app.state.instances, 'id', id);
+        var instanceIdx = app.indexBy(app.state.instances, 'id', id);
 
         if (instanceIdx !== -1) {
             app.state.instances.splice(instanceIdx, 1);
@@ -72,7 +71,7 @@
         var $tab = $(e.target);
         var id = $tab.attr('id').replace('-tab', '');
 
-        var instanceIdx = app.utils.indexBy(app.state.instances, 'id', id);
+        var instanceIdx = app.indexBy(app.state.instances, 'id', id);
 
         if (instanceIdx !== -1) {
             app.state.instances[instanceIdx].active = true;
@@ -89,7 +88,7 @@
         var $tab = $(e.target);
         var id = $tab.attr('id').replace('-tab', '');
 
-        var instanceIdx = app.utils.indexBy(app.state.instances, 'id', id);
+        var instanceIdx = app.indexBy(app.state.instances, 'id', id);
 
         if (instanceIdx !== -1) {
             app.state.instances[instanceIdx].active = false;

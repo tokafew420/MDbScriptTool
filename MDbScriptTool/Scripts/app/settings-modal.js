@@ -58,7 +58,7 @@ $(function () {
 
         if (addonChanged) {
             app.saveState('settings');
-            bsAlert('AddOn Script and CSS file will be apply on next reload.', {
+            app.alert('AddOn Script and CSS file will be apply on next reload.', {
                 cancel: 'Later',
                 ok: 'Reload'
             }, function (reload) {

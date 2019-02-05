@@ -149,12 +149,16 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>app.html</LastGenOutput>
     </Content>
-    <Content Include="Content\bootstrap-grid.css" />
-    <Content Include="Content\bootstrap-grid.min.css" />
-    <Content Include="Content\bootstrap-reboot.css" />
-    <Content Include="Content\bootstrap-reboot.min.css" />
-    <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\bootstrap-4.2.1\js\bootstrap.js" />
+    <Content Include="Content\bootstrap-4.2.1\js\bootstrap.min.js">
+      <DependentUpon>bootstrap.js</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap.css">
+      <DependentUpon>bootstrap.scss</DependentUpon>
+    </Content>
+    <Content Include="Content\bootstrap.min.css">
+      <DependentUpon>bootstrap.css</DependentUpon>
+    </Content>
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\themes\base\accordion.css" />
@@ -199,6 +203,7 @@
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
     <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="Scripts\app-core.min.js" />
     <Content Include="Scripts\app.min.js" />
     <Content Include="Scripts\app\content-tabs.js" />
     <Content Include="Scripts\app\content-toolbar.js" />
@@ -207,10 +212,6 @@
     <Content Include="Scripts\app\settings-modal.js" />
     <Content Include="Scripts\app\about-modal.js" />
     <Content Include="Scripts\app\sidebar-toolbar.js" />
-    <Content Include="Scripts\bootstrap.bundle.js" />
-    <Content Include="Scripts\bootstrap.bundle.min.js" />
-    <Content Include="Scripts\bootstrap.js" />
-    <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\CodeMirror\addon\comment\comment.js" />
     <Content Include="Scripts\CodeMirror\addon\comment\continuecomment.js" />
     <Content Include="Scripts\CodeMirror\addon\dialog\dialog.css" />
@@ -663,12 +664,99 @@
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
     <None Include="Content\app\css\app.less" />
-    <None Include="Content\bootstrap-grid.css.map" />
-    <None Include="Content\bootstrap-grid.min.css.map" />
-    <None Include="Content\bootstrap-reboot.css.map" />
-    <None Include="Content\bootstrap-reboot.min.css.map" />
-    <None Include="Content\bootstrap.css.map" />
-    <None Include="Content\bootstrap.min.css.map" />
+    <None Include="Content\bootstrap-4.2.1\js\bootstrap.js.map">
+      <DependentUpon>bootstrap.js</DependentUpon>
+    </None>
+    <None Include="Content\bootstrap-4.2.1\js\bootstrap.min.js.map">
+      <DependentUpon>bootstrap.min.js</DependentUpon>
+    </None>
+    <None Include="Content\bootstrap-4.2.1\scss\bootstrap-grid.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\bootstrap-reboot.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\bootstrap.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_alert.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_background-variant.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_badge.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_border-radius.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_box-shadow.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_breakpoints.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_buttons.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_caret.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_clearfix.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_float.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_forms.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_gradients.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_grid-framework.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_grid.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_hover.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_image.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_list-group.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_lists.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_nav-divider.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_pagination.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_reset-text.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_resize.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_screen-reader.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_size.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_table-row.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_text-emphasis.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_text-hide.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_text-truncate.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_transition.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\mixins\_visibility.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_align.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_background.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_borders.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_clearfix.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_display.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_embed.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_flex.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_float.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_overflow.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_position.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_screenreaders.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_shadows.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_sizing.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_spacing.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_text.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\utilities\_visibility.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_alert.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_badge.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_breadcrumb.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_button-group.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_buttons.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_card.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_carousel.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_close.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_code.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_custom-forms.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_dropdown.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_forms.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_functions.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_grid.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_images.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_input-group.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_jumbotron.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_list-group.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_media.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_mixins.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_modal.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_nav.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_navbar.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_pagination.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_popover.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_print.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_progress.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_reboot.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_root.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_spinners.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_tables.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_toasts.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_tooltip.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_transitions.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_type.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_utilities.scss" />
+    <None Include="Content\bootstrap-4.2.1\scss\_variables.scss" />
+    <None Include="Content\bootstrap.scss" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -681,13 +769,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Scripts\app-core.min.js.map">
+      <DependentUpon>app-core.min.js</DependentUpon>
+    </None>
     <None Include="Scripts\app.min.js.map">
       <DependentUpon>app.min.js</DependentUpon>
     </None>
-    <None Include="Scripts\bootstrap.bundle.js.map" />
-    <None Include="Scripts\bootstrap.bundle.min.js.map" />
-    <None Include="Scripts\bootstrap.js.map" />
-    <None Include="Scripts\bootstrap.min.js.map" />
     <None Include="Scripts\esm\popper-utils.js.map" />
     <None Include="Scripts\esm\popper-utils.min.js.map" />
     <None Include="Scripts\esm\popper.js.map" />
@@ -733,7 +820,6 @@
     <Content Include="Scripts\app\sidebar.js" />
     <Content Include="Scripts\app\sidebar-slider.js" />
     <Content Include="Scripts\app\navbar.js" />
-    <Content Include="Scripts\app\utils.js" />
     <Content Include="Scripts\app\app.js" />
     <Content Include="Scripts\app\core.js" />
   </ItemGroup>

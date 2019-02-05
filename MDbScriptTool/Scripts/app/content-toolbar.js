@@ -1,5 +1,4 @@
-﻿/// <reference path="utils.js" />
-/// <reference path="app.js" />
+﻿/// <reference path="app.js" />
 
 /**
  * Content panel toolbar.
@@ -39,7 +38,7 @@
     });
 
     os.on('sql-exe-db-begin', function (err, id, db) {
-        var instance = app.utils.findBy(app.state.instances, 'id', id);
+        var instance = app.findBy(app.state.instances, 'id', id);
 
         if (instance) {
             instance.pending++;
@@ -47,7 +46,7 @@
     });
 
     os.on('sql-exe-db-complete', function (err, id, db) {
-        var instance = app.utils.findBy(app.state.instances, 'id', id);
+        var instance = app.findBy(app.state.instances, 'id', id);
 
         if (instance) {
             instance.pending--;
@@ -61,10 +60,10 @@
     os.on('sql-exe-complete', function (err, id, db) {
         if (err) {
             console.log(err);
-            bsAlert(err.Message, 'Error Executing SQL');
+            app.alert(err.Message, 'Error Executing SQL');
         }
 
-        var instance = app.utils.findBy(app.state.instances, 'id', id);
+        var instance = app.findBy(app.state.instances, 'id', id);
 
         if (instance) {
             instance.pending = 0;
@@ -75,7 +74,7 @@
     });
 
     app.on('tab-activating', function (id) {
-        var instance = app.utils.findBy(app.state.instances, 'id', id);
+        var instance = app.findBy(app.state.instances, 'id', id);
 
         if (instance) {
             if (instance.pending === 0) {

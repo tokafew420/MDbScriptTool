@@ -289,7 +289,6 @@ __pycache__/
 /MDbScriptTool/fonts
 /MDbScriptTool/Content/themes/base
 /MDbScriptTool/Content/font-awesome.*
-/MDbScriptTool/Content/bootstrap*
 /MDbScriptTool/Scripts/codemirror-2.37/keymap
 /MDbScriptTool/Scripts/umd
 /MDbScriptTool/Scripts/esm
@@ -309,3 +308,5 @@ __pycache__/
 /MDbScriptTool/Scripts/app.min.js.map
 /MDbScriptTool/Scripts/app-core.min.js.map
 /MDbScriptTool/Scripts/app-core.min.js
+/MDbScriptTool/Content/bootstrap.min.css
+/MDbScriptTool/Content/bootstrap.css

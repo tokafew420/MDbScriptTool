@@ -1,5 +1,4 @@
-﻿/// <reference path="utils.js" />
-/// <reference path="app.js" />
+﻿/// <reference path="app.js" />
 
 /**
  * Connection Information Dialog 
@@ -87,7 +86,7 @@
         }
     });
 
-    $name.on('keydown change', app.utils.debounce(function () {
+    $name.on('keydown change', app.debounce(function () {
         if ($name[0].checkValidity()) {
             $name.removeClass('is-invalid').addClass('is-valid');
         } else {
@@ -95,7 +94,7 @@
         }
     }, 200));
 
-    $server.on('keydown change', app.utils.debounce(function () {
+    $server.on('keydown change', app.debounce(function () {
         var server = $server.val();
         var connStr = $connStr.val();
 
@@ -112,7 +111,7 @@
         }
     }, 100));
 
-    $username.on('keydown change', app.utils.debounce(function () {
+    $username.on('keydown change', app.debounce(function () {
         var username = $username.val();
         var connStr = $connStr.val();
 
@@ -129,7 +128,7 @@
         }
     }, 100));
 
-    $password.on('keydown change', app.utils.debounce(function () {
+    $password.on('keydown change', app.debounce(function () {
         var password = $password.val();
         var connStr = $connStr.val();
 
@@ -146,7 +145,7 @@
         }
     }, 100));
 
-    $connStr.on('keydown change', app.utils.debounce(function () {
+    $connStr.on('keydown change', app.debounce(function () {
         var connStr = $connStr.val();
 
         if (connStr) {
@@ -204,10 +203,10 @@
             var id = $selectConnections.val();
 
             if (id === 'new') {
-                loading.show('Adding...');
+                app.loading.show('Adding...');
                 _hideAfterSave = true;
                 _tmpConn = {
-                    id: app.utils.guid(),
+                    id: app.guid(),
                     name: $name.val(),
                     server: $server.val(),
                     username: $username.val(),
@@ -220,7 +219,7 @@
             } else {
                 var conn = app.getConnection(id);
                 if (conn) {
-                    loading.show('Saving...');
+                    app.loading.show('Saving...');
                     _hideAfterSave = false;
 
                     conn.name = $name.val();
@@ -262,6 +261,6 @@
 
         _tmpConn = null;
         _hideAfterSave = false;
-        loading.hide();
+        app.loading.hide();
     });
 }(window));

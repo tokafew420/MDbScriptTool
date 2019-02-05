@@ -1,5 +1,4 @@
-﻿/// <reference path="utils.js" />
-/// <reference path="app.js" />
+﻿/// <reference path="app.js" />
 
 
 /**
@@ -24,7 +23,7 @@
         }
     });
 
-    var removeAnimationFn = app.utils.debounce(function () {
+    var removeAnimationFn = app.debounce(function () {
         $sidebar.removeClass('animating');
         $sidebarSlider.removeClass('animating');
         $content.removeClass('animating');
