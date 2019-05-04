@@ -1,4 +1,3 @@
-﻿using CefSharp.WinForms;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,16 +12,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CefSharp.WinForms;
 
 namespace Tokafew420.MDbScriptTool
 {
     internal class App
     {
-        private Form _form;
-        private ChromiumWebBrowser _browser;
-        private Regex _goRegex = new Regex(@"^\s*go\s*(--.*)*$", RegexOptions.IgnoreCase);
+        private readonly Form _form;
+        private readonly ChromiumWebBrowser _browser;
+        private readonly Regex _goRegex = new Regex(@"^\s*go\s*(--.*)*$", RegexOptions.IgnoreCase);
         private static readonly Random _rnd = new Random();
-        private static readonly char[] padding = { '=' };
+        private static readonly char[] _padding = { '=' };
 
         public OsEvent OsEvent { get; set; }
         public UiEvent UiEvent { get; set; }
@@ -281,10 +281,7 @@ namespace Tokafew420.MDbScriptTool
                         }
                     }
                 }
-                else
-                {
-                    OsEvent.Emit(replyMsgName, null, id);
-                }
+                OsEvent.Emit(replyMsgName, null, id);
             }
             catch (Exception e)
             {
@@ -410,50 +407,59 @@ namespace Tokafew420.MDbScriptTool
             var batchCt = batches.Count();
             var batchNum = 0;
 
-            foreach (var batch in batches)
+            OsEvent.Emit("sql-exe-db-batch-begin", null, id, db, batchNum);
+
+            try
             {
-                OsEvent.Emit("sql-exe-db-batch-begin", null, id, db, batchNum);
-
-                try
+                using (var conn = new SqlConnection(connectionString))
                 {
-                    using (var conn = new SqlConnection(connectionString))
-                    {
-                        OsEvent.Emit("sql-exe-db-batch-connecting", null, id, db, batchNum);
-                        Logger.Debug($"Connecting to {connectionString}");
-                        await conn.OpenAsync();
+                    OsEvent.Emit("sql-exe-db-batch-connecting", null, id, db, batchNum);
+                    Logger.Debug($"Connecting to {connectionString}");
+                    await conn.OpenAsync();
 
-                        using (var cmd = conn.CreateCommand())
+                    using (var cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandType = CommandType.Text;
+
+                        foreach (var batch in batches)
                         {
-                            cmd.CommandType = CommandType.Text;
                             cmd.CommandText = batch;
 
                             OsEvent.Emit("sql-exe-db-batch-executing", null, id, db, batchNum);
                             Logger.Debug($"Executing to {connectionString}");
 
-                            using (var reader = await cmd.ExecuteReaderAsync())
+                            try
                             {
-                                do
+                                using (var reader = await cmd.ExecuteReaderAsync())
                                 {
-                                    OsEvent.Emit("sql-exe-db-batch-result", null, id, db, batchNum, ConvertToResultset(reader));
-                                } while (reader.NextResult());
+                                    do
+                                    {
+                                        OsEvent.Emit("sql-exe-db-batch-result", null, id, db, batchNum, ConvertToResultset(reader));
+                                    } while (reader.NextResult());
+                                }
                             }
+                            catch (Exception e)
+                            {
+                                OsEvent.Emit("sql-exe-db-batch-result", e, id, db, batchNum);
+                                Logger.Error(e.ToString());
+                            }
+
+                            OsEvent.Emit("sql-exec-db-batch-complete", null, id, db, batchNum);
+                            Logger.Debug($"Completed batch {id} for {db}");
+
+                            batchNum++;
                         }
                     }
                 }
-                catch (Exception e)
-                {
-                    OsEvent.Emit("sql-exe-db-batch-result", e, id, db, batchNum);
-                    Logger.Error(e.ToString());
-                }
 
-                OsEvent.Emit("sql-exec-db-batch-complete", null, id, db, batchNum);
-                Logger.Debug($"Completed batch {id} for {db}");
-
-                batchNum++;
+                OsEvent.Emit("sql-exe-db-complete", null, id, db, batchCt);
+                Logger.Debug($"Completed batches {id} for {db}");
             }
-
-            OsEvent.Emit("sql-exe-db-complete", null, id, db, batchCt);
-            Logger.Debug($"Completed batches {id} for {db}");
+            catch (Exception e)
+            {
+                OsEvent.Emit("sql-exe-db-complete", e, id, db, batchCt);
+                Logger.Debug($"Completed batches {id} for {db}");
+            }
         }
 
         /// <summary>
@@ -500,8 +506,7 @@ namespace Tokafew420.MDbScriptTool
             {
                 var row = new object[count];
 
-                for (i = 0; i < count; i++)
-                    row[i] = reader[i];
+                for (i = 0; i < count; i++) row[i] = reader[i];
 
                 yield return row;
             }
@@ -570,7 +575,7 @@ namespace Tokafew420.MDbScriptTool
             Buffer.BlockCopy(cipher, 0, final, 32, cipher.Length);
 
             return Convert.ToBase64String(final)
-                .TrimEnd(padding).Replace('+', '-').Replace('/', '_');
+                .TrimEnd(_padding).Replace('+', '-').Replace('/', '_');
         }
 
         /// <summary>
@@ -584,8 +589,13 @@ namespace Tokafew420.MDbScriptTool
                 .Replace('_', '/').Replace('-', '+');
             switch (cipher.Length % 4)
             {
-                case 2: cipher += "=="; break;
-                case 3: cipher += "="; break;
+                case 2:
+                    cipher += "==";
+                    break;
+
+                case 3:
+                    cipher += "=";
+                    break;
             }
             var bytes = Convert.FromBase64String(cipher);
             var salt = new byte[32];
