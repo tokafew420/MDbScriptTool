@@ -44,6 +44,7 @@ namespace Tokafew420.MDbScriptTool
             UiEvent.On("encrypt-password", EncryptPassword);
             UiEvent.On("list-databases", GetDatabases);
             UiEvent.On("execute-sql", ExecuteSql);
+            UiEvent.On("parse-sql", ParseSql);
             UiEvent.On("get-versions", GetVersions);
             UiEvent.On("get-log-settings", GetLogSettings);
             UiEvent.On("set-log-settings", SetLogSettings);
@@ -204,7 +205,7 @@ namespace Tokafew420.MDbScriptTool
                     conn.Open();
                     using (var cmd = conn.CreateCommand())
                     {
-                        cmd.CommandType = System.Data.CommandType.Text;
+                        cmd.CommandType = CommandType.Text;
                         cmd.CommandText = "SELECT * FROM sys.databases";
 
                         using (var reader = cmd.ExecuteReader())
@@ -221,7 +222,7 @@ namespace Tokafew420.MDbScriptTool
         }
 
         /// <summary>
-        /// Execute the sql commands(s);
+        /// Execute the sql commands(s)
         /// </summary>
         /// <param name="args">Expects:
         /// [0] The connection string
@@ -286,6 +287,107 @@ namespace Tokafew420.MDbScriptTool
             catch (Exception e)
             {
                 OsEvent.Emit(replyMsgName, e, id);
+            }
+        }
+
+        /// <summary>
+        /// Parse the sql.
+        /// </summary>
+        /// <param name="args">Expects:
+        /// [0] The connection string
+        /// [1] The sql to execute
+        /// [2] A batch id.
+        /// </param>
+        /// <remarks>
+        /// Emits event: sql-parse-complete
+        /// Event params:
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] The sql execute batch id
+        /// [2] A list of parse errors if any.
+        /// </remarks>
+        private async void ParseSql(object[] args)
+        {
+            var replyMsgName = "sql-parse-complete";
+            if (args == null || args.Length != 3)
+            {
+                OsEvent.Emit(replyMsgName, new ArgumentException("Invalid arguments"));
+                return;
+            }
+
+            var connStr = args[0] as string;
+            var sql = args[1] as string;
+            var id = args[2] as string;
+
+            try
+            {
+                var errors = new List<SqlError>();
+                var handler = new SqlInfoMessageEventHandler((object sender, SqlInfoMessageEventArgs evt) =>
+                {
+                    //ensure that all errors are caught
+                    var errs = new SqlError[evt.Errors.Count];
+                    evt.Errors.CopyTo(errs, 0);
+                    errors.AddRange(errs);
+                });
+
+                if (!string.IsNullOrWhiteSpace(connStr) &&
+                    !string.IsNullOrWhiteSpace(sql) &&
+                    !string.IsNullOrWhiteSpace(id))
+                {
+                    OsEvent.Emit("sql-parse-begin", null, id);
+
+                    var batches = GetSqlBatches(sql);
+                    var builder = new SqlConnectionStringBuilder(connStr)
+                    {
+                        InitialCatalog = "master"
+                    };
+                    builder.Password = TryDecrypt(builder.Password);
+                    connStr = builder.ToString();
+
+                    using (var conn = new SqlConnection(connStr))
+                    {
+                        try
+                        {
+                            conn.FireInfoMessageEventOnUserErrors = true;
+                            conn.InfoMessage += handler;
+
+                            OsEvent.Emit("sql-parse-connecting", null, id);
+                            Logger.Debug($"Connecting to {connStr}");
+
+                            await conn.OpenAsync();
+
+                            using (var cmd = conn.CreateCommand())
+                            {
+                                cmd.CommandType = CommandType.Text;
+                                cmd.CommandText = "SET PARSEONLY ON";
+                                await cmd.ExecuteNonQueryAsync();
+
+                                OsEvent.Emit("sql-parse-parsing", null, id);
+                                foreach (var batch in batches)
+                                {
+                                    if (!string.IsNullOrWhiteSpace(batch))
+                                    {
+                                        cmd.CommandText = batch;
+                                        var result = await cmd.ExecuteNonQueryAsync();
+                                    }
+                                }
+
+                                cmd.CommandText = "SET PARSEONLY OFF";
+                                await cmd.ExecuteNonQueryAsync();
+                            }
+                        }
+                        finally
+                        {
+                            conn.FireInfoMessageEventOnUserErrors = false;
+                            conn.InfoMessage -= handler;
+                        }
+                    }
+                }
+
+                OsEvent.Emit(replyMsgName, null, id, errors);
+            }
+            catch (Exception e)
+            {
+                OsEvent.Emit(replyMsgName, e, id, null);
             }
         }
 

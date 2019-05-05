@@ -53,9 +53,9 @@
             <div class="sidebar-header">
                 <div class="btn-toolbar sidebar-toolbar mb-2" role="toolbar" aria-label="Main Connection Toolbar">
                     <div class="btn-group mr-2" role="group" aria-label="First group">
-                        <button type="button" class="btn btn-sm btn-secondary refresh-databases-btn"><i class="fa fa-refresh" aria-hidden="true"></i></button>
-                        <button type="button" class="btn btn-sm btn-secondary toggle-all-db-btn"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
-                        <button type="button" class="btn btn-sm btn-secondary sort-db-list-btn"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i></button>
+                        <button type="button" class="btn btn-sm btn-secondary refresh-databases-btn" data-toggle="tooltip" title="Refresh databases"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+                        <button type="button" class="btn btn-sm btn-secondary toggle-all-db-btn no-context-menu" data-toggle="tooltip" title="Toggle databases"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
+                        <button type="button" class="btn btn-sm btn-secondary sort-db-list-btn" data-toggle="tooltip" title="Sort databases"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i></button>
                     </div>
                 </div>
                 <Select class="select-connection custom-select custom-select-sm">
@@ -87,7 +87,8 @@
         <div class="container-fluid">
             <div class="btn-toolbar content-toolbar m-2" role="toolbar" aria-label="Main Connection Toolbar">
                 <div class="btn-group mr-2" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-sm btn-secondary execute-btn"><i class="fa fa-play text-success" aria-hidden="true"></i></button>
+                    <button type="button" class="btn btn-sm btn-secondary execute-btn" data-toggle="tooltip" title="Execute SQL"><i class="fa fa-play text-danger" aria-hidden="true"></i></button>
+                    <button type="button" class="btn btn-sm btn-secondary parse-btn"data-toggle="tooltip" title="Parse SQL"><i class="fa fa-check text-success" aria-hidden="true"></i></button>
                     <button type="button" class="btn btn-sm btn-secondary"><i class="fa fa-refresh" aria-hidden="true"></i></button>
                 </div>
                 <div class="btn-group mr-2" role="group" aria-label="Second group">

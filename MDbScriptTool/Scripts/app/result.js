@@ -1,4 +1,4 @@
-﻿/// <reference path="app.js" />
+/// <reference path="app.js" />
 
 /**
  * Result pane in each instance
@@ -66,6 +66,26 @@
             }).join());
 
             $dbTable.append($table);
+        } else {
+            $dbTable.append('<div class="result-text">Command(s) completed successfully</div>');
+        }
+    });
+
+    os.on('sql-parse-complete', function (err, batchId, errors) {
+        var $pane = $('#' + batchId);
+        var $resultPane = $('.result', $pane);
+
+        $resultPane.append(`<div id="parse-result"><div class="dbname">Parse Result</div></div>`);
+        var $dbTable = $('#parse-result', $resultPane);
+
+        if (err) {
+            if (err.Errors && err.Errors.length) {
+                $dbTable.append(`<div class="result-text"><pre class="text-danger">${formatSqlError(err.Errors).join('\n\n')}</pre></div>`);
+            } else {
+                $dbTable.append(`<div class="result-text text-danger">${err.Message}</div>`);
+            }
+        } else if (errors && errors.length) {
+            $dbTable.append(`<div class="result-text"><pre class="text-danger">${formatSqlError(errors).join('\n\n')}</pre></div>`);
         } else {
             $dbTable.append('<div class="result-text">Command(s) completed successfully</div>');
         }

@@ -1,4 +1,4 @@
-﻿(function (window, app, os, $) {
+(function (window, app, os, $) {
     // Initalize app object
     // Inherit event emitter
     EventEmitter.call(app);
@@ -517,4 +517,18 @@
             };
         })();
     }());
+
+    $(function () {
+        // Initialize all tooltips
+        $('[data-toggle="tooltip"]').tooltip({
+            tigger: 'hover'
+        }).on('mouseleave', function () {
+            $(this).tooltip('hide');
+        });
+
+        // Prevent right-click context menu
+        $(window.document).on('contextmenu', '.no-context-menu', function () {
+            return false;
+        });
+    });
 }(window, window.app = window.app || {}, window.os, jQuery));

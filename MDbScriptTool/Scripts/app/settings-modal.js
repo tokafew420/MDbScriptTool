@@ -1,4 +1,4 @@
-﻿/// <reference path="app.js" />
+/// <reference path="app.js" />
 
 /**
  * Settings Modal
@@ -20,8 +20,6 @@ $(function () {
     var $addonCss = $('#addon-css', $dlg);
 
     var $saveBtn = $('.save-btn', $dlg);
-
-    $('[data-toggle="tooltip"]', $dlg).tooltip();
 
     $logging.change(function () {
         var enabled = $logging.is(':checked');
