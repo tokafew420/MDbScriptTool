@@ -1,401 +1,401 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="A tool to run SQL scripts against multiple MSSQL databases">
-    <meta name="author" content="Tokafew420">
-    <title>Multi Database Script Tool</title>
-    <!-- External libs -->
-    <link rel="stylesheet" href="./Content/themes/base/jquery-ui.min.css" />
-    <link rel="stylesheet" href="./Content/bootstrap.min.css">
-    <link rel="stylesheet" href="./Content/font-awesome.min.css">
-    <link rel="stylesheet" href="./Scripts/CodeMirror/lib/codemirror.css">
-    <link rel="stylesheet" href="./Scripts/CodeMirror/theme/twilight.css">
-    <!--App css -->
-    <!--<# if (config == "Debug") { #>-->
-    <link rel="stylesheet" href="./Content/app.css">
-    <!--<# } else { #>-->
-    <link rel="stylesheet" href="./Content/app.min.css">
-    <!--<# } #>-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="A tool to run SQL scripts against multiple MSSQL databases">
+  <meta name="author" content="Tokafew420">
+  <title>Multi Database Script Tool</title>
+  <!-- External libs -->
+  <link rel="stylesheet" href="./Content/themes/base/jquery-ui.min.css" />
+  <link rel="stylesheet" href="./Content/bootstrap.min.css">
+  <link rel="stylesheet" href="./Content/font-awesome.min.css">
+  <link rel="stylesheet" href="./Scripts/CodeMirror/lib/codemirror.css">
+  <link rel="stylesheet" href="./Scripts/CodeMirror/theme/twilight.css">
+  <!--App css -->
+  <!--<# if (config == "Debug") { #>-->
+  <link rel="stylesheet" href="./Content/app.css">
+  <!--<# } else { #>-->
+  <link rel="stylesheet" href="./Content/app.min.css">
+  <!--<# } #>-->
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
-        <div class="container-fluid">
-            <div class="navbar-brand">
-                <a href="#" class="sidebar-toggle"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></a>
-                <a href="https://tokafew420.github.io/MDbScriptTool/">MDbScriptTool</a>
-            </div>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-drawer" aria-controls="navbarResponsive"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container-fluid">
+      <div class="navbar-brand">
+        <a href="#" class="sidebar-toggle"><i class="fa fa-arrow-circle-left" aria-hidden="true"></i></a>
+        <a href="https://tokafew420.github.io/MDbScriptTool/">MDbScriptTool</a>
+      </div>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-drawer" aria-controls="navbarResponsive"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbar-drawer">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link connection-menu-lnk" href="#" data-toggle="modal" data-target="#connections-modal"><i class="fa fa-plug"></i>&nbsp;Connections</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link settings-menu-lnk" href="#" data-toggle="modal" data-target="#settings-modal"><i class="fa fa-cog"></i>&nbsp;Settings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link about-menu-lnk" href="#" data-toggle="modal" data-target="#about-modal"><i class="fa fa-info-circle"></i>&nbsp;About</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <!-- Sidebar -->
+  <div class="sidebar p-2">
+    <nav class="sidebar-nav">
+      <!-- Sidebar Header -->
+      <div class="sidebar-header">
+        <div class="btn-toolbar sidebar-toolbar mb-2" role="toolbar" aria-label="Main Connection Toolbar">
+          <div class="btn-group mr-2" role="group" aria-label="First group">
+            <button type="button" class="btn btn-sm btn-secondary refresh-databases-btn" data-toggle="tooltip" title="Refresh databases"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-sm btn-secondary toggle-all-db-btn no-context-menu" data-toggle="tooltip" title="Toggle databases"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-sm btn-secondary sort-db-list-btn" data-toggle="tooltip" title="Sort databases"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i></button>
+          </div>
+        </div>
+        <Select class="select-connection custom-select custom-select-sm">
+          <option value="select">Select Connection</option>
+          <option value="new">New...</option>
+        </Select>
+      </div>
+      <div id="db-list-filter" class="hidden">
+        <div class="input-group input-group-sm mb-2">
+          <input id="db-list-filter-input" type="search" class="form-control" placeholder="Search">
+          <div id="db-list-filter-clear" class="input-group-append">
+            <button class="btn btn-secondary" type="button">
+              <i class="fa fa-remove"></i>
             </button>
-            <div class="collapse navbar-collapse" id="navbar-drawer">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link connection-menu-lnk" href="#" data-toggle="modal" data-target="#connections-modal"><i class="fa fa-plug"></i>&nbsp;Connections</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link settings-menu-lnk" href="#" data-toggle="modal" data-target="#settings-modal"><i class="fa fa-cog"></i>&nbsp;Settings</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link about-menu-lnk" href="#" data-toggle="modal" data-target="#about-modal"><i class="fa fa-info-circle"></i>&nbsp;About</a>
-                    </li>
-                </ul>
-            </div>
+          </div>
         </div>
+        <small id="db-list-filter-text" class="form-text"></small>
+      </div>
     </nav>
-    <!-- Sidebar -->
-    <div class="sidebar scrollable p-2">
-        <nav class="sidebar-nav">
-            <!-- Sidebar Header -->
-            <div class="sidebar-header">
-                <div class="btn-toolbar sidebar-toolbar mb-2" role="toolbar" aria-label="Main Connection Toolbar">
-                    <div class="btn-group mr-2" role="group" aria-label="First group">
-                        <button type="button" class="btn btn-sm btn-secondary refresh-databases-btn" data-toggle="tooltip" title="Refresh databases"><i class="fa fa-refresh" aria-hidden="true"></i></button>
-                        <button type="button" class="btn btn-sm btn-secondary toggle-all-db-btn no-context-menu" data-toggle="tooltip" title="Toggle databases"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
-                        <button type="button" class="btn btn-sm btn-secondary sort-db-list-btn" data-toggle="tooltip" title="Sort databases"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i></button>
-                    </div>
-                </div>
-                <Select class="select-connection custom-select custom-select-sm">
-                    <option value="select">Select Connection</option>
-                    <option value="new">New...</option>
-                </Select>
-            </div>
-        </nav>
-        <div id="content">
-            <div id="db-list-filter" class="hidden">
-                <div class="input-group input-group-sm mb-2">
-                    <input id="db-list-filter-input" type="search" class="form-control" placeholder="Search">
-                    <div id="db-list-filter-clear" class="input-group-append">
-                        <button class="btn btn-secondary" type="button">
-                            <i class="fa fa-remove"></i>
-                        </button>
-                    </div>
-                </div>
-                <small id="db-list-filter-text" class="form-text"></small>
-            </div>
-            <ul class="db-lst"></ul>
+    <div id="content" class="scrollable">
+      <ul class="db-lst"></ul>
+    </div>
+  </div>
+  <div class="slider slider-v">
+    <div></div>
+  </div>
+  <!-- Content -->
+  <div class="content">
+    <div class="container-fluid">
+      <div class="btn-toolbar content-toolbar m-2" role="toolbar" aria-label="Main Connection Toolbar">
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+          <button type="button" class="btn btn-sm btn-secondary execute-btn" data-toggle="tooltip" title="Execute SQL"><i class="fa fa-play text-danger" aria-hidden="true"></i></button>
+          <button type="button" class="btn btn-sm btn-secondary parse-btn" data-toggle="tooltip" title="Parse SQL"><i class="fa fa-check text-success" aria-hidden="true"></i></button>
+          <button type="button" class="btn btn-sm btn-secondary"><i class="fa fa-refresh" aria-hidden="true"></i></button>
         </div>
-    </div>
-    <div class="slider slider-v">
-        <div></div>
-    </div>
-    <!-- Content -->
-    <div class="content">
-        <div class="container-fluid">
-            <div class="btn-toolbar content-toolbar m-2" role="toolbar" aria-label="Main Connection Toolbar">
-                <div class="btn-group mr-2" role="group" aria-label="First group">
-                    <button type="button" class="btn btn-sm btn-secondary execute-btn" data-toggle="tooltip" title="Execute SQL"><i class="fa fa-play text-danger" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-sm btn-secondary parse-btn"data-toggle="tooltip" title="Parse SQL"><i class="fa fa-check text-success" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-sm btn-secondary"><i class="fa fa-refresh" aria-hidden="true"></i></button>
-                </div>
-                <div class="btn-group mr-2" role="group" aria-label="Second group">
-                    <button type="button" class="btn btn-sm btn-secondary open-file-btn"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
-                    <button type="button" class="btn btn-sm btn-secondary save-file-btn"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
-                </div>
-            </div>
-            <ul class="nav nav-tabs instance-tabs scrollable-x ml-2" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link plus-tab" role="tab" aria-controls="plus" aria-selected="false"><i class="fa fa-plus" aria-hidden="true"></i></a>
-                </li>
-            </ul>
-            <div class="tab-content instance-containers">
-            </div>
+        <div class="btn-group mr-2" role="group" aria-label="Second group">
+          <button type="button" class="btn btn-sm btn-secondary open-file-btn"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
+          <button type="button" class="btn btn-sm btn-secondary save-file-btn"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
         </div>
+      </div>
+      <ul class="nav nav-tabs instance-tabs scrollable-x ml-2" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link plus-tab" role="tab" aria-controls="plus" aria-selected="false"><i class="fa fa-plus" aria-hidden="true"></i></a>
+        </li>
+      </ul>
+      <div class="tab-content instance-containers">
+      </div>
     </div>
-    <!-- Modals -->
-    <!-- Connections dialog -->
-    <div class="modal fade" id="connections-modal" tabindex="-1" role="dialog" aria-labelledby="connections-modal" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="connections-modal-title">Connections</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="input-group input-group-sm mb-3">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" id="select-connection-lbl">Connections</label>
-                        </div>
-                        <select class="form-control custom-select select-connections" aria-label="Connections" aria-describedby="select-connections-lbl">
-                            <option value="new" selected>New...</option>
-                        </select>
-                    </div>
-                    <hr>
-                    <div class="input-group input-group-sm mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="name-lbl">Name</span>
-                        </div>
-                        <input type="text" class="form-control name" aria-label="Name" aria-describedby="name-lbl" required>
-                        <div class="invalid-feedback">
-                            Name required (i.e. "My Server")
-                        </div>
-                    </div>
-                    <div class="input-group input-group-sm mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="server-lbl">Server</span>
-                        </div>
-                        <input type="text" class="form-control server" aria-label="Server" aria-describedby="server-lbl" required>
-                        <div class="invalid-feedback">
-                            Server name required
-                        </div>
-                    </div>
-                    <div class="input-group input-group-sm mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="username-lbl">Username</span>
-                        </div>
-                        <input type="text" class="form-control username" aria-label="Username" aria-describedby="username-lbl" required>
-                        <div class="invalid-feedback">
-                            Username required, User must have access to <strong>master</strong> database
-                        </div>
-                    </div>
-                    <div class="input-group input-group-sm mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="password-lbl">Password</span>
-                        </div>
-                        <input type="text" class="form-control password" aria-label="Password" aria-describedby="password-lbl" required>
-                        <div class="invalid-feedback">
-                            Password required
-                        </div>
-                    </div>
-                    <div class="answer-text p-2">
-                        <a class="advanced-lnk" href="#" data-toggle="collapse" data-target="#advanced-container">Advanced</a>
-                    </div>
-                    <div class="collapse" id="advanced-container">
-                        <div class="input-group input-group-sm mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" id="connection-string-lbl">Connection String</span>
-                            </div>
-                            <input type="text" class="form-control connection-string" aria-label="Connection string" aria-describedby="connection-string-lbl">
-                            <div class="invalid-feedback">
-                                Invalid connection string
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-outline-danger delete-btn hidden">Delete</button>
-                    <button type="button" class="btn btn-sm btn-outline-primary add-btn">Add</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
+  </div>
+  <!-- Modals -->
+  <!-- Connections dialog -->
+  <div class="modal fade" id="connections-modal" tabindex="-1" role="dialog" aria-labelledby="connections-modal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="connections-modal-title">Connections</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
         </div>
-    </div>
-    <!-- Settings dialog -->
-    <div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="settings-modal" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="settings-modal-title">Settings</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-dark table-sm">
-                        <tbody class="">
-                            <tr>
-                                <td>
-                                    <div class="custom-control custom-checkbox" data-toggle="tooltip" title="View logs from native code in browser console">
-                                        <input type="checkbox" class="custom-control-input" id="enable-logs">
-                                        <label class="custom-control-label" for="enable-logs">Enable Native Logs</label>
-                                    </div>
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="container-fluid log-flags">
-                                        <div class="row">
-                                            <div class="col-sm">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="enable-logs-debug">
-                                                    <label class="custom-control-label" for="enable-logs-debug">Debug</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="enable-logs-info">
-                                                    <label class="custom-control-label" for="enable-logs-info">Info</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="enable-logs-warn">
-                                                    <label class="custom-control-label" for="enable-logs-warn">Warn</label>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input" id="enable-logs-error">
-                                                    <label class="custom-control-label" for="enable-logs-error">Error</label>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <div class="input-group input-group-sm">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" id="addon-js-label" data-toggle="tooltip" title="Add your own custom script file">JS AddOn</span>
-                                        </div>
-                                        <input type="text" id="addon-js" class="form-control" placeholder="JS path or URL" aria-label="Script Add-On" aria-describedby="addon-js-label">
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <div class="input-group input-group-sm">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" id="addon-css-label" data-toggle="tooltip" title="Add your own custom CSS file">CSS AddOn</span>
-                                        </div>
-                                        <input type="text" id="addon-css" class="form-control" placeholder="CSS path or URL" aria-label="CSS Add-On" aria-describedby="addon-css-label">
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-outline-primary save-btn">Save</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn" data-dismiss="modal">Cancel</button>
-                </div>
+        <div class="modal-body">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" id="select-connection-lbl">Connections</label>
             </div>
+            <select class="form-control custom-select select-connections" aria-label="Connections" aria-describedby="select-connections-lbl">
+              <option value="new" selected>New...</option>
+            </select>
+          </div>
+          <hr>
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="name-lbl">Name</span>
+            </div>
+            <input type="text" class="form-control name" aria-label="Name" aria-describedby="name-lbl" required>
+            <div class="invalid-feedback">
+              Name required (i.e. "My Server")
+            </div>
+          </div>
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="server-lbl">Server</span>
+            </div>
+            <input type="text" class="form-control server" aria-label="Server" aria-describedby="server-lbl" required>
+            <div class="invalid-feedback">
+              Server name required
+            </div>
+          </div>
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="username-lbl">Username</span>
+            </div>
+            <input type="text" class="form-control username" aria-label="Username" aria-describedby="username-lbl" required>
+            <div class="invalid-feedback">
+              Username required, User must have access to <strong>master</strong> database
+            </div>
+          </div>
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="password-lbl">Password</span>
+            </div>
+            <input type="text" class="form-control password" aria-label="Password" aria-describedby="password-lbl" required>
+            <div class="invalid-feedback">
+              Password required
+            </div>
+          </div>
+          <div class="answer-text p-2">
+            <a class="advanced-lnk" href="#" data-toggle="collapse" data-target="#advanced-container">Advanced</a>
+          </div>
+          <div class="collapse" id="advanced-container">
+            <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="connection-string-lbl">Connection String</span>
+              </div>
+              <input type="text" class="form-control connection-string" aria-label="Connection string" aria-describedby="connection-string-lbl">
+              <div class="invalid-feedback">
+                Invalid connection string
+              </div>
+            </div>
+          </div>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-outline-danger delete-btn hidden">Delete</button>
+          <button type="button" class="btn btn-sm btn-outline-primary add-btn">Add</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
     </div>
-    <!-- About dialog -->
-    <div class="modal fade" id="about-modal" tabindex="-1" role="dialog" aria-labelledby="about-modal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="about-modal-title">About</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <h5>Multi Database Script Tool</h5>
-                    <table class="table table-hover table-dark table-sm">
-                        <tbody class="">
-                            <tr>
-                                <td>Version:</td>
-                                <td id="app-version"></td>
-                            </tr>
-                            <tr>
-                                <td>Site:</td>
-                                <td><a href="https://tokafew420.github.io/MDbScriptTool/">https://tokafew420.github.io/MDbScriptTool/</a></td>
-                            </tr>
-                            <tr>
-                                <td>Repo:</td>
-                                <td><a href="https://github.com/tokafew420/MDbScriptTool/">https://github.com/tokafew420/MDbScriptTool/</a></td>
-                            </tr>
-                            <tr class="dependency-versions-section">
-                                <td colspan="2">Dependencies</td>
-                            </tr>
-                            <tr>
-                                <td>CEF:</td>
-                                <td id="cef-version"></td>
-                            </tr>
+  </div>
+  <!-- Settings dialog -->
+  <div class="modal fade" id="settings-modal" tabindex="-1" role="dialog" aria-labelledby="settings-modal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="settings-modal-title">Settings</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <table class="table table-dark table-sm">
+            <tbody class="">
+              <tr>
+                <td>
+                  <div class="custom-control custom-checkbox" data-toggle="tooltip" title="View logs from native code in browser console">
+                    <input type="checkbox" class="custom-control-input" id="enable-logs">
+                    <label class="custom-control-label" for="enable-logs">Enable Native Logs</label>
+                  </div>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="container-fluid log-flags">
+                    <div class="row">
+                      <div class="col-sm">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="enable-logs-debug">
+                          <label class="custom-control-label" for="enable-logs-debug">Debug</label>
+                        </div>
+                      </div>
+                      <div class="col-sm">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="enable-logs-info">
+                          <label class="custom-control-label" for="enable-logs-info">Info</label>
+                        </div>
+                      </div>
+                      <div class="col-sm">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="enable-logs-warn">
+                          <label class="custom-control-label" for="enable-logs-warn">Warn</label>
+                        </div>
+                      </div>
+                      <div class="col-sm">
+                        <div class="custom-control custom-checkbox">
+                          <input type="checkbox" class="custom-control-input" id="enable-logs-error">
+                          <label class="custom-control-label" for="enable-logs-error">Error</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" id="addon-js-label" data-toggle="tooltip" title="Add your own custom script file">JS AddOn</span>
+                    </div>
+                    <input type="text" id="addon-js" class="form-control" placeholder="JS path or URL" aria-label="Script Add-On" aria-describedby="addon-js-label">
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2">
+                  <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" id="addon-css-label" data-toggle="tooltip" title="Add your own custom CSS file">CSS AddOn</span>
+                    </div>
+                    <input type="text" id="addon-css" class="form-control" placeholder="CSS path or URL" aria-label="CSS Add-On" aria-describedby="addon-css-label">
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-outline-primary save-btn">Save</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- About dialog -->
+  <div class="modal fade" id="about-modal" tabindex="-1" role="dialog" aria-labelledby="about-modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="about-modal-title">About</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h5>Multi Database Script Tool</h5>
+          <table class="table table-hover table-dark table-sm">
+            <tbody class="">
+              <tr>
+                <td>Version:</td>
+                <td id="app-version"></td>
+              </tr>
+              <tr>
+                <td>Site:</td>
+                <td><a href="https://tokafew420.github.io/MDbScriptTool/">https://tokafew420.github.io/MDbScriptTool/</a></td>
+              </tr>
+              <tr>
+                <td>Repo:</td>
+                <td><a href="https://github.com/tokafew420/MDbScriptTool/">https://github.com/tokafew420/MDbScriptTool/</a></td>
+              </tr>
+              <tr class="dependency-versions-section">
+                <td colspan="2">Dependencies</td>
+              </tr>
+              <tr>
+                <td>CEF:</td>
+                <td id="cef-version"></td>
+              </tr>
 
-                            <tr>
-                                <td>Chromium:</td>
-                                <td id="chromium-version"></td>
-                            </tr>
-                            <tr>
-                                <td>jQuery:</td>
-                                <td id="jquery-version"></td>
-                            </tr>
-                            <tr>
-                                <td>Bootstrap:</td>
-                                <td id="bootstrap-version"></td>
-                            </tr>
-                            <tr>
-                                <td>CodeMirror:</td>
-                                <td id="codemirror-version"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-sm btn-outline-primary ok-btn" data-dismiss="modal">Ok</button>
-                </div>
-            </div>
+              <tr>
+                <td>Chromium:</td>
+                <td id="chromium-version"></td>
+              </tr>
+              <tr>
+                <td>jQuery:</td>
+                <td id="jquery-version"></td>
+              </tr>
+              <tr>
+                <td>Bootstrap:</td>
+                <td id="bootstrap-version"></td>
+              </tr>
+              <tr>
+                <td>CodeMirror:</td>
+                <td id="codemirror-version"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    </div>
-    <!-- Alert dialog -->
-    <div class="modal" id="alert-modal" tabindex="-1" role="dialog" aria-labelledby="alert-modal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                </div>
-                <div class="modal-body">
-                </div>
-                <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-sm btn-outline-primary ok-btn">Ok</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn" data-dismiss="modal">Cancel</button>
-                </div>
-            </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-sm btn-outline-primary ok-btn" data-dismiss="modal">Ok</button>
         </div>
+      </div>
     </div>
-    <div class="loader-container">
-        <div class="loader"></div>
-        <div class="msg"></div>
+  </div>
+  <!-- Alert dialog -->
+  <div class="modal" id="alert-modal" tabindex="-1" role="dialog" aria-labelledby="alert-modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-sm btn-outline-primary ok-btn">Ok</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
     </div>
-    <!-- External Libs -->
-    <script src="./Scripts/jquery-3.4.1.min.js"></script>
-    <script src="./Scripts/jquery-ui-1.12.1.min.js"></script>
-    <script src="./Scripts/umd/popper.min.js"></script>
-    <script src="./Content/bootstrap-4.2.1/js/bootstrap.min.js"></script>
-    <script src="./Scripts/CodeMirror/lib/codemirror.js"></script>
-    <script src="./Scripts/CodeMirror/mode/sql/sql.js"></script>
-    <!--<# if (config =="Debug") { #>-->
-    <!-- Core app to load first -->
-    <script src="./Scripts/app/core.js"></script>
-    <!--<# } else { #>-->
-    <!-- Core app to load first -->
-    <script src="./Scripts/app-core.min.js"></script>
-    <!--<# } #>-->
-    <script>
-        (function (window) {
-            var os = window.os = new EventEmitter();
-            // Copy the os.emit function to another property so that .NET side can call it
-            // then replace the os.emit with the uiEvent's emit() function.
-            // This will send all emit events (from script) to the .NET side and the browser
-            // can listen for event (replies) with the same API convention.
-            os._emit = os.emit.bind(os);
+  </div>
+  <div class="loader-container">
+    <div class="loader"></div>
+    <div class="msg"></div>
+  </div>
+  <!-- External Libs -->
+  <script src="./Scripts/jquery-3.4.1.min.js"></script>
+  <script src="./Scripts/jquery-ui-1.12.1.min.js"></script>
+  <script src="./Scripts/umd/popper.min.js"></script>
+  <script src="./Content/bootstrap-4.2.1/js/bootstrap.min.js"></script>
+  <script src="./Scripts/CodeMirror/lib/codemirror.js"></script>
+  <script src="./Scripts/CodeMirror/mode/sql/sql.js"></script>
+  <!--<# if (config =="Debug") { #>-->
+  <!-- Core app to load first -->
+  <script src="./Scripts/app/core.js"></script>
+  <!--<# } else { #>-->
+  <!-- Core app to load first -->
+  <script src="./Scripts/app-core.min.js"></script>
+  <!--<# } #>-->
+  <script>
+    (function (window) {
+      var os = window.os = new EventEmitter();
+      // Copy the os.emit function to another property so that .NET side can call it
+      // then replace the os.emit with the uiEvent's emit() function.
+      // This will send all emit events (from script) to the .NET side and the browser
+      // can listen for event (replies) with the same API convention.
+      os._emit = os.emit.bind(os);
 
-            // Register script event object that interops with the .Net side.
-            (async function () {
-                await CefSharp.BindObjectAsync("uiEvent");
-                os.emit = uiEvent.emit;
-            })();
-        }(window));
-    </script>
-    <!--<# if (config =="Debug") { #>-->
-    <!-- Main app  -->
-    <script src="./Scripts/app/app.js"></script>
-    <!-- App components -->
-    <script src="./Scripts/app/navbar.js"></script>
-    <script src="./Scripts/app/sidebar.js"></script>
-    <script src="./Scripts/app/sidebar-toolbar.js"></script>
-    <script src="./Scripts/app/sidebar-slider.js"></script>
-    <script src="./Scripts/app/content.js"></script>
-    <script src="./Scripts/app/content-toolbar.js"></script>
-    <script src="./Scripts/app/content-tabs.js"></script>
-    <script src="./Scripts/app/editor.js"></script>
-    <script src="./Scripts/app/result.js"></script>
-    <script src="./Scripts/app/connections-modal.js"></script>
-    <script src="./Scripts/app/settings-modal.js"></script>
-    <script src="./Scripts/app/about-modal.js"></script>
-    <!--<# } else { #>-->
-    <script src="./Scripts/app.min.js"></script>
-    <!--<# } #>-->
+      // Register script event object that interops with the .Net side.
+      (async function () {
+        await CefSharp.BindObjectAsync("uiEvent");
+        os.emit = uiEvent.emit;
+      })();
+    }(window));
+  </script>
+  <!--<# if (config =="Debug") { #>-->
+  <!-- Main app  -->
+  <script src="./Scripts/app/app.js"></script>
+  <!-- App components -->
+  <script src="./Scripts/app/navbar.js"></script>
+  <script src="./Scripts/app/sidebar.js"></script>
+  <script src="./Scripts/app/sidebar-toolbar.js"></script>
+  <script src="./Scripts/app/sidebar-slider.js"></script>
+  <script src="./Scripts/app/content.js"></script>
+  <script src="./Scripts/app/content-toolbar.js"></script>
+  <script src="./Scripts/app/content-tabs.js"></script>
+  <script src="./Scripts/app/editor.js"></script>
+  <script src="./Scripts/app/result.js"></script>
+  <script src="./Scripts/app/connections-modal.js"></script>
+  <script src="./Scripts/app/settings-modal.js"></script>
+  <script src="./Scripts/app/about-modal.js"></script>
+  <!--<# } else { #>-->
+  <script src="./Scripts/app.min.js"></script>
+  <!--<# } #>-->
 </body>
 </html>

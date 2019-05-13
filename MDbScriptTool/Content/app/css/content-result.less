@@ -1,71 +1,71 @@
 /* Result set */
 .content .result {
-    bottom: 0;
-    color: @dark-0;
-    font-size: 0.85em;
-    left: 0;
-    margin-top: 406px;
-    margin-left: 4px;
+  bottom: 0;
+  color: @dark-0;
+  font-size: 0.85em;
+  left: 0;
+  margin-top: 406px;
+  margin-left: 4px;
+  overflow: auto;
+  position: absolute;
+  right: 0;
+  top: 0;
+
+  table {
+    /** Table result set **/
+    white-space: nowrap;
+  }
+
+  .dbname {
+    padding: 2px 8px;
+    background-color: @dark-1;
+    color: @light-0;
+  }
+
+  .result-text {
+    border: 1px solid @dark-1;
+    padding: 2px 8px;
+  }
+
+  .result-set {
     overflow: auto;
-    position: absolute;
-    right: 0;
-    top: 0;
 
     table {
-        /** Table result set **/
-        white-space: nowrap;
-    }
+      margin-bottom: 0;
 
-    .dbname {
-        padding: 2px 8px;
-        background-color: @dark-1;
-        color: @light-0;
-    }
+      td, th {
+        padding: 2px 4px;
+        vertical-align: middle;
+      }
 
-    .result-text {
-        border: 1px solid @dark-1;
-        padding: 2px 8px;
-    }
+      tbody {
+        tr {
+          th.row-number {
+            background-color: @dark-2;
+          }
 
-    .result-set {
-        overflow: auto;
-
-        table {
-            margin-bottom: 0;
-
-            td, th {
-                padding: 2px 4px;
-                vertical-align: middle;
+          td {
+            &.null {
+              background-color: @dark-4;
+              font-style: italic;
             }
+          }
 
-            tbody {
-                tr {
-                    th.row-number {
-                        background-color: @dark-2;
-                    }
-
-                    td {
-                        &.null {
-                            background-color: @dark-4;
-                            font-style: italic;
-                        }
-                    }
-
-                    &:nth-of-type(odd) td {
-                        &.null {
-                            background-color: @light-5;
-                        }
-                    }
-
-                    &:hover {
-                        background-color: rgba(0, 196, 255, 0.5);
-
-                        td.null {
-                            background-color: rgba(40, 160, 173, 0.8);
-                        }
-                    }
-                }
+          &:nth-of-type(odd) td {
+            &.null {
+              background-color: @light-5;
             }
+          }
+
+          &:hover {
+            background-color: @text-hover;
+
+            td.null {
+              background-color: rgba(40, 160, 173, 0.8);
+            }
+          }
         }
+      }
     }
+  }
 }
