@@ -1,4 +1,4 @@
-﻿/// <reference path="app.js" />
+/// <reference path="app.js" />
 /**
  * Sidebar
  */
@@ -34,7 +34,7 @@
     });
 
     var updateFilterText = app.debounce(function () {
-        if (app.state.currentConnection.dbs) {
+        if (app.state.currentConnection && app.state.currentConnection.dbs) {
             var matchedTxt = '';
             var visible;
             var total = app.state.currentConnection.dbs.length;
@@ -59,7 +59,7 @@
 
         if (dbLst) {
             dbLst.forEach(function (db, idx) {
-                var $item = $(`<li class="db-lst-item active">
+                var $item = $(`<li class="db-lst-item">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" id="${db.name}" ${db.checked ? 'checked' : ''}>
                                 <label class="custom-control-label" for="${db.name}">${db.name}</label>

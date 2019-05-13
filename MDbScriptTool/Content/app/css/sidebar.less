@@ -1,57 +1,72 @@
 /* Sidebar */
 
 .sidebar {
-    background-color: @dark-1;
-    bottom: 0;
-    left: 0;
-    margin: 0;
-    position: absolute;
-    top: 56px;
-    white-space: nowrap;
-    width: 300px;
+  background-color: @dark-1;
+  bottom: 0;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  top: 56px;
+  white-space: nowrap;
+  width: 300px;
+  display: flex;
+  flex-flow: column;
 
-    &.collapsed {
-        margin-left: -306px;
+  &.collapsed {
+    margin-left: -306px;
+  }
+  // Toolbar
+  .sidebar-toolbar {
+    flex-wrap: nowrap;
+  }
+  // Connection select
+  .select-connection {
+    margin-bottom: 8px;
+  }
+  // List filter
+  #db-list-filter {
+    margin-bottom: 4px;
+
+    #db-list-filter-input {
+      border-radius: .2rem;
     }
 
-    .sidebar-toolbar {
-        flex-wrap: nowrap;
+    #db-list-filter-clear {
+      display: none;
+
+      button {
+        color: @accent-0;
+      }
     }
 
-    #content .db-lst {
-        list-style: none;
-        margin: 0;
-        padding: 0;
+    &.has-search-term {
+      #db-list-filter-input {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+
+      #db-list-filter-clear {
+        display: flex;
+      }
     }
+  }
+  // Content
+  #content {
+    height: 100%;
 
-    .select-connection {
-        margin-bottom: 8px;
-    }
+    .db-lst {
+      list-style: none;
+      padding: 0;
 
-    #db-list-filter {
-        margin-bottom: 4px;
-
-        #db-list-filter-input {
-            border-radius: .2rem;
+      .db-lst-item {
+        &:hover {
+          background-color: @text-hover;
         }
 
-        #db-list-filter-clear {
-            display: none;
-
-            button {
-                color: @accent-0;
-            }
+        .custom-control-label {
+          width: 100%;
         }
-
-        &.has-search-term {
-            #db-list-filter-input {
-                border-top-right-radius: 0;
-                border-bottom-right-radius: 0;
-            }
-
-            #db-list-filter-clear {
-                display: flex;
-            }
-        }
+      }
     }
+  }
 }
