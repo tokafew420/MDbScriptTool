@@ -1,4 +1,4 @@
-﻿using CefSharp;
+using CefSharp;
 using System;
 using System.IO;
 using System.Linq;
@@ -50,7 +50,7 @@ namespace Tokafew420.MDbScriptTool
 
             if (File.Exists(filepath))
             {
-                return ResourceHandler.FromFilePath(filepath, ResourceHandler.GetMimeType(Path.GetExtension(filepath)));
+                return ResourceHandler.FromFilePath(filepath, ResourceHandler.GetMimeType(Path.GetExtension(filepath)), true);
             }
 
             return ResourceHandler.ForErrorMessage("File not found.", HttpStatusCode.NotFound);

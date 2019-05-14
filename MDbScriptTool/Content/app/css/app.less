@@ -55,6 +55,25 @@ a:hover {
     color: @light-0;
 }
 
+// Link buttons
+.link-btn {
+  &:hover,
+  &:hover {
+    font-weight: bold;
+  }
+
+  &.active {
+    color: @accent2-0;
+    text-decoration: underline;
+
+    &:hover,
+    &:focus {
+      font-weight: normal;
+      cursor: default;
+    }
+  }
+}
+
 .animating {
     transition: all ease-out .5s;
 }

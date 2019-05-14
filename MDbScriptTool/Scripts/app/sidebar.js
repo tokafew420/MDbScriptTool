@@ -6,10 +6,12 @@
     var $sidebar = $('.sidebar');
     var $connectionSelect = $('.select-connection', $sidebar);
     var $dbLst = $('.db-lst', $sidebar);
-    var $filterInputGrp = $('#db-list-filter', $sidebar);
+    var $additionalCtrls = $('#additional-ctrls', $sidebar);
+    var $filterInputGrp = $('#db-list-filter', $additionalCtrls);
     var $filterInput = $('#db-list-filter-input', $filterInputGrp);
     var $filterClear = $('#db-list-filter-clear', $filterInputGrp);
-    var $filterText = $('#db-list-filter-text', $filterInputGrp);
+    var $showToggles = $('.link-btn', $additionalCtrls);
+    var $filterText = $('#db-list-filter-text', $additionalCtrls);
 
     var removeAnimateTimer;
 
@@ -31,6 +33,22 @@
     // Resize sidebar on slider dragger
     app.on('sidebar-slider-dragged', function (left) {
         $sidebar.css('width', left + 'px');
+    });
+
+    $showToggles.on('click', function (e) {
+        e.preventDefault();
+
+        var $this = $(this);
+        $showToggles.removeClass('active');
+        $this.addClass('active');
+
+        if ($this.hasClass('show-selected')) {
+            $dbLst.removeClass('show-unselected').addClass('show-selected');
+        } else if ($this.hasClass('show-unselected')) {
+            $dbLst.removeClass('show-selected').addClass('show-unselected');
+        } else {
+            $dbLst.removeClass('show-unselected show-selected');
+        }
     });
 
     var updateFilterText = app.debounce(function () {
@@ -55,7 +73,12 @@
 
     function renderDbList(dbLst) {
         $dbLst.empty();
+        // Reset filter input
         $filterInput.val('').change();
+        // Reset show toggles to All
+        $showToggles.removeClass('active');
+        $showToggles.filter('.show-all').addClass('active');
+        $dbLst.removeClass('show-unselected show-selected');
 
         if (dbLst) {
             dbLst.forEach(function (db, idx) {
@@ -74,15 +97,16 @@
                 }
 
                 $('input', $item).change(function () {
-                    db.checked = $(this).is(':checked');
+                    var $this = $(this);
+                    $this.closest('.db-lst-item').toggleClass('active', db.checked = $this.is(':checked'));
                 });
             });
 
-            app.show($filterInputGrp);
+            app.show($additionalCtrls);
             updateFilterText();
             app.emit('db-list-rendered', dbLst);
         } else {
-            app.hide($filterInputGrp);
+            app.hide($additionalCtrls);
         }
     }
 
@@ -108,7 +132,7 @@
             return app.compare($('label', a).text(), $('label', b).text()) * asc;
         });
 
-        $.each(dbs, function(idx, db) {
+        $.each(dbs, function (idx, db) {
             $dbLst.append(db);
         });
     });

@@ -63,8 +63,8 @@
           <option value="new">New...</option>
         </Select>
       </div>
-      <div id="db-list-filter" class="hidden">
-        <div class="input-group input-group-sm mb-2">
+      <div id="additional-ctrls" class="hidden">
+        <div id="db-list-filter" class="input-group input-group-sm mb-2">
           <input id="db-list-filter-input" type="search" class="form-control" placeholder="Search">
           <div id="db-list-filter-clear" class="input-group-append">
             <button class="btn btn-secondary" type="button">
@@ -72,6 +72,11 @@
             </button>
           </div>
         </div>
+        <small id="db-list-show-toggle" class="form-text">Show:&nbsp;
+          <span><a href="#" class="show-all link-btn active">All</a> | </span>
+          <span><a href="#" class="show-selected link-btn">Selected</a> | </span>
+          <span><a href="#" class="show-unselected link-btn">Unselected</a></span>
+        </small>
         <small id="db-list-filter-text" class="form-text"></small>
       </div>
     </nav>

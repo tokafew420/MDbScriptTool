@@ -58,6 +58,14 @@
       list-style: none;
       padding: 0;
 
+      &.show-selected .db-lst-item:not(.active) {
+        display: none;
+      }
+
+      &.show-unselected .db-lst-item.active {
+        display: none;
+      }
+
       .db-lst-item {
         &:hover {
           background-color: @text-hover;
