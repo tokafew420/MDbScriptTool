@@ -1,58 +1,59 @@
-/* Content */
+/// <reference path="variables.less" />
+
+// Content
 .content {
-    bottom: 0;
-    left: 0;
-    margin-left: 306px;
-    position: absolute;
-    right: 0;
-    top: 56px;
+  bottom: 0;
+  left: 0;
+  margin-left: 306px;
+  position: absolute;
+  right: 0;
+  top: 56px;
 
-    &.full {
-        // Overlay sidebar purposefully so dragging is not possible
-        margin-left: 0 !important;
+  &.full {
+    // Overlay sidebar purposefully so dragging is not possible
+    margin-left: 0 !important;
+  }
+
+  & > div {
+    height: 100%;
+    overflow-y: hidden;
+    padding-left: 4px;
+    padding-right: 0;
+  }
+
+  .content-toolbar {
+    flex-wrap: nowrap;
+  }
+
+  .instance-tabs {
+    flex-wrap: nowrap;
+    font-size: 0.85em;
+    white-space: nowrap;
+
+    .nav-link:not(.active) {
+      background-color: @light-5;
+
+      &:not(:hover) {
+        border-color: @light-3 @light-3 @light-4;
+      }
     }
 
-    & > div {
-        height: 100%;
-        overflow-y: hidden;
-        padding-left: 4px;
-        padding-right: 0;
+    .nav-link.plus-tab:not(.active) {
+      background-color: @light-2;
     }
+  }
 
-    .content-toolbar {
-        flex-wrap: nowrap;
+  .instance-containers {
+    // Will be adjusted by js
+    height: 100%;
+
+    .instance {
+      height: 100%;
+      // Editor
+      .editor {
+        z-index: 10;
+        height: 300px;
+      }
     }
-
-    .instance-tabs {
-        flex-wrap: nowrap;
-        font-size: 0.85em;
-        white-space: nowrap;
-
-        .nav-link:not(.active) {
-            background-color: @light-5;
-
-            &:not(:hover) {
-                border-color: @light-3 @light-3 @light-4;
-            }
-        }
-
-        .nav-link.plus-tab:not(.active) {
-            background-color: @light-2;
-        }
-    }
-
-    .instance-containers {
-        // Will be adjusted by js
-        height: 100%;
-
-        .instance {
-            height: 100%;
-
-            .editor {
-                /* Editor*/
-                z-index: 10;
-                height: 300px;
-            }
-        }
-    }
+  }
 }

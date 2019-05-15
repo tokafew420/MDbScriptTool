@@ -142,6 +142,7 @@
     <None Include="compilerconfig.json.bindings">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
+    <None Include="Content\app\css\variables.less" />
     <None Include="Content\app\css\content-result.less" />
     <None Include="Content\app\css\settings-modal.less" />
     <None Include="Content\app\css\about-modal.less" />
