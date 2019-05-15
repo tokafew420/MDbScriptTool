@@ -1,1 +1,1 @@
-﻿///<binding BeforeBuild='Content/app/css/app.less' />
+﻿///<binding BeforeBuild='LESS, Scss' />
