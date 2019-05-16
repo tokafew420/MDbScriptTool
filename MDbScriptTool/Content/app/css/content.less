@@ -3,6 +3,8 @@
 // Content
 .content {
   bottom: 0;
+  display: flex;
+  flex-flow: column;
   left: 0;
   margin-left: 306px;
   position: absolute;
@@ -14,11 +16,10 @@
     margin-left: 0 !important;
   }
 
-  & > div {
-    height: 100%;
+  & > div,
+  & > ul {
     overflow-y: hidden;
-    padding-left: 4px;
-    padding-right: 0;
+    margin-left: 4px;
   }
 
   .content-toolbar {
@@ -54,6 +55,15 @@
         z-index: 10;
         height: 300px;
       }
+    }
+  }
+  // Statusbar
+  #content-statusbar {
+    background-color: @dark-0;
+    height: 30px;
+
+    .status-text {
+      display: block;
     }
   }
 }

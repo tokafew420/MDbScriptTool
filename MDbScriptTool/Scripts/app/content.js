@@ -1,4 +1,4 @@
-﻿/// <reference path="app.js" />
+/// <reference path="app.js" />
 
 /**
  * Content panel. Contains the editor and the result set(s).
@@ -32,4 +32,8 @@
     var $instanceContainer = $('.instance-containers', $content);
     var containerTop = $instanceContainer.position().top;
     $instanceContainer.css('height', `calc(100% - ${containerTop}px)`);
+
+    app.on('update-content-status', function (text) {
+        $('#content-statusbar .status-text', $content).html(text);
+    });
 }(app, window, window.jQuery));

@@ -521,6 +521,7 @@
     $(function () {
         // Initialize all tooltips
         $('[data-toggle="tooltip"]').tooltip({
+            boundary: 'window',
             tigger: 'hover'
         }).on('mouseleave', function () {
             $(this).tooltip('hide');

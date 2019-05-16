@@ -47,8 +47,8 @@
     </div>
   </nav>
   <!-- Sidebar -->
-  <div class="sidebar p-2">
-    <nav class="sidebar-nav">
+  <div class="sidebar">
+    <nav class="sidebar-nav p-2">
       <!-- Sidebar Header -->
       <div class="sidebar-header">
         <div class="btn-toolbar sidebar-toolbar mb-2" role="toolbar" aria-label="Main Connection Toolbar">
@@ -72,16 +72,19 @@
             </button>
           </div>
         </div>
-        <small id="db-list-show-toggle" class="form-text">Show:&nbsp;
+        <small id="db-list-show-toggle" class="form-text">
+          Show:&nbsp;
           <span><a href="#" class="show-all link-btn active">All</a> | </span>
           <span><a href="#" class="show-selected link-btn">Selected</a> | </span>
           <span><a href="#" class="show-unselected link-btn">Unselected</a></span>
         </small>
-        <small id="db-list-filter-text" class="form-text"></small>
       </div>
     </nav>
-    <div id="content" class="scrollable">
+    <div id="content" class="scrollable p-2">
       <ul class="db-lst"></ul>
+    </div>
+    <div id="sidebar-statusbar" class="p-2">
+      <small class="status-text"></small>
     </div>
   </div>
   <div class="slider slider-v">
@@ -89,26 +92,25 @@
   </div>
   <!-- Content -->
   <div class="content">
-    <div class="container-fluid">
-      <div class="btn-toolbar content-toolbar m-2" role="toolbar" aria-label="Main Connection Toolbar">
-        <div class="btn-group mr-2" role="group" aria-label="First group">
-          <button type="button" class="btn btn-sm btn-secondary execute-btn" data-toggle="tooltip" title="Execute SQL"><i class="fa fa-play text-danger" aria-hidden="true"></i></button>
-          <button type="button" class="btn btn-sm btn-secondary parse-btn" data-toggle="tooltip" title="Parse SQL"><i class="fa fa-check text-success" aria-hidden="true"></i></button>
-          <button type="button" class="btn btn-sm btn-secondary"><i class="fa fa-refresh" aria-hidden="true"></i></button>
-        </div>
-        <div class="btn-group mr-2" role="group" aria-label="Second group">
-          <button type="button" class="btn btn-sm btn-secondary open-file-btn"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
-          <button type="button" class="btn btn-sm btn-secondary save-file-btn"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
-        </div>
+    <div class="btn-toolbar content-toolbar p-2" role="toolbar" aria-label="Main Connection Toolbar">
+      <div class="btn-group mr-2" role="group" aria-label="First group">
+        <button type="button" class="btn btn-sm btn-secondary execute-btn" data-toggle="tooltip" title="Execute SQL"><i class="fa fa-play text-danger" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm btn-secondary parse-btn" data-toggle="tooltip" title="Parse SQL"><i class="fa fa-check text-success" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm btn-secondary"><i class="fa fa-refresh" aria-hidden="true"></i></button>
       </div>
-      <ul class="nav nav-tabs instance-tabs scrollable-x ml-2" role="tablist">
-        <li class="nav-item">
-          <a class="nav-link plus-tab" role="tab" aria-controls="plus" aria-selected="false"><i class="fa fa-plus" aria-hidden="true"></i></a>
-        </li>
-      </ul>
-      <div class="tab-content instance-containers">
+      <div class="btn-group mr-2" role="group" aria-label="Second group">
+        <button type="button" class="btn btn-sm btn-secondary open-file-btn"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm btn-secondary save-file-btn"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
       </div>
     </div>
+    <ul class="nav nav-tabs instance-tabs scrollable-x pl-2" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link plus-tab" role="tab" aria-controls="plus" aria-selected="false"><i class="fa fa-plus" aria-hidden="true"></i></a>
+      </li>
+    </ul>
+    <div class="tab-content instance-containers">
+    </div>
+    <div id="content-statusbar" class="p-2"><small class="status-text"></small></div>
   </div>
   <!-- Modals -->
   <!-- Connections dialog -->

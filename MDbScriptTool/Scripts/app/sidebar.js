@@ -11,7 +11,8 @@
     var $filterInput = $('#db-list-filter-input', $filterInputGrp);
     var $filterClear = $('#db-list-filter-clear', $filterInputGrp);
     var $showToggles = $('.link-btn', $additionalCtrls);
-    var $filterText = $('#db-list-filter-text', $additionalCtrls);
+    var $statusbar = $('#sidebar-statusbar', $sidebar);
+    var $statusText = $('.status-text', $statusbar);
 
     var removeAnimateTimer;
 
@@ -51,7 +52,7 @@
         }
     });
 
-    var updateFilterText = app.debounce(function () {
+    var updateStatusText = app.debounce(function () {
         if (app.state.currentConnection && app.state.currentConnection.dbs) {
             var matchedTxt = '';
             var visible;
@@ -65,7 +66,7 @@
                 visible = total;
             }
 
-            $filterText.html(`${matchedTxt}Selected <strong>${selected}</strong>/<strong>${total}</strong>`);
+            $statusText.html(`${matchedTxt}Selected <strong>${selected}</strong>/<strong>${total}</strong>`);
 
             app.emit('db-list-selection-changed', total, selected, visible || total);
         }
@@ -82,7 +83,7 @@
 
         if (dbLst) {
             dbLst.forEach(function (db, idx) {
-                var $item = $(`<li class="db-lst-item">
+                var $item = $(`<li class="db-lst-item ${db.checked ? 'active' : ''}">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" id="${db.name}" ${db.checked ? 'checked' : ''}>
                                 <label class="custom-control-label" for="${db.name}">${db.name}</label>
@@ -103,7 +104,7 @@
             });
 
             app.show($additionalCtrls);
-            updateFilterText();
+            updateStatusText();
             app.emit('db-list-rendered', dbLst);
         } else {
             app.hide($additionalCtrls);
@@ -117,7 +118,7 @@
     });
 
     // Update selected db text
-    $dbLst.on('change', '.db-lst-item input[type="checkbox"]', updateFilterText);
+    $dbLst.on('change', '.db-lst-item input[type="checkbox"]', updateStatusText);
 
     // Save state on db toggles
     $dbLst.on('change', '.db-lst-item input[type="checkbox"]', app.debounce(function () {
@@ -198,7 +199,7 @@
             $filterInputGrp.removeClass('has-search-term');
             app.show('.db-lst-item', $dbLst);
         }
-        updateFilterText();
+        updateStatusText();
     }, 200));
 
     $filterClear.on('click', function () {

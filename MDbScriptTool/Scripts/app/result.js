@@ -6,6 +6,22 @@
 (function (window) {
     var $content = $('.content');
 
+    app.on('execute-sql', function (id) {
+        var $pane = $('#' + id);
+
+        if ($pane.length) {
+            $pane.data('total-rows', 0);
+        }
+    });
+
+    app.on('parse-sql', function (id) {
+        var $pane = $('#' + id);
+
+        if ($pane.length) {
+            $pane.data('total-rows', null);
+        }
+    });
+
     // Formats a SQLError to show only relevant information.
     function formatSqlError(errs) {
         return errs.map(function (e) {
@@ -33,7 +49,7 @@
 
         var $dbTable = $('#' + db, $resultPane);
         if ($dbTable.length === 0) {
-            $resultPane.append(`<div id="${db}"><div class="dbname">${db}</div></div>`);
+            $resultPane.append(`<div id="${db}" class="result-sets-container"><div class="result-sets-header">${db}</div></div>`);
             $dbTable = $('#' + db, $resultPane);
         }
 
@@ -66,6 +82,14 @@
             }).join());
 
             $dbTable.append($table);
+
+            // Set status text
+            var totalRows = $pane.data('total-rows');
+            $pane.data('total-rows', totalRows += result.length - 1);
+
+            if (!isNaN(totalRows)) {
+                app.emit('update-content-status', `Total Rows: <strong>${totalRows}</strong>`);
+            }
         } else {
             $dbTable.append('<div class="result-text">Command(s) completed successfully</div>');
         }
@@ -75,7 +99,7 @@
         var $pane = $('#' + batchId);
         var $resultPane = $('.result', $pane);
 
-        $resultPane.append(`<div id="parse-result"><div class="dbname">Parse Result</div></div>`);
+        $resultPane.append(`<div id="parse-result"><div class="result-sets-header">Parse Result</div></div>`);
         var $dbTable = $('#parse-result', $resultPane);
 
         if (err) {
@@ -88,6 +112,21 @@
             $dbTable.append(`<div class="result-text"><pre class="text-danger">${formatSqlError(errors).join('\n\n')}</pre></div>`);
         } else {
             $dbTable.append('<div class="result-text">Command(s) completed successfully</div>');
+        }
+
+        app.emit('update-content-status', '');
+    });
+
+    app.on('tab-active', function (id) {
+        var $pane = $('#' + id);
+
+        // Update status
+        var totalRows = $pane.data('total-rows');
+
+        if (!isNaN(totalRows) && totalRows != null) {
+            app.emit('update-content-status', `Total Rows: <strong>${totalRows}</strong>`);
+        } else {
+            app.emit('update-content-status', '');
         }
     });
 }(window));
