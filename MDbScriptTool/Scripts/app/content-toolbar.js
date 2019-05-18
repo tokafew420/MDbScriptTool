@@ -12,7 +12,7 @@
     var $parseBtn = $('.parse-btn', $toolbar);
 
     $executeBtn.click(function () {
-        var $activeInstance = $('.instance-containers .instance.active', $content);
+        var $activeInstance = $('.instance-container .instance.active', $content);
 
         if ($activeInstance.length) {
             var editor = $('.CodeMirror', $activeInstance)[0].CodeMirror;
@@ -40,7 +40,7 @@
     });
 
     $parseBtn.click(function () {
-        var $activeInstance = $('.instance-containers .instance.active', $content);
+        var $activeInstance = $('.instance-container .instance.active', $content);
 
         if ($activeInstance.length) {
             var editor = $('.CodeMirror', $activeInstance)[0].CodeMirror;
@@ -82,7 +82,7 @@
 
         if (instance) {
             instance.pending--;
-            if (instance.pending === 0 && $('.instance-containers .instance.active', $content).attr('id') === id) {
+            if (instance.pending === 0 && $('.instance-container .instance.active', $content).attr('id') === id) {
                 $executeBtn.prop('disabled', false);
                 $parseBtn.prop('disabled', false);
             }
@@ -100,7 +100,7 @@
 
         if (instance) {
             instance.pending = 0;
-            if ($('.instance-containers .instance.active', $content).attr('id') === id) {
+            if ($('.instance-container .instance.active', $content).attr('id') === id) {
                 $executeBtn.prop('disabled', false);
                 $parseBtn.prop('disabled', false);
             }

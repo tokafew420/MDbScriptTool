@@ -5,11 +5,70 @@
  */
 (function (app, window, $) {
     var $content = $('.content');
+    var $instanceContainer = $('.instance-container', $content);
+    // Includes the navbar, content padding, toolbar, and tab
+    var containerOffset = $instanceContainer.offset().top;
+
+    var resizeEditor = app.debounce(function ($instance) {
+        if ($instance && $instance.length) {
+            var id = $instance[0].id;
+            var containerHeight = $instanceContainer.height();
+            var $slider = $('.slider', $instance);
+            // Result slider is 10px = 2 * (border 2px + padding 3px)
+            var sliderHeight = $slider.outerHeight(true);
+
+            // Current top (position: absolute) relative to parent
+            var top = $slider.position().top;
+
+            // Don't allow slider to go outside container
+            if (top > containerHeight - sliderHeight) {
+                top = containerHeight - sliderHeight;
+                
+                $slider.css('top', top + 'px');
+            }
+            if (top < 0) {
+                top = 0;
+                $slider.css('top', top + 'px');
+            }
+
+            var editorHeight = top;
+
+            var resultHeight = containerHeight - editorHeight - sliderHeight;
+            if (resultHeight < 0) resultHeight = 0;
+            // TODO: Hard coded 21...need to figure out a way to get this value dynamic on-render [os.on('sql-exe-db-batch-result')]
+            var resultHeaderHeight = $('.result-sets-container .result-sets-header', $instance).outerHeight(true) || 21;
+
+            console.log('containerOffSet: %s, containerHeight: %s, top: %s, editorHeight: %s, resultHeight: %s, resultHeaderHeight: %s',
+                containerOffset,
+                containerHeight,
+                top,
+                editorHeight,
+                resultHeight,
+                resultHeaderHeight
+            );
+            $('style', $instance).html(`
+            #${id} .editor {
+                height: ${editorHeight}px;
+            }
+            #${id} .result {
+                height: ${resultHeight}px;
+                margin-top: ${sliderHeight}px;
+            }
+            #${id} .result .result-set {
+                max-height: ${resultHeight - resultHeaderHeight}px;
+            }`);
+
+            var editor = $instance.data('editor');
+
+            if (editor) {
+                editor.setSize('100%', `${editorHeight}px`);
+            }
+        }
+    }, 0);
 
     app.on('new-instance', function (instance) {
-        var $codeTabsContent = $('.instance-containers', $content);
-
-        var $tabContent = $(`<div class="tab-pane instance fade" id="${instance.id}" role="tabpanel" aria-labelledby="${instance.id}-tab">
+        var $instance = $(`<div class="tab-pane instance fade" id="${instance.id}" role="tabpanel" aria-labelledby="${instance.id}-tab">
+                    <style></style>
                     <div class="editor"></div>
                     <div class="slider slider-h">
                         <div></div>
@@ -17,13 +76,13 @@
                     <div class="result"></div>
                 </div>`);
 
-        $tabContent.appendTo($codeTabsContent);
+        $instance.appendTo($instanceContainer);
 
         // Initialize codemirror editor
         var mime = 'text/x-mssql';
         var theme = 'twilight';
 
-        var editor = CodeMirror($('.editor', $tabContent)[0], {
+        var editor = CodeMirror($('.editor', $instance)[0], {
             mode: mime,
             indentWithTabs: true,
             smartIndent: true,
@@ -32,6 +91,7 @@
             autofocus: true,
             theme: theme
         });
+        $instance.data('editor', editor);
 
         if (instance.code) {
             editor.setValue(instance.code);
@@ -42,73 +102,23 @@
             app.saveState('instances');
         }, 5000));
 
-        /** result slider **/
-        (function () {
-            var $dynoStyle = $('<style/>');
-            $dynoStyle.prependTo($tabContent);
-            var $instanceContainer = $('.instance-containers', $content);
-            var $resultSlider = $('.slider', $tabContent);
-
-            // Includes the navbar, content padding, toolbar, and tab
-            var instanceContainerOffset = $instanceContainer.offset().top;
-
-            function resizeEditor(event, ui) {
-                // Current top (position: absolute) relative to window
-                var top = Math.floor(ui.offset.top);
-                var instanceContainerHeight = $instanceContainer.height();
-                var editorHeight = top - instanceContainerOffset;
-
-                // Constrain movement (minimium is 150 height for editor subpane)
-                if (editorHeight < 150) return false;
-
-                // Result slider is 10px = 2 * (border 2px + padding 3px)
-                var sliderHeight = $resultSlider.outerHeight(true);
-                var resultHeight = instanceContainerHeight - editorHeight - sliderHeight;
-                // TODO: Hard coded 21...need to figure out a way to get this value dynamic on-render [os.on('sql-exe-db-batch-result')]
-                var resultHeaderHeight = $('.result-sets-container .result-sets-header', $tabContent).outerHeight(true) || 21;
-
-                $dynoStyle.html(`#${instance.id} .editor {
-                            height: ${editorHeight}px;
-                        }
-                        #${instance.id} .result {
-                            height: ${resultHeight}px;
-                            margin-top: ${sliderHeight}px;
-                        }
-                        #${instance.id} .result .result-set {
-                            max-height: ${resultHeight - resultHeaderHeight}px;
-                        }`);
-
-                editor.setSize('100%', `${editorHeight}px`);
+        // Initialize slider
+        $('.slider', $instance).draggable({
+            axis: 'y',
+            containment: 'parent',
+            drag: function (event, ui) {
+                resizeEditor($instance);
             }
-
-            $resultSlider.draggable({
-                axis: 'y',
-                containment: 'parent',
-                drag: resizeEditor
-            });
-
-            // Initilaize position before any drag
-            var onInit = true;
-            app.on('tab-active', function (id) {
-                if (onInit && id === instance.id) {
-                    // TODO: Waiting until on(tab-active) for slider height to be rendered
-                    resizeEditor(null, {
-                        offset: {
-                            // 300 is the initial editor height
-                            top: instanceContainerOffset + 300
-                        }
-                    });
-                    onInit = false;
-                }
-            });
-        })();
+        });
     });
 
     app.on('tab-active', function (id) {
-        var $cm = $('#' + id + '.instance .CodeMirror', $content);
+        var $instance = $('#' + id, $instanceContainer);
 
-        if ($cm.length) {
-            var editor = $cm[0].CodeMirror;
+        if ($instance.length) {
+            resizeEditor($instance);
+
+            var editor = $instance.data('editor');
 
             if (editor) {
                 editor.refresh();
@@ -117,5 +127,10 @@
                 //editor.setCursor(editor.lineCount(), 0);
             }
         }
+    });
+
+    $(window).on('resize', function () {
+        var $instance = $('.instance.active', $instanceContainer);
+        resizeEditor($instance);
     });
 }(app, window, window.jQuery));

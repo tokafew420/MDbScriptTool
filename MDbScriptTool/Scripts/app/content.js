@@ -28,11 +28,6 @@
         $content.css('margin-left', (left + 6) + 'px'); // eslint-disable-line no-extra-parens
     });
 
-    // Adjust the instance container height
-    var $instanceContainer = $('.instance-containers', $content);
-    var containerTop = $instanceContainer.position().top;
-    $instanceContainer.css('height', `calc(100% - ${containerTop}px)`);
-
     app.on('update-content-status', function (text) {
         $('#content-statusbar .status-text', $content).html(text);
     });

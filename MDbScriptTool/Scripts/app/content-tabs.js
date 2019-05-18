@@ -1,4 +1,4 @@
-﻿/// <reference path="app.js" />
+/// <reference path="app.js" />
 
 /**
  * Content panel instance tabs.
@@ -6,7 +6,7 @@
 (function (window) {
     var $content = $('.content');
     var $tabs = $('.instance-tabs', $content);
-    var $codeTabsEditors = $('.instance-containers', $content);
+    var $instanceContainer = $('.instance-container', $content);
     var $plusTab = $('.plus-tab', $tabs);
 
     // Create new tab when the '+' is clicked
@@ -29,7 +29,7 @@
 
         $tab.tab('dispose');
         $tab.remove();
-        $('#' + id, $codeTabsEditors).remove();
+        $('#' + id, $instanceContainer).remove();
 
         if ($('a', $tab).hasClass('active')) {
             if ($('.nav-item', $tabs).length === 1) {

@@ -206,6 +206,10 @@
         $filterInput.val('').change();
     });
 
+    app.on('update-sidebar-status', function (html) {
+        $statusText.html(html);
+    });
+
     // Initializations
     if (app.state.currentConnection) renderDbList(app.state.currentConnection.dbs);
 }(app, window, window.jQuery));

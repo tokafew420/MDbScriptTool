@@ -1,4 +1,4 @@
-﻿namespace Tokafew420.MDbScriptTool
+namespace Tokafew420.MDbScriptTool
 {
     partial class Program
     {
@@ -47,6 +47,7 @@
             this.ClientSize = new System.Drawing.Size(1334, 811);
             this.Controls.Add(this.MainPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(300, 300);
             this.Name = "AppForm";
             this.Text = "Multi Database Script Tool";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AppForm_Closing);

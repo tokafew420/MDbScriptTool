@@ -96,6 +96,7 @@
     function resetConnectionSelect() {
         app.setCurrentConnection(null);
         setConnectionSelect('select');
+        app.emit('update-sidebar-status', '');
     }
 
     // Handle connection selection
