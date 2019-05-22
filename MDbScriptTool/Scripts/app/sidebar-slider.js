@@ -1,4 +1,4 @@
-﻿/// <reference path="app.js" />
+/// <reference path="app.js" />
 
 /**
  * Sidebar slider
@@ -27,15 +27,20 @@
 
             app.emit('sidebar-slider-dragged', left);
         }
+    }).on('dblclick', function () {
+        // Toggle the sidebar
+        app.state.ui.sidebarCollapsed = !app.state.ui.sidebarCollapse;
+        app.emit('sidebar-collapse-toggled', app.state.ui.sidebarCollapsed);
+        app.saveState('ui');
     });
 
     var removeAnimateTimer;
     // Toggle collapse on navbar's sidebar toggle click
-    app.on('navbar-sidebar-toggled', function (collapsed) {
+    app.on('sidebar-collapse-toggled', function (collapsed) {
         clearTimeout(removeAnimateTimer);
 
         if (collapsed) {
-            $sidebarSlider.addClass('animate-250').addClass('collapsed');
+            $sidebarSlider.addClass('animate-250 collapsed');
         } else {
             $sidebarSlider.addClass('animate-250').removeClass('collapsed');
         }

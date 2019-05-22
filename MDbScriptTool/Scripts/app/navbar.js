@@ -1,4 +1,4 @@
-﻿/// <reference path="app.js" />
+/// <reference path="app.js" />
 
 
 /**
@@ -23,34 +23,25 @@
         }
     });
 
-    var removeAnimationFn = app.debounce(function () {
-        $sidebar.removeClass('animating');
-        $sidebarSlider.removeClass('animating');
-        $content.removeClass('animating');
-    }, 500);
-
-    function setSidebarCollapsed(collapsed) {
-        app.state.ui.sidebarCollapsed = !!collapsed;
-
-        if (app.state.ui.sidebarCollapsed) {
+    app.on('sidebar-collapse-toggled', function (collapsed) {
+        if (collapsed) {
             $('i', $sidebarToggle).removeClass('fa-arrow-circle-left')
                 .addClass('fa-arrow-circle-right');
         } else {
             $('i', $sidebarToggle).removeClass('fa-arrow-circle-right')
                 .addClass('fa-arrow-circle-left');
         }
-
-        app.saveState('ui');
-        app.emit('navbar-sidebar-toggled', app.state.ui.sidebarCollapsed);
-    }
+    });
 
     // Handle sidebar toggle on the navbar
     $sidebarToggle.click(function () {
-        setSidebarCollapsed(!app.state.ui.sidebarCollapsed);
+        app.state.ui.sidebarCollapsed = !app.state.ui.sidebarCollapsed;
+        app.emit('sidebar-collapse-toggled', app.state.ui.sidebarCollapsed);
+        app.saveState('ui');
     });
 
     // Restore state
     $(function () {
-        setSidebarCollapsed(app.state.ui.sidebarCollapsed);
+        app.emit('sidebar-collapse-toggled', app.state.ui.sidebarCollapsed);
     });
 }(window));

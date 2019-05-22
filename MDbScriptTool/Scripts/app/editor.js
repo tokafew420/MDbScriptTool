@@ -9,7 +9,7 @@
     // Includes the navbar, content padding, toolbar, and tab
     var containerOffset = $instanceContainer.offset().top;
 
-    var resizeEditor = app.debounce(function ($instance) {
+    function resizeEditor($instance) {
         if ($instance && $instance.length) {
             var id = $instance[0].id;
             var containerHeight = $instanceContainer.height();
@@ -23,7 +23,7 @@
             // Don't allow slider to go outside container
             if (top > containerHeight - sliderHeight) {
                 top = containerHeight - sliderHeight;
-                
+
                 $slider.css('top', top + 'px');
             }
             if (top < 0) {
@@ -38,14 +38,6 @@
             // TODO: Hard coded 21...need to figure out a way to get this value dynamic on-render [os.on('sql-exe-db-batch-result')]
             var resultHeaderHeight = $('.result-sets-container .result-sets-header', $instance).outerHeight(true) || 21;
 
-            console.log('containerOffSet: %s, containerHeight: %s, top: %s, editorHeight: %s, resultHeight: %s, resultHeaderHeight: %s',
-                containerOffset,
-                containerHeight,
-                top,
-                editorHeight,
-                resultHeight,
-                resultHeaderHeight
-            );
             $('style', $instance).html(`
             #${id} .editor {
                 height: ${editorHeight}px;
@@ -64,7 +56,23 @@
                 editor.setSize('100%', `${editorHeight}px`);
             }
         }
-    }, 0);
+    }
+
+    $instanceContainer.on('dblclick', '.slider.slider-h', function (e) {
+        var $slider = $(this);
+        var $instance = $slider.closest('.instance');
+        var containerHeight = $instanceContainer.height();
+        var sliderHeight = $slider.outerHeight(true);
+        var top = $slider.position().top;
+
+        if (top === containerHeight - sliderHeight) {
+            $slider.css('top', 0);
+        } else {
+            $slider.css('top', `${containerHeight - sliderHeight}px`);
+        }
+
+        resizeEditor($instance);
+    });
 
     app.on('new-instance', function (instance) {
         var $instance = $(`<div class="tab-pane instance fade" id="${instance.id}" role="tabpanel" aria-labelledby="${instance.id}-tab">

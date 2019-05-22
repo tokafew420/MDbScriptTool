@@ -9,11 +9,11 @@
     var removeAnimateTimer;
 
     // Toggle collapse on navbar's sidebar toggle click
-    app.on('navbar-sidebar-toggled', function (collapsed) {
+    app.on('sidebar-collapse-toggled', function (collapsed) {
         clearTimeout(removeAnimateTimer);
 
         if (collapsed) {
-            $content.addClass('animate-250').addClass('full');
+            $content.addClass('animate-250 full');
         } else {
             $content.addClass('animate-250').removeClass('full');
         }
