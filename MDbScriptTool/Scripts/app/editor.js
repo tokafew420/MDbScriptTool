@@ -6,8 +6,6 @@
 (function (app, window, $) {
     var $content = $('.content');
     var $instanceContainer = $('.instance-container', $content);
-    // Includes the navbar, content padding, toolbar, and tab
-    var containerOffset = $instanceContainer.offset().top;
 
     function resizeEditor($instance) {
         if ($instance && $instance.length) {
@@ -87,12 +85,13 @@
         $instance.appendTo($instanceContainer);
 
         // Initialize codemirror editor
-        var mime = 'text/x-mssql';
-        var theme = 'twilight';
+        var mime = 'text/x-tsql';
+        var theme = 'twilight-vs-tsql';
 
         var editor = CodeMirror($('.editor', $instance)[0], {
             mode: mime,
             indentWithTabs: true,
+            indentUnit: 4,
             smartIndent: true,
             lineNumbers: true,
             matchBrackets: true,

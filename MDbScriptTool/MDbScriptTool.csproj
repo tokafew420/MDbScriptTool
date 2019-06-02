@@ -160,6 +160,10 @@
     <Content Include="Content\bootstrap.min.css">
       <DependentUpon>bootstrap.css</DependentUpon>
     </Content>
+    <Content Include="Content\cm-s-twilight-vs-tsql.css" />
+    <Content Include="Content\cm-s-twilight-vs-tsql.min.css">
+      <DependentUpon>cm-s-twilight-vs-tsql.css</DependentUpon>
+    </Content>
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\themes\base\accordion.css" />
@@ -203,6 +207,7 @@
     <Content Include="Content\themes\base\tabs.css" />
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
+    <None Include="Content\app\css\cm-s-twilight-vs-tsql.less" />
     <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="Scripts\app-core.min.js" />
     <Content Include="Scripts\app.min.js" />
@@ -213,6 +218,8 @@
     <Content Include="Scripts\app\settings-modal.js" />
     <Content Include="Scripts\app\about-modal.js" />
     <Content Include="Scripts\app\sidebar-toolbar.js" />
+    <Content Include="Scripts\app\cm-tsql-mode.js" />
+    <Content Include="Scripts\cm-tsql-mode.min.js" />
     <Content Include="Scripts\CodeMirror\addon\comment\comment.js" />
     <Content Include="Scripts\CodeMirror\addon\comment\continuecomment.js" />
     <Content Include="Scripts\CodeMirror\addon\dialog\dialog.css" />
@@ -775,6 +782,9 @@
     </None>
     <None Include="Scripts\app.min.js.map">
       <DependentUpon>app.min.js</DependentUpon>
+    </None>
+    <None Include="Scripts\cm-tsql-mode.min.js.map">
+      <DependentUpon>cm-tsql-mode.min.js</DependentUpon>
     </None>
     <None Include="Scripts\esm\popper-utils.js.map" />
     <None Include="Scripts\esm\popper-utils.min.js.map" />

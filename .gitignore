@@ -310,3 +310,7 @@ __pycache__/
 /MDbScriptTool/Scripts/app-core.min.js
 /MDbScriptTool/Content/bootstrap.min.css
 /MDbScriptTool/Content/bootstrap.css
+/MDbScriptTool/Content/cm-s-twilight-vs-tsql.min.css
+/MDbScriptTool/Content/cm-s-twilight-vs-tsql.css
+/MDbScriptTool/Scripts/cm-tsql-mode.min.js.map
+/MDbScriptTool/Scripts/cm-tsql-mode.min.js

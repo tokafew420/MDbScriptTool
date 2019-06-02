@@ -11,7 +11,12 @@
   <link rel="stylesheet" href="./Content/bootstrap.min.css">
   <link rel="stylesheet" href="./Content/font-awesome.min.css">
   <link rel="stylesheet" href="./Scripts/CodeMirror/lib/codemirror.css">
-  <link rel="stylesheet" href="./Scripts/CodeMirror/theme/twilight.css">
+  <!--TSQL mode css -->
+  <!--<# if (config == "Debug") { #>-->
+  <link rel="stylesheet" href="./Content/cm-s-twilight-vs-tsql.css">
+  <!--<# } else { #>-->
+  <link rel="stylesheet" href="./Content/cm-s-twilight-vs-tsql.min.css">
+  <!--<# } #>-->
   <!--App css -->
   <!--<# if (config == "Debug") { #>-->
   <link rel="stylesheet" href="./Content/app.css">
@@ -361,7 +366,12 @@
   <script src="./Scripts/umd/popper.min.js"></script>
   <script src="./Content/bootstrap-4.2.1/js/bootstrap.min.js"></script>
   <script src="./Scripts/CodeMirror/lib/codemirror.js"></script>
-  <script src="./Scripts/CodeMirror/mode/sql/sql.js"></script>
+  <!--<# if (config =="Debug") { #>-->
+  <script src="./Scripts/app/cm-tsql-mode.js"></script>
+  <!--<# } else { #>-->
+  <script src="./Scripts/cm-tsql-mode.min.js"></script>
+  <!--<# } #>-->
+  
   <!--<# if (config =="Debug") { #>-->
   <!-- Core app to load first -->
   <script src="./Scripts/app/core.js"></script>

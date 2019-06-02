@@ -1,0 +1,105 @@
+/* Theme based on CodeMirror's twilight theme but using Visual Studio's syntax colors */
+
+.cm-s-twilight-vs-tsql {
+  &.CodeMirror {
+    background: #141414;
+    color: rgb(220, 220, 220);
+    font-family: Consolas;
+  }
+  /** Editor styles **/
+  div.CodeMirror-selected {
+    background: rgba(51, 153, 255, .3);
+  }
+
+  & .CodeMirror-line::selection,
+  & .CodeMirror-line > span::selection,
+  & .CodeMirror-line > span > span::selection {
+    background: rgba(51, 153, 255, .3);
+  }
+
+  & .CodeMirror-line::-moz-selection,
+  & .CodeMirror-line > span::-moz-selection,
+  & .CodeMirror-line > span > span::-moz-selection {
+    background: rgba(51, 153, 255, .3);
+  }
+
+  .CodeMirror-gutters {
+    background: #222;
+    border-right: 1px solid #aaa;
+  }
+
+  .CodeMirror-guttermarker {
+    color: white;
+  }
+
+  .CodeMirror-guttermarker-subtle {
+    color: #aaa;
+  }
+
+  .CodeMirror-linenumber {
+    color: rgb(43, 145, 175);
+  }
+
+  .CodeMirror-cursor {
+    border-left: 1px solid white;
+  }
+
+  .CodeMirror-activeline-background {
+    background: #27282E;
+    border: solid 1px rgb(129, 129, 129);
+  }
+
+  .CodeMirror-matchingbracket {
+    outline: 1px solid grey;
+    color: white !important;
+  }
+  /** TSQL Mode colors **/
+  .cm-number {
+    color: #B5CEA8;
+  }
+
+  & .cm-atom,
+  & .cm-operator {
+    color: rgb(129, 129, 129);
+  }
+
+  & .cm-keyword,
+  & .cm-type,
+  & .cm-option {
+    color: #569CD6;
+  }
+
+  .cm-variable {
+    color: white;
+  }
+
+  .cm-comment {
+    color: #57A64A;
+  }
+
+  .cm-string {
+    color: rgb(203, 65, 65);
+  }
+
+  .cm-builtin {
+    color: rgb(201, 117, 213);
+  }
+
+  .cm-sysview {
+    color: rgb(185, 232, 115)
+  }
+
+  .cm-sysproc {
+    color: rgb(179, 114, 91)
+  }
+
+  .cm-link {
+    color: #ad9361;
+    font-style: italic;
+    text-decoration: none;
+  }
+
+  .cm-error {
+    border-bottom: 1px solid red;
+  }
+}

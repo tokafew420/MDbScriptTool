@@ -18,5 +18,19 @@
     "options": {
       "sourceMap": true
     }
+  },
+  {
+    "outputFile": "Content/cm-s-twilight-vs-tsql.css",
+    "inputFile": "Content/app/css/cm-s-twilight-vs-tsql.less",
+    "minify": {
+      "enabled": true
+    },
+    "options": {
+      "sourceMap": true
+    }
+  },
+  {
+    "outputFile": "Scripts/app/cm-tsql-mode.es5.js",
+    "inputFile": "Scripts/app/cm-tsql-mode.js"
   }
 ]

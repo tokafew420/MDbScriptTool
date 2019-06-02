@@ -36,5 +36,17 @@
       "renameLocals": true
     },
     "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/cm-tsql-mode.min.js",
+    "includeInProject": false,
+    "inputFiles": [
+      "Scripts/app/cm-tsql-mode.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": true
   }
 ]
