@@ -55,7 +55,7 @@
                 /* eslint-enable no-extra-parens */
                 // strings
                 // https://docs.microsoft.com/en-us/sql/t-sql/data-types/constants-transact-sql?view=sql-server-2017#character-string-constants
-                state.tokenize = tokenLiteral(ch);
+                state.tokenize = tokenLiteral(stream.current().replace('N', ''));
 
                 return state.tokenize(stream, state);
             } else if (ch === '[' ||
