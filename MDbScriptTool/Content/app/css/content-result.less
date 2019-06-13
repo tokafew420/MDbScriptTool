@@ -28,6 +28,32 @@
 
     table {
       margin-bottom: 0;
+      // Make result set column header and row number always stay in place when scrolling
+      tr th:first-child {
+        // When we scroll the table show overlapping effect to remove this effect and retains border we need to remove border and add outline instead of border
+        // https://stackoverflow.com/a/50155060
+        border: none;
+        cursor: pointer;
+        left: 0;
+        outline: 2px solid #32383e;
+        outline-offset: -1px;
+        position: sticky;
+      }
+
+      thead th {
+        background-color: #212529;
+        border: none;
+        cursor: pointer;
+        outline: 2px solid #32383e;
+        outline-offset: -1px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+
+        &.row-number {
+          z-index: 101;
+        }
+      }
 
       td, th {
         padding: 2px 4px;
