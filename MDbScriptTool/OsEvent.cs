@@ -1,4 +1,4 @@
-﻿using CefSharp;
+using CefSharp;
 using CefSharp.WinForms;
 using Newtonsoft.Json;
 using System;
@@ -12,6 +12,10 @@ namespace Tokafew420.MDbScriptTool
     public class OsEvent : IEvent
     {
         private readonly ChromiumWebBrowser _browser = null;
+        private readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+        {
+            DateTimeZoneHandling = DateTimeZoneHandling.Unspecified
+        };
 
         /// <summary>
         /// Initializes a new instance of OsEvent.
@@ -34,7 +38,7 @@ namespace Tokafew420.MDbScriptTool
             args = (new object[] { name }).Concat(args).ToArray();
 
             // This will get eval in chrome
-            _browser.ExecuteScriptAsync($"window.os._emit.apply(window.os, {JsonConvert.SerializeObject(args)})");
+            _browser.ExecuteScriptAsync($"window.os._emit.apply(window.os, {JsonConvert.SerializeObject(args, Formatting.None, _jsonSettings)})");
         }
 
         public void On(string name, Action<object[]> handler)

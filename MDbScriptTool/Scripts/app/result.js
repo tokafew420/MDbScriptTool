@@ -63,7 +63,11 @@
             var $table = $('<div class="result-set"><table class="table table-sm table-striped table-hover table-dark table-bordered"><thead><tr><th class="row-number"></th></tr></thead><tbody></tbody></table></div>');
 
             $('thead tr', $table).append(result[0].map(function (columnName) {
-                return '<th>' + columnName + '</th>';
+                if (columnName) {
+                    return '<th>' + columnName + '</th>';
+                } else {
+                    return '<th class="unnamed">(No Name)</th>';
+                }
             }).join());
 
             $('tbody', $table).append(result.map(function (row, idx) {
@@ -75,8 +79,10 @@
                 return `<tr><th class="row-number">${idx}</th>` + row.map(function (data) {
                     if (data === null) {
                         return '<td class="null">NULL</td>';
+                    } else if (typeof data === 'boolean') {
+                        return `<td data-type="bit">${data ? 1 : 0}</td>`;
                     } else {
-                        return '<td>' + app.escapeHtml(data) + '</td>';
+                        return `<td>${app.escapeHtml(data)}</td>`;
                     }
                 }).join() + '</tr>';
             }).join());
