@@ -314,3 +314,5 @@ __pycache__/
 /MDbScriptTool/Content/cm-s-twilight-vs-tsql.css
 /MDbScriptTool/Scripts/cm-tsql-mode.min.js.map
 /MDbScriptTool/Scripts/cm-tsql-mode.min.js
+/MDbScriptTool/Scripts/app/cm-tsql-mode.es5.min.js
+/MDbScriptTool/Scripts/app/cm-tsql-mode.es5.js

@@ -14,8 +14,14 @@
     $executeBtn.click(function () {
         var $activeInstance = $('.instance-container .instance.active', $content);
 
-        if ($activeInstance.length) {
-            var editor = $('.CodeMirror', $activeInstance)[0].CodeMirror;
+        app.emit('execute-instance', $activeInstance);
+    });
+
+    app.on('execute-instance', function ($instance, dbs) {
+        $instance = $($instance);
+
+        if ($instance && $instance.length) {
+            var editor = $('.CodeMirror', $instance)[0].CodeMirror;
             var sql = editor.getSelection();
 
             if (!sql) sql = editor.getValue();
@@ -23,16 +29,20 @@
 
             if (sql) {
                 if (app.state.currentConnection) {
-                    var dbs = (app.state.currentConnection.dbs || []).filter(function (d) { return d.checked; });
+                    if (!dbs) {
+                        dbs = (app.state.currentConnection.dbs || [])
+                            .filter(function (d) { return d.checked; })
+                            .map(function (db) { return db.name; });
+                    }
 
                     if (dbs.length) {
-                        $('.result', $activeInstance).empty();
+                        $('.result', $instance).empty();
                         $executeBtn.prop('disabled', true);
                         $parseBtn.prop('disabled', true);
-                        var id = $activeInstance.attr('id');
+                        var id = $instance.attr('id');
 
                         app.emit('execute-sql', id);
-                        os.emit('execute-sql', app.state.currentConnection.raw, dbs.map(function (db) { return db.name; }), sql, id);
+                        os.emit('execute-sql', app.state.currentConnection.raw, dbs, sql, id);
                     }
                 }
             }

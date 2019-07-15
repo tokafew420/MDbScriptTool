@@ -70,7 +70,12 @@
       }
 
       .db-lst-item {
-        &:hover {
+        padding: 0 4px;
+
+        &:hover,
+        &:focus,
+        &:active,
+        &.context-menu-active {
           background-color: @text-hover;
         }
 

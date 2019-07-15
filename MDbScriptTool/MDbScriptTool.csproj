@@ -166,6 +166,14 @@
     </Content>
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\jQuery-contextMenu\jquery.contextMenu.css" />
+    <Content Include="Content\jQuery-contextMenu\jquery.contextMenu.js" />
+    <Content Include="Content\jQuery-contextMenu\jquery.contextMenu.min.css">
+      <DependentUpon>jquery.contextMenu.css</DependentUpon>
+    </Content>
+    <Content Include="Content\jQuery-contextMenu\jquery.contextMenu.min.js">
+      <DependentUpon>jquery.contextMenu.js</DependentUpon>
+    </Content>
     <Content Include="Content\themes\base\accordion.css" />
     <Content Include="Content\themes\base\all.css" />
     <Content Include="Content\themes\base\autocomplete.css" />
@@ -765,6 +773,12 @@
     <None Include="Content\bootstrap-4.2.1\scss\_utilities.scss" />
     <None Include="Content\bootstrap-4.2.1\scss\_variables.scss" />
     <None Include="Content\bootstrap.scss" />
+    <None Include="Content\jQuery-contextMenu\jquery.contextMenu.min.css.map">
+      <DependentUpon>jquery.contextMenu.min.css</DependentUpon>
+    </None>
+    <None Include="Content\jQuery-contextMenu\jquery.contextMenu.min.js.map">
+      <DependentUpon>jquery.contextMenu.min.js</DependentUpon>
+    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

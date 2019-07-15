@@ -101,6 +101,8 @@
                     var $this = $(this);
                     $this.closest('.db-lst-item').toggleClass('active', db.checked = $this.is(':checked'));
                 });
+
+                $item.data('app-db', db);
             });
 
             app.show($additionalCtrls);
@@ -208,6 +210,133 @@
 
     app.on('update-sidebar-status', function (html) {
         $statusText.html(html);
+    });
+
+    function runQuery(sql, db) {
+        if (sql) {
+            sql = '-- Database: ' + db.name + '\r\n' + sql + '\r\n';
+            app.once('instance-created', function ($inst) {
+                app.emit('execute-instance', $inst, [db.name]);
+            });
+            app.newInstance({
+                code: sql
+            });
+        }
+    }
+
+    $.contextMenu.types.filter = function (item, opts, root) {
+        // this === item.$node
+        var $this = this;
+
+        function runFilteredQuery(val) {
+            // do some funky stuff
+            if (root.$trigger && root.$trigger[0]) {
+                var db = $(root.$trigger[0]).data('app-db');
+
+                if (db && item.sql) {
+                    runQuery(item.sql.replace('{0}', val), db);
+                }
+            }
+        }
+        
+        var $filter = $(`<div class="input-group input-group-sm">
+            <input type="text" class="form-control" placeholder="Filter" aria-label="Filter" aria-describedby="run-query-filter">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="run-query-filter"><i class="fa fa-angle-double-right" aria-hidden="true"></i></button>
+            </div>
+        </div>`);
+
+        $filter.appendTo(this)
+            .on('click', 'button', function () {
+                runFilteredQuery($('input', $filter).val());
+                root.$menu.trigger('contextmenu:hide');
+            });
+
+        $this.addClass('custom-filter fa fa-filter')
+            .on('mouseup.contextMenu', function (e) {
+                // Ignore click events on this submenu
+                e.stopImmediatePropagation();
+            })
+            .on('contextmenu:focus', function (e) {
+                // setup some awesome stuff
+            }).on('contextmenu:blur', function (e) {
+                // tear down whatever you did
+            }).on('keydown', function (e) {
+                if (e.keyCode === 13) {
+                    runFilteredQuery($('input', $filter).val());
+                    root.$menu.trigger('contextmenu:hide');
+                }
+            });
+    };
+
+    $.contextMenu({
+        selector: '.sidebar .db-lst .db-lst-item',
+        callback: function (key, opts, e) {
+            if (key === 'copy') {
+                app.copyToClipboard($(this).text().trim());
+            } else {
+                var db = $(this).data('app-db');
+                if (db && opts.commands && opts.commands[key] && opts.commands[key].sql) {
+                    runQuery(opts.commands[key].sql, db);
+                }
+            }
+        },
+        zIndex: function ($trigger, opt) {
+            return 500;
+        },
+        selectableSubMenu: true,
+        items: {
+            copy: { name: 'Copy', icon: 'fa-copy', accesskey: 'c' },
+            sep1: '---------',
+            tables: {
+                name: 'Tables',
+                icon: 'fa-table',
+                accesskey: 't',
+                items: {
+                    'tables-all': {
+                        name: 'All',
+                        icon: 'fa-globe',
+                        sql: 'SELECT * FROM sys.tables'
+                    },
+                    'tables-filter': {
+                        type: 'filter',
+                        sql: "SELECT * FROM sys.tables WHERE [name] LIKE '%{0}%'"
+                    }
+                }
+            },
+            procedures: {
+                name: 'Stored Procedures',
+                icon: 'fa-code',
+                accesskey: 's',
+                items: {
+                    'procedures-all': {
+                        name: 'All',
+                        icon: 'fa-globe',
+                        sql: 'SELECT * FROM sys.procedures'
+                    },
+                    'procedures-filter': {
+                        type: 'filter',
+                        sql: "SELECT * FROM sys.procedures WHERE [name] LIKE '%{0}%'"
+                    }
+                }
+            },
+            functions: {
+                name: 'Functions',
+                icon: 'fa-flash',
+                accesskey: 'f',
+                items: {
+                    'functions-all': {
+                        name: 'All',
+                        icon: 'fa-globe',
+                        sql: "SELECT * FROM sys.all_objects WHERE type IN ('FN','AF','FS','FT','IF','TF')"
+                    },
+                    'functions-filter': {
+                        type: 'filter',
+                        sql: "SELECT * FROM sys.all_objects WHERE type IN ('FN','AF','FS','FT','IF','TF') AND [name] LIKE '%{0}%'"
+                    }
+                }
+            }
+        }
     });
 
     // Initializations

@@ -80,32 +80,87 @@ a:hover {
     }
 }
 
+/** jQuery-contextMenu overrides */
+.context-menu-list {
+  background-color: @dark-1;
+  color: @light-0;
+
+  .context-menu-item {
+    background-color: @dark-1;
+    color: @light-0;
+
+    &::before,
+    &::after {
+      border-left-color: @accent-0;
+      color: @accent-0;
+    }
+
+    &:hover {
+      background-color: @text-hover;
+
+      &:hover::before,
+      &:hover::after {
+        border-left-color: @light-0;
+        color: @light-0;
+      }
+    }
+    /** Custom filter **/
+    &.custom-filter {
+      padding-right: .6em;
+
+      &::before {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 2em;
+        font-family: FontAwesome;
+        font-size: 1em;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 1;
+        color: @accent-0;
+        text-align: center;
+        -webkit-transform: translateY(-50%);
+        -ms-transform: translateY(-50%);
+        -o-transform: translateY(-50%);
+        transform: translateY(-50%);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      input {
+        font-family: @font-family;
+      }
+    }
+  }
+}
+
 /** Loader **/
 .loader-container {
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    display: none;
-    position: absolute;
-    padding: 200px;
-    background-color: @dark-tran-9;
-    z-index: 2000;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: none;
+  position: absolute;
+  padding: 200px;
+  background-color: @dark-tran-9;
+  z-index: 2000;
 
-    .loader {
-        animation: spin .75s linear infinite;
-        border: 16px solid @light-1;
-        border-radius: 50%;
-        border-top: 16px solid @accent-0;
-        height: 120px;
-        margin: 0 auto;
-        width: 120px;
-    }
+  .loader {
+    animation: spin .75s linear infinite;
+    border: 16px solid @light-1;
+    border-radius: 50%;
+    border-top: 16px solid @accent-0;
+    height: 120px;
+    margin: 0 auto;
+    width: 120px;
+  }
 
-    .msg {
-        font-size: 24px;
-        text-align: center;
-    }
+  .msg {
+    font-size: 24px;
+    text-align: center;
+  }
 }
 
 @keyframes spin {

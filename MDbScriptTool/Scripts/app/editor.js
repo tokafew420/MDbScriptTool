@@ -117,6 +117,8 @@
                 resizeEditor($instance);
             }
         });
+
+        app.emit('instance-created', $instance);
     });
 
     app.on('tab-active', function (id) {
