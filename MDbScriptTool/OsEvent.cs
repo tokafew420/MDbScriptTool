@@ -21,10 +21,7 @@ namespace Tokafew420.MDbScriptTool
         /// Initializes a new instance of OsEvent.
         /// </summary>
         /// <param name="browser">The browser instance.</param>
-        public OsEvent(ChromiumWebBrowser browser)
-        {
-            _browser = browser ?? throw new ArgumentNullException("browser");
-        }
+        public OsEvent(ChromiumWebBrowser browser) => _browser = browser ?? throw new ArgumentNullException("browser");
 
         /// <summary>
         /// Emits an event in the Javascript environment.
@@ -41,19 +38,10 @@ namespace Tokafew420.MDbScriptTool
             _browser.ExecuteScriptAsync($"window.os._emit.apply(window.os, {JsonConvert.SerializeObject(args, Formatting.None, _jsonSettings)})");
         }
 
-        public void On(string name, Action<object[]> handler)
-        {
-            throw new NotImplementedException();
-        }
+        public void On(string name, Action<object[]> handler) => throw new NotImplementedException();
 
-        public void Once(string name, Action<object[]> handler)
-        {
-            throw new NotImplementedException();
-        }
+        public void Once(string name, Action<object[]> handler) => throw new NotImplementedException();
 
-        public void RemoveListener(string name, Action<object[]> handler)
-        {
-            throw new NotImplementedException();
-        }
+        public void RemoveListener(string name, Action<object[]> handler) => throw new NotImplementedException();
     }
 }

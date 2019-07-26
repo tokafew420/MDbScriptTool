@@ -1,11 +1,10 @@
-﻿using CefSharp;
+using System;
+using System.IO;
+using System.Windows.Forms;
+using CefSharp;
 using CefSharp.WinForms;
 using Mono.Options;
 using Newtonsoft.Json;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Windows.Forms;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -60,10 +59,7 @@ namespace Tokafew420.MDbScriptTool
             Application.Run(new Program());
         }
 
-        public Program()
-        {
-            InitializeComponent();
-        }
+        public Program() => InitializeComponent();
 
         private void AppForm_Load(object sender, EventArgs e)
         {
@@ -83,6 +79,8 @@ namespace Tokafew420.MDbScriptTool
             // Register the uiEvent class with JS
             _browser.JavascriptObjectRepository.Register("uiEvent", app.UiEvent, true, BindingOptions.DefaultBinder);
 
+            _browser.DialogHandler = new FileDialogHandler(this, _browser);
+
             MainPanel.Controls.Add(_browser);
 
             NativeMethods.CreateSysMenu(this);
@@ -93,19 +91,19 @@ namespace Tokafew420.MDbScriptTool
                 var windowLocation = AppSettings.Get<System.Drawing.Point?>("WindowLocation");
                 if (windowLocation != null)
                 {
-                    this.Location = windowLocation.Value;
+                    Location = windowLocation.Value;
                 }
 
                 var windowSize = AppSettings.Get<System.Drawing.Size?>("WindowSize");
                 if (windowSize != null)
                 {
-                    this.Size = windowSize.Value;
+                    Size = windowSize.Value;
                 }
 
                 var windowIsMaximized = AppSettings.Get<bool>("WindowIsMaximized");
                 if (windowIsMaximized)
                 {
-                    this.WindowState = FormWindowState.Maximized;
+                    WindowState = FormWindowState.Maximized;
                 }
 
                 if (AppSettings.Exists("LogToBrowser") && !AppSettings.Get<bool>("LogToBrowser"))
@@ -144,18 +142,18 @@ namespace Tokafew420.MDbScriptTool
             //Cef.Shutdown();
 
             // Save window state
-            AppSettings.Set("WindowLocation", new System.Drawing.Point?(this.Location));
+            AppSettings.Set("WindowLocation", new System.Drawing.Point?(Location));
 
             // Copy window size to app settings
-            if (this.WindowState == FormWindowState.Normal)
+            if (WindowState == FormWindowState.Normal)
             {
-                AppSettings.Set("WindowSize", new System.Drawing.Size?(this.Size));
+                AppSettings.Set("WindowSize", new System.Drawing.Size?(Size));
             }
             else
             {
-                AppSettings.Set("WindowSize", new System.Drawing.Size?(this.RestoreBounds.Size));
+                AppSettings.Set("WindowSize", new System.Drawing.Size?(RestoreBounds.Size));
             }
-            AppSettings.Set("WindowIsMaximized", this.WindowState == FormWindowState.Maximized);
+            AppSettings.Set("WindowIsMaximized", WindowState == FormWindowState.Maximized);
             AppSettings.Set("LogToBrowser", Logger.Browser != null);
             AppSettings.Set("LogLevel", Logger.Level);
 

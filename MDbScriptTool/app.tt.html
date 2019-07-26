@@ -59,9 +59,9 @@
       <div class="sidebar-header">
         <div class="btn-toolbar sidebar-toolbar mb-2" role="toolbar" aria-label="Main Connection Toolbar">
           <div class="btn-group mr-2" role="group" aria-label="First group">
-            <button type="button" class="btn btn-sm btn-secondary refresh-databases-btn" data-toggle="tooltip" title="Refresh databases"><i class="fa fa-refresh" aria-hidden="true"></i></button>
-            <button type="button" class="btn btn-sm btn-secondary toggle-all-db-btn no-context-menu" data-toggle="tooltip" title="Toggle databases"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
-            <button type="button" class="btn btn-sm btn-secondary sort-db-list-btn" data-toggle="tooltip" title="Sort databases"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-sm refresh-databases-btn" data-toggle="tooltip" title="Refresh databases"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-sm toggle-all-db-btn no-context-menu" data-toggle="tooltip" title="Toggle databases"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-sm sort-db-list-btn" data-toggle="tooltip" title="Sort databases"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i></button>
           </div>
         </div>
         <Select class="select-connection custom-select custom-select-sm">
@@ -100,13 +100,13 @@
   <div class="content">
     <div class="btn-toolbar content-toolbar p-2" role="toolbar" aria-label="Main Connection Toolbar">
       <div class="btn-group mr-2" role="group" aria-label="First group">
-        <button type="button" class="btn btn-sm btn-secondary execute-btn" data-toggle="tooltip" title="Execute SQL"><i class="fa fa-play text-danger" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-sm btn-secondary parse-btn" data-toggle="tooltip" title="Parse SQL"><i class="fa fa-check text-success" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-sm btn-secondary"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm execute-btn" data-toggle="tooltip" title="Execute SQL"><i class="fa fa-play text-danger" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm parse-btn" data-toggle="tooltip" title="Parse SQL"><i class="fa fa-check text-success" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm"><i class="fa fa-refresh" aria-hidden="true"></i></button>
       </div>
       <div class="btn-group mr-2" role="group" aria-label="Second group">
-        <button type="button" class="btn btn-sm btn-secondary open-file-btn"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-sm btn-secondary save-file-btn"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm open-file-btn"><i class="fa fa-folder-open-o" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm save-file-btn"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
       </div>
     </div>
     <ul class="nav nav-tabs instance-tabs scrollable-x pl-2" role="tablist">
@@ -257,9 +257,22 @@
                 <td colspan="2">
                   <div class="input-group input-group-sm">
                     <div class="input-group-prepend">
-                      <span class="input-group-text" id="addon-js-label" data-toggle="tooltip" title="Add your own custom script file">JS AddOn</span>
+                      <span class="input-group-text" id="addon-js-label" for="addon-js" data-toggle="tooltip" title="Add your own custom script file">
+                        JS AddOn
+                      </span>
                     </div>
-                    <input type="text" id="addon-js" class="form-control" placeholder="JS path or URL" aria-label="Script Add-On" aria-describedby="addon-js-label">
+                    <input type="text" id="addon-js" class="form-control" placeholder="JS path or URL" aria-label="Script Add-On" aria-describedby="addon-js-label" style="background-clip: border-box;" />
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#" onclick="$('#addon-js-file').click(); return false;" >
+                          Browse Local
+                        </a>
+                        <input type="file" id="addon-js-file" accept=".js,.*" class="hidden">
+                      </div>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -267,9 +280,22 @@
                 <td colspan="2">
                   <div class="input-group input-group-sm">
                     <div class="input-group-prepend">
-                      <span class="input-group-text" id="addon-css-label" data-toggle="tooltip" title="Add your own custom CSS file">CSS AddOn</span>
+                      <span class="input-group-text" id="addon-css-label" for="addon-css" data-toggle="tooltip" title="Add your own custom CSS file">
+                        CSS AddOn
+                      </span>
                     </div>
-                    <input type="text" id="addon-css" class="form-control" placeholder="CSS path or URL" aria-label="CSS Add-On" aria-describedby="addon-css-label">
+                    <input type="text" id="addon-css" class="form-control" placeholder="CSS path or URL" aria-label="CSS Add-On" aria-describedby="addon-css-label" style="background-clip: border-box;" />
+                    <div class="input-group-append">
+                      <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#"  onclick="$('#addon-css-file').click(); return false;" >
+                          Browse Local
+                        </a>
+                        <input type="file" id="addon-css-file" accept=".css,.*" class="hidden">
+                      </div>
+                    </div>
                   </div>
                 </td>
               </tr>
@@ -373,7 +399,6 @@
   <!--<# } else { #>-->
   <script src="./Scripts/cm-tsql-mode.min.js"></script>
   <!--<# } #>-->
-  
   <!--<# if (config =="Debug") { #>-->
   <!-- Core app to load first -->
   <script src="./Scripts/app/core.js"></script>

@@ -1,4 +1,4 @@
-﻿using CefSharp;
+using CefSharp;
 using CefSharp.WinForms;
 using Newtonsoft.Json;
 
@@ -93,50 +93,35 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Error(string message, params object[] args)
-        {
-            Write(LogLevel.Error, message, args);
-        }
+        public static void Error(string message, params object[] args) => Write(LogLevel.Error, message, args);
 
         /// <summary>
         /// Logs a warning message.
         /// </summary>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Warn(string message, params object[] args)
-        {
-            Write(LogLevel.Warn, message, args);
-        }
+        public static void Warn(string message, params object[] args) => Write(LogLevel.Warn, message, args);
 
         /// <summary>
         /// Logs an info message.
         /// </summary>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Info(string message, params object[] args)
-        {
-            Write(LogLevel.Info, message, args);
-        }
+        public static void Info(string message, params object[] args) => Write(LogLevel.Info, message, args);
 
         /// <summary>
         /// Logs an info message. An alias for Logger.Info()
         /// </summary>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Log(string message, params object[] args)
-        {
-            Write(LogLevel.Info, message, args);
-        }
+        public static void Log(string message, params object[] args) => Write(LogLevel.Info, message, args);
 
         /// <summary>
         /// Logs a debug message.
         /// </summary>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Debug(string message, params object[] args)
-        {
-            Write(LogLevel.Debug, message, args);
-        }
+        public static void Debug(string message, params object[] args) => Write(LogLevel.Debug, message, args);
 
         /// <summary>
         /// Get or set the logger's log level.

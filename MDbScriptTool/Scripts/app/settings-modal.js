@@ -67,6 +67,25 @@ $(function () {
         }
     });
 
+    var osFiles;
+    $('#addon-js-file, #addon-css-file', $dlg).on('click', function () {
+        osFiles = null;
+        os.on('file-dialog-closed', function (err, cancelled, files) {
+            if (!cancelled) osFiles = files;
+        });
+    }).on('change', function () {
+        var $this = $(this);
+        if (osFiles && osFiles.length && this.files && this.files.length) {
+            var osFile = app.findBy(osFiles, 'Name', this.files[0].name);
+            if (osFile) {
+                var id = '#' + $this.attr('id').replace('-file', '');
+
+                $(id, $dlg).val((osFile.WebkitRelativePath + '/' + osFile.Name).replace(/\\/g, '/'));
+            }
+        }
+        osFiles = null;
+    });
+
     $dlg.on('show.bs.modal', function (evt) {
         $logging.prop('checked', app.state.settings.logging.enabled).change();
         $loggingDebug.prop('checked', app.state.settings.logging.debug);

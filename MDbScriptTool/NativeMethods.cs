@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Tokafew420.MDbScriptTool
@@ -6,7 +6,7 @@ namespace Tokafew420.MDbScriptTool
     internal static class NativeMethods
     {
         // P/Invoke constants
-        public static int WM_SYSCOMMAND = 0x112;
+        public static readonly int WM_SYSCOMMAND = 0x112;
 
         [Flags]
         public enum MenuFlags : uint
@@ -18,7 +18,7 @@ namespace Tokafew420.MDbScriptTool
         }
 
         // ID for the Chrome dev tools item on the system menu
-        public static IntPtr SYSMENU_CHROME_DEV_TOOLS = new IntPtr(0x1);
+        public static readonly IntPtr SYSMENU_CHROME_DEV_TOOLS = new IntPtr(0x1);
 
         // P/Invoke declarations
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -36,7 +36,7 @@ namespace Tokafew420.MDbScriptTool
             // }
 
             // Get a handle to a copy of this form's system (window) menu
-            IntPtr hSysMenu = GetSystemMenu(frm.Handle, false);
+            var hSysMenu = GetSystemMenu(frm.Handle, false);
 
             // Add a separator
             AppendMenu(hSysMenu, MenuFlags.MF_SEPARATOR, new IntPtr(0), string.Empty);

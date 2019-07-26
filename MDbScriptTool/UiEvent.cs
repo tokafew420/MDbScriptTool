@@ -1,10 +1,10 @@
-﻿using CefSharp;
-using CefSharp.WinForms;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CefSharp;
+using CefSharp.WinForms;
+using Newtonsoft.Json;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -142,10 +142,7 @@ namespace Tokafew420.MDbScriptTool
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
         /// <remarks>Override to hide from the browser Javascript.</remarks>
         [JavascriptIgnore]
-        public override bool Equals(object obj)
-        {
-            return base.Equals(obj);
-        }
+        public override bool Equals(object obj) => base.Equals(obj);
 
         /// <summary>
         /// Serves as the default hash function.
@@ -153,10 +150,7 @@ namespace Tokafew420.MDbScriptTool
         /// <returns>A hash code for the current object.</returns>
         /// <remarks>Override to hide from the browser Javascript.</remarks>
         [JavascriptIgnore]
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        public override int GetHashCode() => base.GetHashCode();
 
         /// <summary>
         /// Returns a string that represents the current object.
@@ -164,9 +158,6 @@ namespace Tokafew420.MDbScriptTool
         /// <returns>A string that represents the current object.</returns>
         /// <remarks>Override to hide from the browser Javascript.</remarks>
         [JavascriptIgnore]
-        public override string ToString()
-        {
-            return base.ToString();
-        }
+        public override string ToString() => base.ToString();
     }
 }

@@ -1,19 +1,17 @@
-﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Tokafew420.MDbScriptTool
 {
     internal static class AppSettings
     {
-        private static string _filePath;
-
         static AppSettings()
         {
-            _filePath = System.IO.Path.Combine(Program.DataDirectory, "settings");
+            Path = System.IO.Path.Combine(Program.DataDirectory, "settings");
 
             if (!Directory.Exists(Program.DataDirectory))
             {
@@ -29,12 +27,12 @@ namespace Tokafew420.MDbScriptTool
                 }
             }
 
-            if (File.Exists(_filePath))
+            if (File.Exists(Path))
             {
                 // Load app settings
                 try
                 {
-                    var loadedSettings = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(File.ReadAllText(_filePath), new SettingsJsonConverter());
+                    var loadedSettings = JsonConvert.DeserializeObject<ConcurrentDictionary<string, object>>(File.ReadAllText(Path), new SettingsJsonConverter());
                     if (loadedSettings != null)
                     {
                         // Reinitialize a new dictionary to keep the string comparer
@@ -53,7 +51,7 @@ namespace Tokafew420.MDbScriptTool
             {
                 try
                 {
-                    File.Create(_filePath);
+                    File.Create(Path);
                     Logger.Debug("Created AppSettings");
                 }
                 catch (Exception e)
@@ -74,7 +72,6 @@ namespace Tokafew420.MDbScriptTool
             if (string.IsNullOrWhiteSpace(key)) return false;
 
             return Settings.ContainsKey(key);
-
         }
 
         /// <summary>
@@ -120,7 +117,7 @@ namespace Tokafew420.MDbScriptTool
                     Logger.Debug("Created Data/ Directory");
                 }
 
-                File.WriteAllText(_filePath, JsonConvert.SerializeObject(Settings, new SettingsJsonConverter()), Encoding.UTF8);
+                File.WriteAllText(Path, JsonConvert.SerializeObject(Settings, new SettingsJsonConverter()), Encoding.UTF8);
                 Logger.Debug("Saved AppSettings");
             }
             catch (Exception e)
@@ -133,7 +130,7 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Get the path to the settings file.
         /// </summary>
-        public static string Path => _filePath;
+        public static string Path { get; private set; }
 
         /// <summary>
         /// Get the app settings.

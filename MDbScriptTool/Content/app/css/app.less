@@ -2,30 +2,30 @@
 @import "variables.less";
 
 html, body {
-    background-color: @dark-1;
-    height: 100%;
+  background-color: @dark-1;
+  height: 100%;
 }
 
 body {
-    -webkit-box-pack: center; /* csslint allow: compatible-vendor-prefixes */
-    color: @light-0;
-    font-size: 14px;
-    justify-content: center;
+  -webkit-box-pack: center; /* csslint allow: compatible-vendor-prefixes */
+  color: @light-0;
+  font-size: 14px;
+  justify-content: center;
 }
 
 .modal-content {
-    background-color: @dark-1;
+  background-color: @dark-1;
 }
 
 .modal-header .close {
-    color: @light-0;
+  color: @light-0;
 }
 
 /* Links */
 a,
 a:focus,
 a:hover {
-    color: @light-0;
+  color: @light-0;
 }
 
 // Link buttons
@@ -47,42 +47,82 @@ a:hover {
   }
 }
 
+.btn-toolbar {
+  .btn {
+    background-color: @dark-0;
+    border-color: @dark-2;
+    color: @light-0;
+
+    &.disabled,
+    &:disabled {
+      background-color: @dark-4;
+    }
+
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active,
+    &:not(:disabled):not(.disabled):focus,
+    &:not(:disabled):not(.disabled):hover {
+      background-color: @dark-2;
+    }
+  }
+}
+
 .animating {
-    transition: all ease-out .5s;
+  transition: all ease-out .5s;
 }
 
 .hidden {
-    display: none;
+  display: none;
+}
+
+/* Bootstrap overrides */
+.dropdown-menu {
+  background-color: @dark-1;
+  border: 1px solid @light-1;
+
+  .dropdown-item {
+    color: @accent2-0;
+    text-decoration: none;
+    background-color: @dark-1;
+
+    &:hover,
+    &:focus,
+    &:active {
+      color: @light-0;
+      background-color: @text-hover;
+    }
+  }
 }
 
 /* CodeMirror overrides */
 .CodeMirror {
-    font-size: 0.95em;
+  font-size: 0.95em;
 
-    &-hscrollbar {
-        overflow-x: hidden;
-    }
+  &-hscrollbar {
+    overflow-x: hidden;
+  }
 
-    &-vscrollbar {
-        overflow-y: hidden;
-    }
+  &-vscrollbar {
+    overflow-y: hidden;
+  }
 
-    &:hover .CodeMirror-hscrollbar {
-        overflow-x: scroll;
-    }
+  &:hover .CodeMirror-hscrollbar {
+    overflow-x: scroll;
+  }
 
-    &:hover .CodeMirror-vscrollbar {
-        overflow-y: scroll;
-    }
+  &:hover .CodeMirror-vscrollbar {
+    overflow-y: scroll;
+  }
 
-    &-scrollbar-filler {
-        background-color: rgba(0, 0, 0, .2);
-    }
+  &-scrollbar-filler {
+    background-color: rgba(0, 0, 0, .2);
+  }
 }
 
 /** jQuery-contextMenu overrides */
 .context-menu-list {
   background-color: @dark-1;
+  border: 1px solid @light-1;
   color: @light-0;
 
   .context-menu-item {
@@ -164,89 +204,89 @@ a:hover {
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
+  0% {
+    transform: rotate(0deg);
+  }
 
-    100% {
-        transform: rotate(360deg);
-    }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Custom scrollbar */
 .scrollable {
-    overflow: hidden;
+  overflow: hidden;
 
-    &:hover {
-        overflow: overlay;
-    }
+  &:hover {
+    overflow: overlay;
+  }
 }
 
 .scrollable-x {
-    overflow-x: hidden;
-    overflow-y: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
 
-    &:hover {
-        overflow-x: overlay;
-        overflow-y: hidden;
-    }
+  &:hover {
+    overflow-x: overlay;
+    overflow-y: hidden;
+  }
 }
 
 .scrollable-y {
-    overflow-x: hidden;
-    overflow-y: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
 
-    &:hover {
-        overflow-x: hidden;
-        overflow-y: overlay;
-    }
+  &:hover {
+    overflow-x: hidden;
+    overflow-y: overlay;
+  }
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  width: 6px;
+  height: 6px;
 
-    &-button {
-        display: none;
+  &-button {
+    display: none;
+  }
+
+  &-track {
+    background-color: @accent-0;
+    background-clip: content-box;
+  }
+
+  &-track:horizontal {
+    border-top: 2px solid @dark-tran-2;
+    border-bottom: 2px solid @dark-tran-2;
+  }
+
+  &-track:vertical {
+    border-left: 2px solid @dark-tran-2;
+    border-right: 2px solid @dark-tran-2;
+  }
+
+  &-thumb {
+    border-radius: 2px;
+    background: rgba(255, 255, 255, .75);
+
+    &:hover {
+      background: @light-0;
+      -webkit-box-shadow: inset 0 0 1px 1px @dark-tran-4;
     }
+  }
 
-    &-track {
-        background-color: @accent-0;
-        background-clip: content-box;
-    }
-
-    &-track:horizontal {
-        border-top: 2px solid @dark-tran-2;
-        border-bottom: 2px solid @dark-tran-2;
-    }
-
-    &-track:vertical {
-        border-left: 2px solid @dark-tran-2;
-        border-right: 2px solid @dark-tran-2;
-    }
-
-    &-thumb {
-        border-radius: 2px;
-        background: rgba(255, 255, 255, .75);
-
-        &:hover {
-            background: @light-0;
-            -webkit-box-shadow: inset 0 0 1px 1px @dark-tran-4;
-        }
-    }
-
-    &-corner {
-        background-color: @dark-tran-2;
-    }
+  &-corner {
+    background-color: @dark-tran-2;
+  }
 }
 
 .animate-250 {
-    transition: all ease-out 0.25s;
+  transition: all ease-out 0.25s;
 }
 
 // Hide default input search cancel 'X' button
 input[type="search"]::-webkit-search-cancel-button {
-    -webkit-appearance: none;
+  -webkit-appearance: none;
 }
 
 @import "navbar.less";

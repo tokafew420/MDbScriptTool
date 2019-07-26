@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Dynamic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -71,7 +69,7 @@ namespace Tokafew420.MDbScriptTool
 
                 versions.App = $"{appVersion.Major}.{appVersion.Minor}.{appVersion.Build}";
 
-                versions.Cef = FileVersionInfo.GetVersionInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "libcef.dll")).ProductVersion;
+                versions.Cef = _browser.ProductVersion;
 
                 OsEvent.Emit(replyMsgName, null, versions);
             }

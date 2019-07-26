@@ -1,6 +1,6 @@
+using System.Diagnostics;
 using CefSharp;
 using CefSharp.Handler;
-using System.Diagnostics;
 
 namespace Tokafew420.MDbScriptTool
 {

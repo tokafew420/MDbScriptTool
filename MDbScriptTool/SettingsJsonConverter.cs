@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -11,10 +11,7 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Returns true if type is of IDictionary&lt;string, object&gt;
         /// </summary>
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(IDictionary<string, object>).IsAssignableFrom(objectType);
-        }
+        public override bool CanConvert(Type objectType) => typeof(IDictionary<string, object>).IsAssignableFrom(objectType);
 
         /// <summary>
         /// Reads the settings json.
@@ -59,9 +56,7 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            var dic = value as IDictionary<string, object>;
-
-            if (dic == null) return;
+            if (!(value is IDictionary<string, object> dic)) return;
 
             var stringType = typeof(string);
             //var typeType = typeof(Type);
@@ -99,9 +94,9 @@ namespace Tokafew420.MDbScriptTool
             // loop through the type name and filter out qualified assembly details from nested type names
             var writingAssemblyName = false;
             var skippingAssemblyDetails = false;
-            for (int i = 0; i < fullyQualifiedTypeName.Length; i++)
+            for (var i = 0; i < fullyQualifiedTypeName.Length; i++)
             {
-                char current = fullyQualifiedTypeName[i];
+                var current = fullyQualifiedTypeName[i];
                 switch (current)
                 {
                     case '[':

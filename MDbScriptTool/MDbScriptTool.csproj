@@ -103,7 +103,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BrowserRequestHandler.cs" />
+    <Compile Include="FileDialogHandler.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="FileSystemSchemeHandlerFactory.cs" />
     <Compile Include="KeyboardHandler.cs" />

@@ -1,8 +1,8 @@
-using CefSharp;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using CefSharp;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -18,11 +18,9 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Initialize the static FileSystemSchemeHandlerFactory instance.
         /// </summary>
-        static FileSystemSchemeHandlerFactory()
-        {
+        static FileSystemSchemeHandlerFactory() =>
             // Get all the available system drives.
             _volumes = DriveInfo.GetDrives().Select(v => v.Name.ToLower()).ToArray();
-        }
 
         /// <summary>
         /// Create an instance of FileSystemResourceHandler.
