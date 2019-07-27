@@ -7,14 +7,20 @@
     var $content = $('.content');
     var $toolbar = $('.content-toolbar', $content);
 
-    /** Execute button **/
+    /** Execute buttons **/
     var $executeBtn = $('.execute-btn', $toolbar);
     var $parseBtn = $('.parse-btn', $toolbar);
+    /** Editor  buttons **/
+    var $commentBtn = $('.comment-btn', $toolbar);
+    var $uncommentBtn = $('.uncomment-btn', $toolbar);
 
     $executeBtn.click(function () {
         var $activeInstance = $('.instance-container .instance.active', $content);
 
         app.emit('execute-instance', $activeInstance);
+        var editor = $activeInstance.data('editor');
+
+        editor.focus();
     });
 
     app.on('execute-instance', function ($instance, dbs) {
@@ -76,6 +82,8 @@
                     }
                 }
             }
+
+            editor.focus();
         }
     });
 
@@ -130,4 +138,21 @@
             }
         }
     });
+
+    $commentBtn.on('click', function () {
+        var $instance = $('.instance-container .instance.active', $content);
+        var editor = $instance.data('editor');
+
+        editor.appToggleComment();
+        editor.focus();
+    });
+
+    $uncommentBtn.on('click', function () {
+        var $instance = $('.instance-container .instance.active', $content);
+        var editor = $instance.data('editor');
+        
+        editor.appToggleComment({ mode: 'un' });
+        editor.focus();
+    });
+
 }(window));

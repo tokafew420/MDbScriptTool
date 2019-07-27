@@ -96,7 +96,8 @@
             lineNumbers: true,
             matchBrackets: true,
             autofocus: true,
-            theme: theme
+            theme: theme,
+            keyMap: 'app'
         });
         $instance.data('editor', editor);
 

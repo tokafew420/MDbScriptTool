@@ -583,6 +583,67 @@
         })();
     }());
 
+    /* Configure CodeMirror */
+    (function () {
+        var cmds = CodeMirror.commands;
+        var Pos = CodeMirror.Pos;
+
+        CodeMirror.defineExtension('appToggleComment', function (opts) {
+            opts = opts || {};
+
+            var cm = this;
+            var minLine = Infinity, ranges = cm.listSelections(), mode = opts.mode;
+            for (var i = ranges.length - 1; i >= 0; i--) {
+                var from = ranges[i].from(), to = ranges[i].to();
+                if (from.line >= minLine) continue;
+                if (to.line >= minLine) to = Pos(minLine, 0);
+                minLine = from.line;
+
+                if (mode === "un") {
+                    cm.uncomment(from, to, opts);
+                } else {
+                    cm.lineComment(from, to, opts);
+                }
+            }
+        });
+
+        cmds.comment = function (cm) {
+            cm.appToggleComment();
+        };
+
+        cmds.uncomment = function (cm) {
+            cm.appToggleComment({ mode: 'un' });
+        };
+
+        cmds.executeSql = function (cm) {
+            $('.content .content-toolbar .execute-btn').click();
+        };
+
+        cmds.parseSql = function (cm) {
+            $('.content .content-toolbar .parse-btn').click();
+        };
+
+        var appKeyMap = CodeMirror.keyMap.app = {
+            // Commands defined in /Scripts/CodeMirror/keymap/sublime.js
+            'Shift-Tab': 'indentLess',
+            'Alt-Up': 'swapLineUp',
+            'Alt-Down': 'swapLineDown',
+            'Ctrl-U': 'downcaseAtCursor',
+            'Shift-Ctrl-U': 'upcaseAtCursor',
+            'Ctrl-/': 'toggleComment',
+            'Shift-Ctrl-D': 'duplicateLine',
+            // Custom commands
+            'Ctrl-E': 'executeSql',
+            'Ctrl-P': 'parseSql',
+            'Ctrl-K Ctrl-C': 'comment',
+            'Ctrl-K Ctrl-U': 'uncomment',
+            fallthrough: 'default'
+        };
+
+        // Must call from Multi-stroke key bindings
+        CodeMirror.normalizeKeyMap(appKeyMap);
+    }());
+
     $(function () {
         // Initialize all tooltips
         $('[data-toggle="tooltip"]').tooltip({
