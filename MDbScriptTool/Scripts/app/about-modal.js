@@ -1,9 +1,9 @@
-﻿/// <reference path="app.js" />
+/// <reference path="app.js" />
 
 /**
  * About Modal
  */
-(function (window) {
+(function (window, app, os, $) {
     var $dlg = $('#about-modal');
     var $appVersion = $('#app-version', $dlg);
     var $cefVersion = $('#cef-version', $dlg);
@@ -15,16 +15,8 @@
     // Set the version information from the .NET side.
     os.on('versions', function (err, versions) {
         if (versions) {
-            if (versions.App) {
-                $appVersion.text(versions.App);
-            } else {
-                $appVersion.text('Unknown');
-            }
-            if (versions.Cef) {
-                $cefVersion.text(versions.Cef);
-            } else {
-                $cefVersion.text('Unknown');
-            }
+            $appVersion.text(versions.App || 'Unknown');
+            $cefVersion.text(versions.Cef || 'Unknown');
         }
     });
 
@@ -32,38 +24,22 @@
     function setChromiumVersion() {
         var match = navigator.userAgent.match(/Chrom(e|ium)\/([0-9\.]+)\s/);
 
-        if (match[2]) {
-            $chromiumVersion.text(match[2]);
-        } else {
-            $chromiumVersion.text('Unknown');
-        }
+        $chromiumVersion.text(match[2] || 'Unknown');
     }
 
     // Set the jQuery version
     function setJQueryVersion() {
-        if ($.fn.jquery) {
-            $jqueryVersion.text($.fn.jquery);
-        } else {
-            $jqueryVersion.text('Unknown');
-        }
+        $jqueryVersion.text($.fn.jquery || 'Unknown');
     }
 
     // Set the Bootstrap version
     function setBootstrapVersion() {
-        if ($.fn.modal.Constructor.VERSION) {
-            $bootstrapVersion.text($.fn.modal.Constructor.VERSION);
-        } else {
-            $bootstrapVersion.text('Unknown');
-        }
+        $bootstrapVersion.text($.fn.modal.Constructor.VERSION || 'Unknown');
     }
 
     // Set the CodeMirror version
     function setCodeMirrorVersion() {
-        if (CodeMirror.version) {
-            $codemirrorVersion.text(CodeMirror.version);
-        } else {
-            $codemirrorVersion.text('Unknown');
-        }
+        $codemirrorVersion.text(CodeMirror.version || 'Unknown');
     }
 
     $dlg.one('show.bs.modal', function (evt) {
@@ -73,4 +49,4 @@
         setBootstrapVersion();
         setCodeMirrorVersion();
     });
-}(window));
+}(window, window.app = window.app || {}, window.os, jQuery));

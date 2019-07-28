@@ -3,7 +3,7 @@
 /**
  * Content panel instance tabs.
  */
-(function (window) {
+(function (window, app, os, $) {
     var $content = $('.content');
     var $tabs = $('.instance-tabs', $content);
     var $instanceContainer = $('.instance-container', $content);
@@ -11,7 +11,7 @@
 
     // Create new tab when the '+' is clicked
     $plusTab.click(function () {
-        app.newInstance({
+        app.createInstance({
             name: 'New *'
         });
     });
@@ -46,10 +46,10 @@
         }
 
         // Remove instance
-        var instanceIdx = app.indexBy(app.state.instances, 'id', id);
+        var instanceIdx = app.indexBy(app.instances, 'id', id);
 
         if (instanceIdx !== -1) {
-            app.state.instances.splice(instanceIdx, 1);
+            app.instances.splice(instanceIdx, 1);
             app.saveState('instances');
         }
     });
@@ -71,31 +71,21 @@
         var $tab = $(e.target);
         var id = $tab.attr('id').replace('-tab', '');
 
-        var instanceIdx = app.indexBy(app.state.instances, 'id', id);
+        var instance = app.findBy(app.instances, 'id', id);
 
-        if (instanceIdx !== -1) {
-            app.state.instances[instanceIdx].active = true;
+        if (instance) {
+            if (app.instance) {
+                app.instance.active = false;
+            }
+            instance.active = true;
+            app.instance = instance;
         }
 
         app.saveState('instances');
         app.emit('tab-active', id);
     });
 
-    $tabs.on('hidden.bs.tab', 'a[data-toggle="tab"]', function (e) {
-        // e.target - newly activated tab
-        // e.relatedTarget - previous active tab
-
-        var $tab = $(e.target);
-        var id = $tab.attr('id').replace('-tab', '');
-
-        var instanceIdx = app.indexBy(app.state.instances, 'id', id);
-
-        if (instanceIdx !== -1) {
-            app.state.instances[instanceIdx].active = false;
-        }
-    });
-    
-    app.on('new-instance', function (instance) {
+    app.on('create-instance', function (instance) {
         var $tab = $(`<li class="nav-item instance-tab">
             <a class="nav-link" id="${instance.id}-tab" data-toggle="tab" href="#${instance.id}" role="tab" aria-controls="${instance.id}" aria-selected="false">${instance.name} <i class="fa fa-times" aria-hidden="true"></i></a>
         </li>`);
@@ -109,4 +99,4 @@
             }, 0);
         }
     });
-}(window));
+}(window, window.app = window.app || {}, window.os, jQuery));

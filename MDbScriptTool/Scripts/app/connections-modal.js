@@ -1,9 +1,9 @@
-﻿/// <reference path="app.js" />
+/// <reference path="app.js" />
 
 /**
  * Connection Information Dialog 
  */
-(function (window) {
+(function (window, app, os, $) {
     const serverRegex = new RegExp('(?:Data Source|Server)=[^;]*;', 'i');
     const usernameRegex = new RegExp('User ID=[^;]*;', 'i');
     const passwordRegex = new RegExp('Password=[^;]*;', 'i');
@@ -27,7 +27,7 @@
 
     // Initialize connections select
     function initSelect() {
-        app.state.connections.forEach(function (conn) {
+        app.connections.forEach(function (conn) {
             $selectConnections.append(`<option value="${conn.id}">${conn.name}</option>`);
         });
     }
@@ -71,7 +71,7 @@
         if (id === 'new') {
             reset();
         } else {
-            var conn = app.getConnection(id);
+            var conn = app.findBy(app.connections, 'id', id);
             if (conn) {
                 resetFields();
                 $deleteBtn.removeClass('hidden');
@@ -206,7 +206,7 @@
                 app.loading.show('Adding...');
                 _hideAfterSave = true;
                 _tmpConn = {
-                    id: app.guid(),
+                    id: 'connection-' + app.guid(),
                     name: $name.val(),
                     server: $server.val(),
                     username: $username.val(),
@@ -217,7 +217,7 @@
                 os.emit('encrypt-password', $password.val());
 
             } else {
-                var conn = app.getConnection(id);
+                var conn = app.findBy(app.connections, 'id', id);
                 if (conn) {
                     app.loading.show('Saving...');
                     _hideAfterSave = false;
@@ -263,4 +263,4 @@
         _hideAfterSave = false;
         app.loading.hide();
     });
-}(window));
+}(window, window.app = window.app || {}, window.os, jQuery));

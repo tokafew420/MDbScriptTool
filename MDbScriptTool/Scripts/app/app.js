@@ -1,4 +1,7 @@
 (function (window, app, os, $) {
+    var document = window.document;
+    var localStorage = window.localStorage;
+
     // Initalize app object
     // Inherit event emitter
     EventEmitter.call(app);
@@ -59,18 +62,18 @@
             return html;
         };
 
+        function _s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
         /**
         * Generates a random guid.
         * 
         * @returns {string} A guid. Format: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         */
         app.guid = function () {
-            function s4() {
-                return Math.floor((1 + Math.random()) * 0x10000)
-                    .toString(16)
-                    .substring(1);
-            }
-            return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+            return _s4() + _s4() + '-' + _s4() + '-' + _s4() + '-' + _s4() + '-' + _s4() + _s4() + _s4();
         };
 
         /**
@@ -110,12 +113,10 @@
          * @param {string} key The lookup property key name.
          * @param {any} val The lookup property value.
          * @returns {any} The object referenced by the found index or property name. Else
-         *  if no match is found then return null.
+         *  if no match is found then return undefined.
          */
         app.findBy = function (arr, key, val) {
             var idx = app.indexBy(arr, key, val);
-
-            if (idx === -1) return null;
 
             return arr[idx];
         };
@@ -179,7 +180,7 @@
                 document.body.removeChild(textArea);
                 return successful;
             } catch (err) {
-                console.log('Copy failed', err);
+                console.error('Copy failed', err);
                 document.body.removeChild(textArea);
                 return false;
             }
@@ -189,40 +190,58 @@
 
     /* App setup */
     (function () {
-        /**
-         * @type {object} state Contains the application state.
-         */
-        app.state = {
-            connections: [],
-            currentConnectionId: '',
-            currentConnection: null,
-            dbs: [],
-            instances: [],
-            settings: {},
-            ui: {
+        Object.assign(app, {
+            connections: [],    // Holds all defined connections
+            instance: null,     // The current active instance
+            instances: [],      // Holds all instances
+            settings: {},       // Settings object
+            ui: {               // Settings object related to the ui
                 sidebarCollapsed: false
+            },
+            savedStates: ['connections', 'instances', 'settings', 'ui'] // States to save
+        });
+
+        // The current active connection
+        var _activeConnection = null;
+        Object.defineProperty(app, 'connection', {
+            get: function () {
+                return _activeConnection;
+            },
+            set: function (c) {
+                if (typeof c === 'string') {
+                    c = app.findBy(app.connections, 'id', c);
+                }
+
+                if (c !== _activeConnection) {
+                    var previousConnection = _activeConnection;
+
+                    _activeConnection = c || null;
+
+                    localStorage.setItem('app-active-connection-id', _activeConnection && _activeConnection.id || '');
+                    app.emit('connection-changed', _activeConnection, previousConnection);
+                }
             }
-        };
+        });
 
         /**
          * Creates a new instance.
          * 
          * @param {any} instance Optional. The initial instance properties.
-         * @event new-instance 
+         * @event create-instance 
          * @type {object} instance The newly created instance.
          */
-        app.newInstance = function (instance) {
+        app.createInstance = function (instance) {
             var inst = Object.assign({
-                id: 'instance' + app.guid(),
+                id: 'instance-' + app.guid(),
                 name: 'New *',
                 active: true,
                 pending: 0,
                 code: ''
             }, instance);
-            app.state.instances.push(inst);
+            app.instances.push(inst);
 
+            app.emit('create-instance', inst);
             app.saveState('instances');
-            app.emit('new-instance', inst);
         };
 
         /**
@@ -233,32 +252,20 @@
          */
         app.saveState = function (key) {
             if (key) {
-                localStorage.setItem('app-state-' + key, JSON.stringify(app.state[key]));
-                //console.log('saved state: ' + JSON.stringify(app.state[key]));
+                localStorage.setItem('app-' + key, JSON.stringify(app[key], function (key, value) {
+                    if (['$instance', 'editor'].includes(key)) return undefined;
+                    return value;
+                }));
             } else {
-                Object.keys(app.state).forEach(function (key) {
-                    if (key === 'currentConnection') return;    // Ignored
-                    localStorage.setItem('app-state-' + key, JSON.stringify(app.state[key]));
+                app.savedStates.forEach(function (key) {
+                    localStorage.setItem('app-' + key, JSON.stringify(app[key], function (key, value) {
+                        if (['$instance', 'editor'].includes(key)) return undefined;
+                        return value;
+                    }));
                 });
-                //console.log('saved state: ' + JSON.stringify(app.state));
             }
 
             app.emit('saved-state', key || 'all');
-        };
-
-        /**
-         * Gets the connection specified by the id.
-         * 
-         * @param {string} id The connection id.
-         * @returns {object} The connection object, or null if not found.
-         */
-        app.getConnection = function (id) {
-            var filtered = app.state.connections.filter(function (conn) {
-                return conn.id === id;
-            });
-
-            if (filtered.length) return filtered[0];
-            return null;
         };
 
         /**
@@ -273,7 +280,7 @@
          * @type {boolean} Whether the connection should be selected.
          */
         app.saveConnection = function (conn, isSelected) {
-            var existingConn = app.getConnection(conn.id);
+            var existingConn = app.findBy(app.connections, 'id', conn.id);
 
             if (existingConn) {
                 existingConn.name = conn.name;
@@ -282,10 +289,10 @@
                 existingConn.password = conn.password;
                 existingConn.raw = conn.raw;
             } else {
-                app.state.connections.push(conn);
+                app.connections.push(conn);
             }
 
-            app.state.connections.sort(function (a, b) {
+            app.connections.sort(function (a, b) {
                 return app.compare(a.name, b.name);
             });
 
@@ -307,15 +314,15 @@
          */
         app.removeConnection = function (conn) {
             if (typeof conn === 'string') {
-                conn = app.getConnection(conn);
+                conn = app.findBy(app.connections, 'id', conn);
             }
-            var idx = app.state.connections.indexOf(conn);
+            var idx = app.connections.indexOf(conn);
 
             if (idx !== -1) {
-                app.state.connections.splice(idx, 1);
+                app.connections.splice(idx, 1);
 
-                if (conn === app.state.currentConnection) {
-                    app.setCurrentConnection(null);
+                if (conn === app.connection) {
+                    app.connection = null;
                 }
 
                 app.saveState('connections');
@@ -326,61 +333,37 @@
             }
         };
 
-        /**
-         * Sets the specified connection as the current connection.
-         * 
-         * @param {object} conn The connection object.
-         */
-        app.setCurrentConnection = function (conn) {
-            if (conn !== app.state.currentConnection) {
-                var previousConnection = app.state.currentConnection;
-
-                if (conn) {
-                    app.state.currentConnection = conn;
-                    app.state.currentConnectionId = conn.id;
-                } else {
-                    app.state.currentConnection = null;
-                    app.state.currentConnectionId = '';
-                }
-
-                app.saveState('currentConnectionId');
-                app.emit('connection-changed', app.state.currentConnection, previousConnection);
+        // Mirgation from v0.3.12
+        // TODO: Remove after 4.x
+        app.savedStates.forEach(function (key) {
+            savedState = localStorage.getItem(`app-state-${key}`);
+     
+            if (savedState) {
+                localStorage.removeItem(`app-state-${key}`);
+                localStorage.setItem(`app-${key}`, savedState);
             }
-        };
+        });
 
         // Inits
 
         // Get saved state
-        Object.keys(app.state).forEach(function (key) {
-            if (key === 'currentConnection') return;    // Ignored
-
-            var savedState = window.localStorage.getItem('app-state-' + key);
+        app.savedStates.forEach(function (key) {
+            var savedState = localStorage.getItem(`app-${key}`);
 
             try {
                 var state = JSON.parse(savedState);
                 if (state) {
                     if (typeof state === 'object') {
-                        Object.assign(app.state[key], state);
+                        Object.assign(app[key], state);
                     } else {
-                        app.state[key] = state;
+                        app[key] = state;
                     }
                 }
             } catch (e) {
-                console.error(`Failed to load saved state. [${key}]`);
-                console.error(e);
+                console.error(`Failed to load saved state. [${key}]`, e);
             }
         });
 
-        // Verify database connections
-        if (Array.isArray(app.state.connections)) {
-            app.state.connections.forEach(function (c) {
-                if (!c.id || c.id.length !== 36) {
-                    c.id = app.guid();
-                }
-            });
-        } else {
-            app.state.connections = [];
-        }
 
         $(function () {
             function alertError(err) {
@@ -400,7 +383,7 @@
             }
 
             // Initialize addons
-            var addonJs = app.state.settings.addonJs;
+            var addonJs = app.settings.addonJs;
             if (addonJs) {
                 if (addonJs.indexOf('http') !== 0) {
                     // Append filesystem schema
@@ -408,8 +391,8 @@
                     addonJs = 'fs://' + addonJs + '?' + app.guid();
                 }
                 $.ajax({
-                    type: "GET",
-                    dataType: "text",
+                    type: 'GET',
+                    dataType: 'text',
                     url: addonJs
                 }).always(function (res, textStatus, jqXhr) {
                     if (textStatus === 'success') {
@@ -427,11 +410,11 @@
                         $onerror.remove();
                         $cleanup.remove();
                     } else {
-                        app.alert(`Failed to load custom script: [${app.state.settings.addonJs}]`);
+                        app.alert(`Failed to load custom script: [${app.settings.addonJs}]`);
                     }
                 });
             }
-            var addonCss = app.state.settings.addonCss;
+            var addonCss = app.settings.addonCss;
             if (addonCss) {
                 if (addonCss.indexOf('http') !== 0) {
                     // Append filesystem schema
@@ -441,18 +424,19 @@
                 $('head').append(`<link rel="stylesheet" href="${addonCss}" />`);
             }
 
-            // Set the current connection
-            if (app.state.currentConnectionId) {
-                app.setCurrentConnection(app.getConnection(app.state.currentConnectionId));
+            var lastConnectionId = localStorage.getItem('app-active-connection-id', _activeConnection && _activeConnection.id || '');
+            if (lastConnectionId) {
+                var conn = app.findBy(app.connections, 'id', lastConnectionId);
+                if (conn) app.connection = conn;
             }
 
             // Initialize saved instances
-            if (app.state.instances.length) {
-                app.state.instances.forEach(function (instance) {
-                    app.emit('new-instance', instance);
+            if (app.instances.length) {
+                app.instances.forEach(function (instance) {
+                    app.emit('create-instance', instance);
                 });
             } else {
-                app.newInstance();
+                app.createInstance();
             }
         });
     }());
@@ -468,6 +452,9 @@
         app.show = function () {
             return $.apply(null, arguments).removeClass('hidden').css('display', '');
         };
+        $.fn.appShow = function () {
+            return app.show(this);
+        };
 
         /**
          * Hides the element by adding the .hidden class.
@@ -477,6 +464,9 @@
          */
         app.hide = function () {
             return $.apply(null, arguments).addClass('hidden').css('display', '');
+        };
+        $.fn.appHide = function () {
+            return app.hide(this);
         };
 
         // Setup alert dialog

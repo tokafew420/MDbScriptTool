@@ -3,11 +3,11 @@
 /**
  * Settings Modal
  */
-$(function () {
+(function (window, app, os, $) {
     // Sync logging settings
     os.emit('get-log-settings');
     os.once('log-settings', function (err, settings) {
-        app.state.settings.logging = settings || {};
+        app.settings.logging = settings || {};
     });
 
     var $dlg = $('#settings-modal');
@@ -31,24 +31,24 @@ $(function () {
     });
 
     $saveBtn.click(function () {
-        app.state.settings.logging.enabled = $logging.is(':checked');
-        app.state.settings.logging.debug = $loggingDebug.is(':checked');
-        app.state.settings.logging.info = $loggingInfo.is(':checked');
-        app.state.settings.logging.warn = $loggingWarn.is(':checked');
-        app.state.settings.logging.error = $loggingError.is(':checked');
+        app.settings.logging.enabled = $logging.is(':checked');
+        app.settings.logging.debug = $loggingDebug.is(':checked');
+        app.settings.logging.info = $loggingInfo.is(':checked');
+        app.settings.logging.warn = $loggingWarn.is(':checked');
+        app.settings.logging.error = $loggingError.is(':checked');
 
-        os.emit('set-log-settings', app.state.settings.logging);
+        os.emit('set-log-settings', app.settings.logging);
 
         // If check add-on values change
         var addonChanged = false;
         var addonJs = $addonJs.val().trim().toLowerCase();
-        if (addonJs !== app.state.settings.addonJs) {
-            app.state.settings.addonJs = addonJs;
+        if (addonJs !== app.settings.addonJs) {
+            app.settings.addonJs = addonJs;
             addonChanged = true;
         }
         var addonCss = $addonCss.val().trim().toLowerCase();
-        if (addonCss !== app.state.settings.addonCss) {
-            app.state.settings.addonCss = addonCss;
+        if (addonCss !== app.settings.addonCss) {
+            app.settings.addonCss = addonCss;
             addonChanged = true;
         }
 
@@ -87,12 +87,12 @@ $(function () {
     });
 
     $dlg.on('show.bs.modal', function (evt) {
-        $logging.prop('checked', app.state.settings.logging.enabled).change();
-        $loggingDebug.prop('checked', app.state.settings.logging.debug);
-        $loggingInfo.prop('checked', app.state.settings.logging.info);
-        $loggingWarn.prop('checked', app.state.settings.logging.warn);
-        $loggingError.prop('checked', app.state.settings.logging.error);
-        $addonJs.val(app.state.settings.addonJs);
-        $addonCss.val(app.state.settings.addonCss);
+        $logging.prop('checked', app.settings.logging.enabled).change();
+        $loggingDebug.prop('checked', app.settings.logging.debug);
+        $loggingInfo.prop('checked', app.settings.logging.info);
+        $loggingWarn.prop('checked', app.settings.logging.warn);
+        $loggingError.prop('checked', app.settings.logging.error);
+        $addonJs.val(app.settings.addonJs);
+        $addonCss.val(app.settings.addonCss);
     });
-});
+}(window, window.app = window.app || {}, window.os, jQuery));

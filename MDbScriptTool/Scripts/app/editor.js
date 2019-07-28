@@ -3,7 +3,7 @@
 /**
  * Editor instance
  */
-(function (app, window, $) {
+(function (window, app, os, $) {
     var $content = $('.content');
     var $instanceContainer = $('.instance-container', $content);
 
@@ -48,11 +48,9 @@
                 max-height: ${resultHeight - resultHeaderHeight}px;
             }`);
 
-            var editor = $instance.data('editor');
+            var instance = $instance.data('instance');
 
-            if (editor) {
-                editor.setSize('100%', `${editorHeight}px`);
-            }
+            instance.editor.setSize('100%', `${editorHeight}px`);
         }
     }
 
@@ -72,8 +70,8 @@
         resizeEditor($instance);
     });
 
-    app.on('new-instance', function (instance) {
-        var $instance = $(`<div class="tab-pane instance fade" id="${instance.id}" role="tabpanel" aria-labelledby="${instance.id}-tab">
+    app.on('create-instance', function (instance) {
+        var $instance = instance.$instance = $(`<div class="tab-pane instance fade" id="${instance.id}" role="tabpanel" aria-labelledby="${instance.id}-tab">
                     <style></style>
                     <div class="editor"></div>
                     <div class="slider slider-h">
@@ -81,14 +79,14 @@
                     </div>
                     <div class="result"></div>
                 </div>`);
-
+        $instance.data('instance', instance);
         $instance.appendTo($instanceContainer);
 
         // Initialize codemirror editor
         var mime = 'text/x-tsql';
         var theme = 'twilight-vs-tsql';
 
-        var editor = CodeMirror($('.editor', $instance)[0], {
+        var editor = instance.editor = CodeMirror($('.editor', $instance)[0], {
             mode: mime,
             indentWithTabs: true,
             indentUnit: 4,
@@ -99,7 +97,6 @@
             theme: theme,
             keyMap: 'app'
         });
-        $instance.data('editor', editor);
 
         if (instance.code) {
             editor.setValue(instance.code);
@@ -126,16 +123,15 @@
         var $instance = $('#' + id, $instanceContainer);
 
         if ($instance.length) {
-            resizeEditor($instance);
+            var instance = $instance.data('instance');
+            //if (instance) {
+                resizeEditor($instance);
 
-            var editor = $instance.data('editor');
-
-            if (editor) {
-                editor.refresh();
-                editor.focus();
+                instance.editor.refresh();
+                instance.editor.focus();
                 // Set the cursor at the end of existing content
-                //editor.setCursor(editor.lineCount(), 0);
-            }
+                //instance.editor.setCursor(editor.lineCount(), 0);
+            //}
         }
     });
 
@@ -143,4 +139,4 @@
         var $instance = $('.instance.active', $instanceContainer);
         resizeEditor($instance);
     });
-}(app, window, window.jQuery));
+}(window, window.app = window.app || {}, window.os, jQuery));

@@ -3,7 +3,7 @@
 /**
  * Sidebar slider
  */
-(function (window) {
+(function (window, app, os, $) {
     var $sidebarSlider = $('.slider.slider-v');
     var $dynoStyle = $('<style/>');
     $dynoStyle.appendTo($('head'));
@@ -29,8 +29,8 @@
         }
     }).on('dblclick', function () {
         // Toggle the sidebar
-        app.state.ui.sidebarCollapsed = !app.state.ui.sidebarCollapse;
-        app.emit('sidebar-collapse-toggled', app.state.ui.sidebarCollapsed);
+        app.ui.sidebarCollapsed = !app.ui.sidebarCollapse;
+        app.emit('sidebar-collapse-toggled', app.ui.sidebarCollapsed);
         app.saveState('ui');
     });
 
@@ -49,4 +49,4 @@
             $sidebarSlider.removeClass('animate-250');
         }, 300);
     });
-}(window));
+}(window, window.app = window.app || {}, window.os, jQuery));

@@ -3,7 +3,7 @@
 /**
  * Content panel. Contains the editor and the result set(s).
  */
-(function (app, window, $) {
+(function (window, app, os, $) {
     var $content = $('.content');
 
     var removeAnimateTimer;
@@ -31,4 +31,4 @@
     app.on('update-content-status', function (text) {
         $('#content-statusbar .status-text', $content).html(text);
     });
-}(app, window, window.jQuery));
+}(window, window.app = window.app || {}, window.os, jQuery));

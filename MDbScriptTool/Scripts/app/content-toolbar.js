@@ -3,7 +3,7 @@
 /**
  * Content panel toolbar.
  */
-(function (window) {
+(function (window, app, os, $) {
     var $content = $('.content');
     var $toolbar = $('.content-toolbar', $content);
 
@@ -18,9 +18,9 @@
         var $activeInstance = $('.instance-container .instance.active', $content);
 
         app.emit('execute-instance', $activeInstance);
-        var editor = $activeInstance.data('editor');
+        var instance = $activeInstance.data('instance');
 
-        editor.focus();
+        instance.editor.focus();
     });
 
     app.on('execute-instance', function ($instance, dbs) {
@@ -34,9 +34,9 @@
             sql = (sql || '').trim();
 
             if (sql) {
-                if (app.state.currentConnection) {
+                if (app.connection) {
                     if (!dbs) {
-                        dbs = (app.state.currentConnection.dbs || [])
+                        dbs = (app.connection.dbs || [])
                             .filter(function (d) { return d.checked; })
                             .map(function (db) { return db.name; });
                     }
@@ -48,7 +48,7 @@
                         var id = $instance.attr('id');
 
                         app.emit('execute-sql', id);
-                        os.emit('execute-sql', app.state.currentConnection.raw, dbs, sql, id);
+                        os.emit('execute-sql', app.connection.raw, dbs, sql, id);
                     }
                 }
             }
@@ -66,18 +66,18 @@
             sql = (sql || '').trim();
 
             if (sql) {
-                if (app.state.currentConnection) {
+                if (app.connection) {
 
                     $('.result', $activeInstance).empty();
                     $executeBtn.prop('disabled', true);
                     $parseBtn.prop('disabled', true);
                     var id = $activeInstance.attr('id');
 
-                    var instance = app.findBy(app.state.instances, 'id', id);
+                    var instance = app.findBy(app.instances, 'id', id);
 
                     if (instance) {
                         app.emit('parse-sql', id);
-                        os.emit('parse-sql', app.state.currentConnection.raw, sql, id);
+                        os.emit('parse-sql', app.connection.raw, sql, id);
                         instance.pending++;
                     }
                 }
@@ -88,7 +88,7 @@
     });
 
     os.on('sql-exe-db-begin', function (err, id, db) {
-        var instance = app.findBy(app.state.instances, 'id', id);
+        var instance = app.findBy(app.instances, 'id', id);
 
         if (instance) {
             instance.pending++;
@@ -96,7 +96,7 @@
     });
 
     os.on('sql-exe-db-complete', function (err, id, db) {
-        var instance = app.findBy(app.state.instances, 'id', id);
+        var instance = app.findBy(app.instances, 'id', id);
 
         if (instance) {
             instance.pending--;
@@ -114,7 +114,7 @@
             app.alert(err.Message, 'Error Executing SQL');
         }
 
-        var instance = app.findBy(app.state.instances, 'id', id);
+        var instance = app.findBy(app.instances, 'id', id);
 
         if (instance) {
             instance.pending = 0;
@@ -126,7 +126,7 @@
     });
 
     app.on('tab-activating', function (id) {
-        var instance = app.findBy(app.state.instances, 'id', id);
+        var instance = app.findBy(app.instances, 'id', id);
 
         if (instance) {
             if (instance.pending === 0) {
@@ -141,18 +141,18 @@
 
     $commentBtn.on('click', function () {
         var $instance = $('.instance-container .instance.active', $content);
-        var editor = $instance.data('editor');
+        var instance = $instance.data('instance');
 
-        editor.appToggleComment();
-        editor.focus();
+        instance.editor.appToggleComment();
+        instance.editor.focus();
     });
 
     $uncommentBtn.on('click', function () {
         var $instance = $('.instance-container .instance.active', $content);
-        var editor = $instance.data('editor');
+        var instance = $instance.data('instance');
         
-        editor.appToggleComment({ mode: 'un' });
-        editor.focus();
+        instance.editor.appToggleComment({ mode: 'un' });
+        instance.editor.focus();
     });
 
-}(window));
+}(window, window.app = window.app || {}, window.os, jQuery));

@@ -3,7 +3,7 @@
 /**
  * Result pane in each instance
  */
-(function (window) {
+(function (window, app, os, $) {
     var $content = $('.content');
 
     app.on('execute-sql', function (id) {
@@ -129,10 +129,12 @@
         // Update status
         var totalRows = $pane.data('total-rows');
 
+        /* eslint-disable eqeqeq */
         if (!isNaN(totalRows) && totalRows != null) {
+            /* eslint-enable eqeqeq */
             app.emit('update-content-status', `Total Rows: <strong>${totalRows}</strong>`);
         } else {
             app.emit('update-content-status', '');
         }
     });
-}(window));
+}(window, window.app = window.app || {}, window.os, jQuery));

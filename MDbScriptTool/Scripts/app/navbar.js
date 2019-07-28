@@ -4,7 +4,7 @@
 /**
  * Navbar
  */
-(function (window) {
+(function (window, app, os, $) {
     var $navbar = $('.navbar');
     var $navbarDrawer = $('#navbar-drawer', $navbar);
     var $navbarToggle = $('.navbar-toggler', $navbar);
@@ -24,24 +24,18 @@
     });
 
     app.on('sidebar-collapse-toggled', function (collapsed) {
-        if (collapsed) {
-            $('i', $sidebarToggle).removeClass('fa-arrow-circle-left')
-                .addClass('fa-arrow-circle-right');
-        } else {
-            $('i', $sidebarToggle).removeClass('fa-arrow-circle-right')
-                .addClass('fa-arrow-circle-left');
-        }
+        $('i', $sidebarToggle).toggleClass('fa-rotate-180', collapsed);
     });
 
     // Handle sidebar toggle on the navbar
     $sidebarToggle.click(function () {
-        app.state.ui.sidebarCollapsed = !app.state.ui.sidebarCollapsed;
-        app.emit('sidebar-collapse-toggled', app.state.ui.sidebarCollapsed);
+        app.ui.sidebarCollapsed = !app.ui.sidebarCollapsed;
+        app.emit('sidebar-collapse-toggled', app.ui.sidebarCollapsed);
         app.saveState('ui');
     });
 
     // Restore state
     $(function () {
-        app.emit('sidebar-collapse-toggled', app.state.ui.sidebarCollapsed);
+        app.emit('sidebar-collapse-toggled', app.ui.sidebarCollapsed);
     });
-}(window));
+}(window, window.app = window.app || {}, window.os, jQuery));

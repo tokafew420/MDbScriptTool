@@ -3,17 +3,17 @@
 /**
  * Sidebar toolbar
  */
-(function (app, window, $) {
+(function (window, app, os, $) {
     var $sidebar = $('.sidebar');
     var $toolbar = $('.sidebar-toolbar', $sidebar);
     var $connectionSelect = $('.select-connection', $sidebar);
 
     // Refresh database list
     $('.refresh-databases-btn', $toolbar).on('click', function () {
-        if (app.state.currentConnection) {
-            if (app.state.currentConnection.raw) {
+        if (app.connection) {
+            if (app.connection.raw) {
                 app.loading.show('Getting Databases...');
-                os.emit('list-databases', app.state.currentConnection.raw);
+                os.emit('list-databases', app.connection.raw);
             }
         } else {
             app.alert('No connection selected');
@@ -80,21 +80,17 @@
 
     // Set the connection select to the specified value
     function setConnectionSelect(val) {
-        $('option', $connectionSelect).prop('selected', false);
-
         if (val && val !== 'select') {
             $connectionSelect.val(val);
-            $(`option[value="${val}"]`, $connectionSelect).prop('selected', true);
         } else {
             $connectionSelect.val('select');
-            $('option[value="select"]', $connectionSelect).prop('selected', true);
         }
     }
 
 
     // Set the connection select to "select" and clear the db list
     function resetConnectionSelect() {
-        app.setCurrentConnection(null);
+        app.connection = null;
         setConnectionSelect('select');
         app.emit('update-sidebar-status', '');
     }
@@ -108,19 +104,18 @@
 
         // Open connection dialog
         if (selectedConnId === 'new') {
-            if (app.state.currentConnectionId) {
+            if (app.connection) {
                 // Go back to previously selected connection
-                setConnectionSelect(app.state.currentConnectionId);
+                setConnectionSelect(app.connection.id);
             } else {
                 setConnectionSelect('select');
             }
             app.emit('open-connections-modal');
         } else {
             // List databases
-            var conn = app.getConnection(selectedConnId);
+            var conn = app.findBy(app.connections, 'id', selectedConnId);
             if (conn) {
-                let previousConnection = app.state.currentConnection;
-                app.setCurrentConnection(conn);
+                app.connection = conn;
             } else {
                 resetConnectionSelect();
             }
@@ -131,12 +126,12 @@
     function renderConnectionSelect() {
         $connectionSelect.html('<option value="select">Select Connection</option><option value="new">New...</option>');
 
-        app.state.connections.forEach(function (c) {
+        app.connections.forEach(function (c) {
             $('<option value="' + c.id + '">' + c.name + '</option>').appendTo($connectionSelect);
         });
 
-        if (app.state.currentConnection) {
-            setConnectionSelect(app.state.currentConnection.id);
+        if (app.connection) {
+            setConnectionSelect(app.connection.id);
         } else {
             resetConnectionSelect();
         }
@@ -151,5 +146,5 @@
     });
 
     // Initialization
-    if (app.state.connections.length) renderConnectionSelect();
-}(app, window, window.jQuery));
+    if (app.connections.length) renderConnectionSelect();
+}(window, window.app = window.app || {}, window.os, jQuery));

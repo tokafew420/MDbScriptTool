@@ -1,4 +1,4 @@
-﻿[
+[
   {
     "outputFile": "Content/app.css",
     "inputFile": "Content/app/css/app.less",
@@ -28,9 +28,5 @@
     "options": {
       "sourceMap": true
     }
-  },
-  {
-    "outputFile": "Scripts/app/cm-tsql-mode.es5.js",
-    "inputFile": "Scripts/app/cm-tsql-mode.js"
   }
 ]

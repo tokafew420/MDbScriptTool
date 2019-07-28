@@ -2,7 +2,7 @@
 /**
  * Sidebar
  */
-(function (app, window, $) {
+(function (window, app, os, $) {
     var $sidebar = $('.sidebar');
     var $connectionSelect = $('.select-connection', $sidebar);
     var $dbLst = $('.db-lst', $sidebar);
@@ -53,11 +53,11 @@
     });
 
     var updateStatusText = app.debounce(function () {
-        if (app.state.currentConnection && app.state.currentConnection.dbs) {
+        if (app.connection && app.connection.dbs) {
             var matchedTxt = '';
             var visible;
-            var total = app.state.currentConnection.dbs.length;
-            var selected = app.state.currentConnection.dbs.filter(function (d) { return d.checked; }).length;
+            var total = app.connection.dbs.length;
+            var selected = app.connection.dbs.filter(function (d) { return d.checked; }).length;
 
             if ($filterInput.val()) {
                 visible = $('.db-lst-item input[type="checkbox"]:visible', $dbLst).length;
@@ -165,10 +165,10 @@
                 return app.compare(a.name, b.name);
             });
 
-            app.state.currentConnection.dbs = dbs;
+            app.connection.dbs = dbs;
             app.saveState('connections');
 
-            renderDbList(app.state.currentConnection.dbs);
+            renderDbList(app.connection.dbs);
         }
     });
 
@@ -218,7 +218,7 @@
             app.once('instance-created', function ($inst) {
                 app.emit('execute-instance', $inst, [db.name]);
             });
-            app.newInstance({
+            app.createInstance({
                 code: sql
             });
         }
@@ -340,5 +340,5 @@
     });
 
     // Initializations
-    if (app.state.currentConnection) renderDbList(app.state.currentConnection.dbs);
-}(app, window, window.jQuery));
+    if (app.connection) renderDbList(app.connection.dbs);
+}(window, window.app = window.app || {}, window.os, jQuery));

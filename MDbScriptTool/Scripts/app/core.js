@@ -1,4 +1,4 @@
-﻿(function (window) {
+(function (window) {
     // Event Emitter polyfill if needed
     // https://gist.github.com/mudge/5830382
     if (typeof window.EventEmitter !== 'function') {
