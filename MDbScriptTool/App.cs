@@ -240,7 +240,7 @@ namespace Tokafew420.MDbScriptTool
         /// [1] The sql execute batch id
         /// [2] The number of databases.
         /// </remarks>
-        private void ExecuteSql(object[] args)
+        private async void ExecuteSql(object[] args)
         {
             var replyMsgName = "sql-exe-complete";
             if (args == null || args.Length != 4)
@@ -269,16 +269,20 @@ namespace Tokafew420.MDbScriptTool
                     var builder = new SqlConnectionStringBuilder(connStr);
                     builder.Password = TryDecrypt(builder.Password);
 
+                    var tasks = new List<Task>();
+
                     foreach (var db in dbs)
                     {
                         if (!string.IsNullOrWhiteSpace(db))
                         {
                             builder.InitialCatalog = db;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                            ExecuteSqlBatches(builder.ToString(), db, batches, id);
+                            tasks.Add(ExecuteSqlBatches(builder.ToString(), db, batches, id));
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         }
                     }
+
+                    await Task.WhenAll(tasks);
                 }
                 OsEvent.Emit(replyMsgName, null, id);
             }

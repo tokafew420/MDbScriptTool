@@ -50,78 +50,6 @@
         }).compare;
 
         /**
-         * Escapes the HTML string by replace the '<' and '>' characters.
-         * 
-         * @param {string} html The HTML string to escape.
-         * @returns {string} The escaped HTML string.
-         */
-        app.escapeHtml = function (html) {
-            if (typeof html === 'string') {
-                return html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            }
-            return html;
-        };
-
-        function _s4() {
-            return Math.floor((1 + Math.random()) * 0x10000)
-                .toString(16)
-                .substring(1);
-        }
-        /**
-        * Generates a random guid.
-        * 
-        * @returns {string} A guid. Format: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-        */
-        app.guid = function () {
-            return _s4() + _s4() + '-' + _s4() + '-' + _s4() + '-' + _s4() + '-' + _s4() + _s4() + _s4();
-        };
-
-        /**
-         * Finds the index of an element in an array or object by a property key and value.
-         * 
-         * @param {Array|Object} arr The array or object to search.
-         * @param {string} key The lookup property key name.
-         * @param {any} val The lookup property value.
-         * @returns {number|string} If an array is searched then the index of the found element
-         *  is returned. If an object is searched then the property name of the found property
-         *  is returned. Otherwise if no match is found then return -1.
-         */
-        app.indexBy = function (arr, key, val) {
-            var i, ii, k;
-
-            if (arr) {
-                if (Array.isArray(arr)) {
-                    for (i = 0, ii = arr.length; i < ii; i++) {
-                        if (arr[i] && arr[i][key] === val) return i;
-                    }
-                } else if (typeof arr === 'object') {
-                    var keys = Object.keys(arr);
-                    for (i = 0, ii = keys.length; i < ii; i++) {
-                        k = keys[i];
-                        if (arr[k] && arr[k][key] === val) return k;
-                    }
-                }
-            }
-
-            return -1;
-        };
-
-        /**
-         * Finds the element/property in an array or object by a property key and value.
-         * 
-         * @param {Array|Object} arr The array or object to search.
-         * @param {string} key The lookup property key name.
-         * @param {any} val The lookup property value.
-         * @returns {any} The object referenced by the found index or property name. Else
-         *  if no match is found then return undefined.
-         */
-        app.findBy = function (arr, key, val) {
-            var idx = app.indexBy(arr, key, val);
-
-            return arr[idx];
-        };
-
-        /**
          * Copy the specified text to the clipboard.
          * https://stackoverflow.com/a/30810322
          * 
@@ -129,7 +57,7 @@
          * @returns {boolean} true if the copy operation was successful, otherwise false.
          */
         app.copyToClipboard = function (text) {
-            var textArea = document.createElement("textarea");
+            var textArea = document.createElement('textarea');
 
             //
             // *** This styling is an extra step which is likely not required. ***
@@ -185,12 +113,146 @@
                 return false;
             }
         };
+
+        /**
+         * Escapes the HTML string by replace the '<' and '>' characters.
+         * 
+         * @param {string} html The HTML string to escape.
+         * @returns {string} The escaped HTML string.
+         */
+        app.escapeHtml = function (html) {
+            if (typeof html === 'string') {
+                return html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+            return html;
+        };
+
+        /**
+         * Exclude the specified properties of an object.
+         * 
+         * @param {object} obj The source object.
+         * @param {Array|string} props The property (or list or properties) to exclude.
+         * @returns {object} A new object with only the wanted properties.
+         */
+        app.exclude = function (obj, props) {
+            if (typeof props === 'string') props = [props];
+
+            return Object.keys(obj).reduce(function (acc, prop) {
+                if (!props.includes(prop)) {
+                    acc[prop] = obj[prop];
+                }
+                return acc;
+            }, {});
+        };
+
+        /**
+         * Finds the element/property in an array or object by a property key and value.
+         * 
+         * @param {Array|Object} arr The array or object to search.
+         * @param {string} key The lookup property key name.
+         * @param {any} val The lookup property value.
+         * @returns {any} The object referenced by the found index or property name. Else
+         *  if no match is found then return undefined.
+         */
+        app.findBy = function (arr, key, val) {
+            var idx = app.indexBy(arr, key, val);
+
+            return arr[idx];
+        };
+
+        function _s4() {
+            return Math.floor((1 + Math.random()) * 0x10000)
+                .toString(16)
+                .substring(1);
+        }
+        /**
+        * Generates a random guid.
+        * 
+        * @returns {string} A guid. Format: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        */
+        app.guid = function () {
+            return _s4() + _s4() + '-' + _s4() + '-' + _s4() + '-' + _s4() + '-' + _s4() + _s4() + _s4();
+        };
+
+        /**
+         * Finds the index of an element in an array or object by a property key and value.
+         * 
+         * @param {Array|Object} arr The array or object to search.
+         * @param {string} key The lookup property key name.
+         * @param {any} val The lookup property value.
+         * @returns {number|string} If an array is searched then the index of the found element
+         *  is returned. If an object is searched then the property name of the found property
+         *  is returned. Otherwise if no match is found then return -1.
+         */
+        app.indexBy = function (arr, key, val) {
+            var i, ii, k;
+
+            if (arr) {
+                if (Array.isArray(arr)) {
+                    for (i = 0, ii = arr.length; i < ii; i++) {
+                        if (arr[i] && arr[i][key] === val) return i;
+                    }
+                } else if (typeof arr === 'object') {
+                    var keys = Object.keys(arr);
+                    for (i = 0, ii = keys.length; i < ii; i++) {
+                        k = keys[i];
+                        if (arr[k] && arr[k][key] === val) return k;
+                    }
+                }
+            }
+
+            return -1;
+        };
+
+        /**
+         * Get the last item in the array.
+         * 
+         * @param {Array} arr The array to pick from
+         * @returns {any} The last array element or null if the array is empty.
+         */
+        app.last = function (arr) {
+            return arr && arr.length ? arr[arr.length - 1] : null;
+        };
+
+        /**
+         * Pick out the specified properties of an object.
+         * 
+         * @param {object} obj The source object.
+         * @param {Array|string} props The property (or list or properties) to pick out.
+         * @returns {object} A new object with only the wanted properties.
+         */
+        app.pick = function (obj, props) {
+            if (typeof props === 'string') props = [props];
+
+            return props.reduce(function (acc, prop) {
+                acc[prop] = obj[prop];
+            }, {});
+        };
+
+        /**
+         * Finds the element/property in an array or object by a property key and value.
+         * 
+         * @param {Array|Object} arr The array or object to search.
+         * @param {string} key The lookup property key name.
+         * @param {any} val The lookup property value.
+         * @returns {any} The object referenced by the found index or property name. Else
+         *  if no match is found then return undefined.
+         */
+        app.removeBy = function (arr, key, val) {
+            var idx = app.indexBy(arr, key, val);
+            var obj = arr[idx];
+
+            if (obj) arr.splice(idx, 1);
+
+            return obj;
+        };
     }());
 
 
     /* App setup */
     (function () {
         Object.assign(app, {
+            connection: null,   // THe current active connection
             connections: [],    // Holds all defined connections
             instance: null,     // The current active instance
             instances: [],      // Holds all instances
@@ -201,86 +263,204 @@
             savedStates: ['connections', 'instances', 'settings', 'ui'] // States to save
         });
 
-        // The current active connection
-        var _activeConnection = null;
-        Object.defineProperty(app, 'connection', {
-            get: function () {
-                return _activeConnection;
-            },
-            set: function (c) {
-                if (typeof c === 'string') {
-                    c = app.findBy(app.connections, 'id', c);
-                }
-
-                if (c !== _activeConnection) {
-                    var previousConnection = _activeConnection;
-
-                    _activeConnection = c || null;
-
-                    localStorage.setItem('app-active-connection-id', _activeConnection && _activeConnection.id || '');
-                    app.emit('connection-changed', _activeConnection, previousConnection);
-                }
+        // Creates a connection object with only properties relevant for the instance.
+        function _createInstanceConnection(connection) {
+            if (connection) {
+                return {
+                    id: connection.id,
+                    dbs: (connection.dbs || []).map(function (db) { return { name: db.name, checked: db.checked }; }),
+                    search: connection.search
+                };
             }
-        });
+            return null;
+        }
+
+        // Restore the state of the connection to reflect the instance's stored connection state.
+        function _restoreInstanceConnection(connection, instanceConnection) {
+            connection.dbs.forEach(function (db) {
+                db.checked = !!(app.findBy(instanceConnection.dbs, 'name', db.name) || {}).checked;
+            });
+            connection.search = instanceConnection.search;
+
+            return connection;
+        }
+
+        // Create a new instance object.
+        function _createInstance(instance) {
+            return Object.assign({
+                id: 'instance-' + app.guid(),
+                name: 'New *',
+                active: true,
+                pending: 0,
+                code: '',
+                connections: [],
+                connection: null
+            }, instance);
+        }
 
         /**
          * Creates a new instance.
          * 
          * @param {any} instance Optional. The initial instance properties.
-         * @event create-instance 
-         * @type {object} instance The newly created instance.
+         * @returns {object} The newly created instance.
+         * @event create-instance|instance-created
+         * @type {object} The newly created instance.
          */
         app.createInstance = function (instance) {
-            var inst = Object.assign({
-                id: 'instance-' + app.guid(),
-                name: 'New *',
-                active: true,
-                pending: 0,
-                code: ''
+            var conn = _createInstanceConnection(app.connection);
+            var conns = conn ? [conn] : [];
+
+            var inst = Object.assign(_createInstance(), {
+                connections: conns,
+                connection: conn
             }, instance);
-            app.instances.push(inst);
 
             app.emit('create-instance', inst);
+
+            app.instances.push(inst);
+
+            app.emit('instance-created', inst);
+
             app.saveState('instances');
+
+            return inst;
+        };
+
+        /**
+         * Remove an instance.
+         * 
+         * @param {any} instance This instance to remove or the instance id.
+         * @returns {object} The removed instance or null if nothing was removed.
+         * @event remove-instance|instance-removed
+         * @type {object} instance The instance to remove.
+         */
+        app.removeInstance = function (instance) {
+            if (typeof instance === 'string') {
+                instance = app.findBy(app.instances, 'id', instance);
+            }
+
+            var idx = app.instances.indexOf(instance);
+
+            if (idx !== -1) {
+                instance = app.instances[idx];
+                app.emit('remove-instance', instance);
+
+                app.instances.splice(idx, 1);
+                if (app.instance === instance) {
+                    app.instance = null;
+                }
+                app.saveState('instances');
+
+                app.emit('instance-removed', instance);
+
+                if (app.instances.length && app.instance === null) {
+                    // Switch to previous instance (to left) or next instance (to right)
+                    app.switchInstance(app.instances[idx - 1] || app.instances[idx]);
+                } else if (!app.instances.length) {
+                    // Create new empty instance
+                    app.switchInstance(app.createInstance());
+                }
+
+                return instance;
+            }
+
+            return null;
+        };
+
+        /**
+         * Switch to a different instance.
+         * 
+         * @param {object} instance The instance to switch to.
+         * @returns {object} The instance that was switched to or null if no switch happened.
+         * @event switch-instance|instance-switched
+         * @type {object} The target instance being switch to.
+         * @type {object} The previous instance.
+         */
+        app.switchInstance = function (instance) {
+            if (typeof instance === 'string') {
+                instance = app.findBy(app.instances, 'id', id);
+            }
+
+            if (instance && instance !== app.instance) {
+                var prev = app.instance;
+
+                app.emit('switch-instance', instance, prev);
+
+                app.instances.forEach(function (i) {
+                    i.active = i === instance;
+                });
+
+                app.instance = instance;
+
+                // Update connection
+                if (instance.connection) {
+                    var conn = app.findBy(app.connections, 'id', instance.connection.id);
+
+                    if (conn) {
+                        app.switchConnection(conn);
+                    } else {
+                        app.removeBy(instance.connections, 'id', instance.connection.id);
+                        instance.connection = null;
+                        app.switchConnection(null);
+                    }
+                } else {
+                    app.switchConnection(null);
+                }
+
+                app.emit('instance-switched', instance, prev);
+                app.saveState('instances');
+
+                return instance;
+            }
+
+            return null;
         };
 
         /**
          * Saves the application state.
          * 
          * @param {string} key Optional If provided, only save the particular state property.
-         * @event saved-state
+         * @event save-state|state-saved
+         * @type {Array} An array of states saved
          */
         app.saveState = function (key) {
-            if (key) {
-                localStorage.setItem('app-' + key, JSON.stringify(app[key], function (key, value) {
-                    if (['$instance', 'editor'].includes(key)) return undefined;
-                    return value;
-                }));
-            } else {
-                app.savedStates.forEach(function (key) {
-                    localStorage.setItem('app-' + key, JSON.stringify(app[key], function (key, value) {
-                        if (['$instance', 'editor'].includes(key)) return undefined;
-                        return value;
-                    }));
-                });
-            }
+            var states = app.savedStates;
+            if (key && typeof key === 'string') states = [key];
 
-            app.emit('saved-state', key || 'all');
+            app.emit('save-state', states);
+
+            states.forEach(function (key) {
+                if (key === 'instances') {
+                    var instances = app.instances.map(function (instance) {
+                        return app.exclude(instance, ['editor', 'pending', 'totalRows', '$editor', '$instance', '$tab', '$result', '$slider']);
+                    });
+                    localStorage.setItem('app-' + key, JSON.stringify(instances));
+                } else {
+                    localStorage.setItem('app-' + key, JSON.stringify(app[key]));
+                }
+            });
+
+            app.emit('state-saved', states);
         };
 
         /**
          * Saves the connection object.
          * 
          * @param {object} conn The connection object.
-         * @param {boolean} isSelected Whether the connection should be selected.
-         * @event connection-updated
+         * @event update-connection|connection-updated
          * @type {object} The updated connection
-         * @event connection-added
+         * @event add-connection|connection-added
          * @type {object} The added connection
          * @type {boolean} Whether the connection should be selected.
          */
-        app.saveConnection = function (conn, isSelected) {
+        app.saveConnection = function (conn) {
             var existingConn = app.findBy(app.connections, 'id', conn.id);
+
+            if (existingConn) {
+                app.emit('update-connection', conn);
+            } else {
+                app.emit('add-connection', conn);
+            }
 
             if (existingConn) {
                 existingConn.name = conn.name;
@@ -301,7 +481,7 @@
             if (existingConn) {
                 app.emit('connection-updated', conn);
             } else {
-                app.emit('connection-added', conn, isSelected);
+                app.emit('connection-added', conn);
             }
         };
 
@@ -309,8 +489,8 @@
          * Removes a connection.
          * 
          * @param {object|string} conn The connection object to remove or the connection id of the connection to remove.
-         * @event connection-removed
-         * @type {object} The removed connection object.
+         * @event remove-connection|connection-removed
+         * @type {object} The connection object being removed.
          */
         app.removeConnection = function (conn) {
             if (typeof conn === 'string') {
@@ -319,6 +499,15 @@
             var idx = app.connections.indexOf(conn);
 
             if (idx !== -1) {
+                app.emit('remove-connection', conn);
+
+                app.instances.forEach(function (instance) {
+                    if (instance.connection && instance.connection.id === conn.id) {
+                        instance.connection = null;
+                    }
+                    app.removeBy(instance.connections, 'id', conn.id);
+                });
+
                 app.connections.splice(idx, 1);
 
                 if (conn === app.connection) {
@@ -333,18 +522,222 @@
             }
         };
 
+        /**
+         * Switch to a different connection.
+         * 
+         * @param {object} conn The connection to switch to.
+         * @returns {object} The connection that was switched to.
+         * @event switch-connection|connection-switched
+         * @type {object} The target instance being switch to.
+         * @type {object} The previous instance.
+         */
+        app.switchConnection = function (conn) {
+            if (typeof conn === 'string') {
+                conn = app.findBy(app.connections, 'id', conn);
+            }
+
+            var prev = app.connection;
+
+            if (conn && app.instance) {
+                let instConn = app.findBy(app.instance.connections, 'id', conn.id);
+
+                if (instConn) {
+                    conn = _restoreInstanceConnection(conn, instConn);
+                }
+            }
+
+            app.emit('switch-connection', conn, prev);
+
+            if (conn && app.instance) {
+                app.instance.connection = _createInstanceConnection(conn);
+
+                app.removeBy(app.instance.connections, 'id', conn.id);
+                app.instance.connections.push(app.instance.connection);
+            }
+
+            app.connection = conn;
+
+            app.emit('connection-switched', conn, prev);
+            app.saveState('instances');
+
+            return conn;
+        };
+
+        /**
+         * Refresh the current connection's database list.
+         */
+        app.refreshDbs = function () {
+            if (app.connection && app.connection.raw) {
+                app.loading.show('Getting Databases...');
+                os.emit('list-databases', app.connection.raw);
+            }
+        };
+
+        /**
+         * Force the app to redraw (re-render).
+         */
+        app.redraw = function () {
+            app.emit('redraw');
+        };
+        $(window).on('resize', app.redraw);
+
+        /**
+         * Executes the given sql. If not arguments are provided, then the sql from the current instance is executed.
+         * 
+         * @param {string} connectionString The target server connection string.
+         * @param {Array} dbs A list of databases on the target server to execute the sql.
+         * @param {string} sql The sql to execute.
+         * @param {string} id The id of the execution.
+         * @returns {boolean} true if some sql was submitted for execution.
+         *
+         * @event execute-sql If called with no arguments
+         * @type {object} The target instance being executed.
+         * @type {object} The target connection used for the execution.
+         * @type {Array} The array of database names.
+         * @type {string} The sql being executed.
+         */
+        app.executeSql = function (connectionString, dbs, sql, id) {
+            if (connectionString && typeof connectionString === 'string') {
+                os.emit('execute-sql', connectionString, dbs, sql, id);
+                return true;
+            } else {
+                if (app.instance && app.connection) {
+                    sql = app.instance.editor.getSelection();
+
+                    if (!sql) sql = app.instance.editor.getValue();
+                    sql = (sql || '').trim();
+
+                    if (sql) {
+                        dbs = (app.connection.dbs || [])
+                            .filter(function (d) { return d.checked; })
+                            .map(function (db) { return db.name; });
+
+                        if (dbs.length) {
+                            app.emit('execute-sql', app.instance, app.connection, dbs, sql);
+
+                            app.instance.pending = 1;
+                            app.instance.totalRows = null;
+
+                            return app.executeSql(app.connection.raw, dbs, sql, app.instance.id);
+                        }
+                    }
+                }
+            }
+
+            return false;
+        };
+
+        os.on('sql-exe-db-begin', function (err, id, db) {
+            var instance = app.findBy(app.instances, 'id', id);
+
+            if (instance) {
+                instance.pending++;
+                console.log('sql-exe-db-begin', instance.pending, instance);
+            }
+            app.emit('execute-sql-progress', instance, err, db);
+        }).on('sql-exe-db-batch-result', function (err, id, db, batchNum, result) {
+            var instance = app.findBy(app.instances, 'id', id);
+
+            if (instance) {
+                var _result = instance.result = instance.result || {};
+                var _db = _result[db] = _result[db] || [];
+
+                _db.push({
+                    error: err,
+                    result: result
+                });
+
+                if (!err && result) {
+                    instance.totalRows = instance.totalRows || 0;
+                    instance.totalRows += result.length - 1;
+                }
+            }
+
+            app.emit('sql-executed-db-batch', instance, db, err, result);
+        }).on('sql-exe-db-complete', function (err, id, db) {
+            var instance = app.findBy(app.instances, 'id', id);
+
+            if (instance) {
+                instance.pending--;
+                console.log('sql-exe-db-complete', instance.pending, instance);
+                if (instance.pending < 0) instance.pending = 0;
+            }
+            app.emit('execute-sql-progress', instance, err, db);
+        }).on(['sql-exe-complete'], function (err, id) {
+            // This event only fires when the entire batch failed to execute.
+            if (err) {
+                console.log(err);
+                app.alert(err.Message, 'Error Executing SQL');
+            }
+
+            var instance = app.findBy(app.instances, 'id', id);
+
+            if (instance) {
+                instance.pending = 0;
+                console.log('sql-exe-complete', instance.pending, instance);
+            }
+            app.emit('sql-executed', instance, err);
+        });
+
+        /**
+         * Parses the given sql. If not arguments are provided, then the sql from the current instance is parsed.
+         * 
+         * @param {string} connectionString The target server connection string.
+         * @param {string} sql The sql to parse.
+         * @param {string} id The id of the execution.
+         * @returns {boolean} true if some sql was submitted for parsing.
+         *
+         * @event parse-sql Only if called with no arguments
+         * @type {object} The target instance being parsed.
+         * @type {object} The target connection used for the execution.
+         * @type {string} The sql being parsed.
+         */
+        app.parseSql = function (connectionString, sql, id) {
+            if (connectionString && typeof connectionString === 'string') {
+                os.emit('parse-sql', app.connection.raw, sql, id);
+                return true;
+            } else {
+                if (app.instance && app.connection) {
+                    sql = app.instance.editor.getSelection();
+
+                    if (!sql) sql = app.instance.editor.getValue();
+                    sql = (sql || '').trim();
+
+                    if (sql) {
+                        app.emit('parse-sql', app.instance, app.connection, sql);
+
+                        app.instance.totalRows = null;
+                        app.instance.pending = 1;
+                        app.parseSql(app.connection.raw, sql, app.instance.id);
+                    }
+                }
+            }
+
+            return false;
+        };
+
+        os.on('sql-parse-complete', function (err, batchId, errors) {
+            var instance = app.findBy(app.instances, 'id', batchId);
+
+            if (instance) {
+                instance.pending = 0;
+            }
+
+            app.emit('sql-parsed', instance, err, errors);
+        });
+
+        // Inits
+
         // Mirgation from v0.3.12
         // TODO: Remove after 4.x
         app.savedStates.forEach(function (key) {
             savedState = localStorage.getItem(`app-state-${key}`);
-     
+
             if (savedState) {
                 localStorage.removeItem(`app-state-${key}`);
                 localStorage.setItem(`app-${key}`, savedState);
             }
         });
-
-        // Inits
 
         // Get saved state
         app.savedStates.forEach(function (key) {
@@ -363,7 +756,6 @@
                 console.error(`Failed to load saved state. [${key}]`, e);
             }
         });
-
 
         $(function () {
             function alertError(err) {
@@ -424,20 +816,28 @@
                 $('head').append(`<link rel="stylesheet" href="${addonCss}" />`);
             }
 
-            var lastConnectionId = localStorage.getItem('app-active-connection-id', _activeConnection && _activeConnection.id || '');
-            if (lastConnectionId) {
-                var conn = app.findBy(app.connections, 'id', lastConnectionId);
-                if (conn) app.connection = conn;
-            }
-
             // Initialize saved instances
             if (app.instances.length) {
-                app.instances.forEach(function (instance) {
+                app.instances = app.instances.map(function (instance) {
+                    instance = _createInstance(instance);
+
+                    if (instance.connection) {
+                        // Restore connection/connections reference
+                        instance.connection = app.findBy(instance.connections, 'id', instance.connection.id);
+                    }
+
                     app.emit('create-instance', instance);
+                    app.emit('instance-created', instance);
+
+                    return instance;
                 });
             } else {
                 app.createInstance();
             }
+
+            // Set active instance
+            var activeInstances = app.instances.filter(function (i) { return i && i.active; });
+            app.switchInstance(app.last(activeInstances.length ? activeInstances : app.instances));
         });
     }());
 

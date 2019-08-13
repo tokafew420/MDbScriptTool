@@ -224,8 +224,8 @@
     <Content Include="Scripts\app.min.js" />
     <Content Include="Scripts\app\content-tabs.js" />
     <Content Include="Scripts\app\content-toolbar.js" />
-    <Content Include="Scripts\app\result.js" />
-    <Content Include="Scripts\app\editor.js" />
+    <Content Include="Scripts\app\content-result.js" />
+    <Content Include="Scripts\app\content-editor.js" />
     <Content Include="Scripts\app\settings-modal.js" />
     <Content Include="Scripts\app\about-modal.js" />
     <Content Include="Scripts\app\sidebar-toolbar.js" />
@@ -843,7 +843,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="laughing-man.ico" />
-    <Content Include="Scripts\app\content.js" />
+    <Content Include="Scripts\app\content-instance.js" />
     <Content Include="Scripts\app\connections-modal.js" />
     <Content Include="Scripts\app\sidebar.js" />
     <Content Include="Scripts\app\sidebar-slider.js" />

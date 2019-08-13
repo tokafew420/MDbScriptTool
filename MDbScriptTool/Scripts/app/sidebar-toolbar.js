@@ -11,10 +11,7 @@
     // Refresh database list
     $('.refresh-databases-btn', $toolbar).on('click', function () {
         if (app.connection) {
-            if (app.connection.raw) {
-                app.loading.show('Getting Databases...');
-                os.emit('list-databases', app.connection.raw);
-            }
+            app.refreshDbs();
         } else {
             app.alert('No connection selected');
         }
@@ -80,18 +77,15 @@
 
     // Set the connection select to the specified value
     function setConnectionSelect(val) {
-        if (val && val !== 'select') {
-            $connectionSelect.val(val);
-        } else {
-            $connectionSelect.val('select');
-        }
+            $connectionSelect.val(val || '');
     }
 
 
     // Set the connection select to "select" and clear the db list
     function resetConnectionSelect() {
-        app.connection = null;
-        setConnectionSelect('select');
+        app.switchConnection(null);
+
+        $connectionSelect.val('');
         app.emit('update-sidebar-status', '');
     }
 
@@ -100,22 +94,22 @@
         var selectedConnId = $('option:selected', $connectionSelect).val();
 
         // Clear db list
-        if (selectedConnId === 'select') return resetConnectionSelect();
+        if (selectedConnId === '') return resetConnectionSelect();
 
         // Open connection dialog
-        if (selectedConnId === 'new') {
+        if (selectedConnId === '_new') {
             if (app.connection) {
                 // Go back to previously selected connection
-                setConnectionSelect(app.connection.id);
+                $connectionSelect.val(app.connection.id || '');
             } else {
-                setConnectionSelect('select');
+                $connectionSelect.val('');
             }
             app.emit('open-connections-modal');
         } else {
             // List databases
             var conn = app.findBy(app.connections, 'id', selectedConnId);
             if (conn) {
-                app.connection = conn;
+                app.switchConnection(conn);
             } else {
                 resetConnectionSelect();
             }
@@ -124,14 +118,14 @@
 
 
     function renderConnectionSelect() {
-        $connectionSelect.html('<option value="select">Select Connection</option><option value="new">New...</option>');
+        $connectionSelect.html('<option value="">Select Connection</option><option value="_new">New...</option>');
 
         app.connections.forEach(function (c) {
             $('<option value="' + c.id + '">' + c.name + '</option>').appendTo($connectionSelect);
         });
 
         if (app.connection) {
-            setConnectionSelect(app.connection.id);
+            $connectionSelect.val(app.connection.id);
         } else {
             resetConnectionSelect();
         }
@@ -141,8 +135,8 @@
         renderConnectionSelect();
     });
 
-    app.on('connection-changed', function (current, previous) {
-        setConnectionSelect((current || {}).id);
+    app.on('connection-switched', function (current, previous) {
+        $connectionSelect.val((current || {}).id);
     });
 
     // Initialization

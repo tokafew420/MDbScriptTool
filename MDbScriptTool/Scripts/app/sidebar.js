@@ -59,11 +59,9 @@
             var total = app.connection.dbs.length;
             var selected = app.connection.dbs.filter(function (d) { return d.checked; }).length;
 
-            if ($filterInput.val()) {
+            if (app.instance.connection.search) {
                 visible = $('.db-lst-item input[type="checkbox"]:visible', $dbLst).length;
                 matchedTxt = `Matched <strong>${visible}</strong> - `;
-            } else {
-                visible = total;
             }
 
             $statusText.html(`${matchedTxt}Selected <strong>${selected}</strong>/<strong>${total}</strong>`);
@@ -97,12 +95,7 @@
                     $item.appendTo($dbLst);
                 }
 
-                $('input', $item).change(function () {
-                    var $this = $(this);
-                    $this.closest('.db-lst-item').toggleClass('active', db.checked = $this.is(':checked'));
-                });
-
-                $item.data('app-db', db);
+                $item.data('db', db);
             });
 
             app.show($additionalCtrls);
@@ -117,6 +110,20 @@
         checked = !!checked;
 
         $('.db-lst-item input[type="checkbox"]', $dbLst).prop('checked', checked).change();
+    });
+
+    // Set checked state
+    $dbLst.on('change', '.db-lst-item input[type="checkbox"]', function () {
+        var $this = $(this);
+        var checked = $this.is(':checked');
+        var $item = $this.closest('.db-lst-item');
+        var db = $item.data('db');
+
+        $item.toggleClass('active', db.checked);
+        db.checked = checked;
+
+        var instDb = app.findBy(app.instance.connection.dbs, 'name', db.name) || {};
+        instDb.checked = checked;
     });
 
     // Update selected db text
@@ -172,13 +179,10 @@
         }
     });
 
-    app.on('connection-changed', function (current, previous) {
-        if (current !== previous) {
-            if (current) {
-                renderDbList(current.dbs);
-            } else {
-                renderDbList();
-            }
+    app.on('connection-switched', function (current, previous) {
+        renderDbList(current && current.dbs);
+        if (app.instance && app.instance.connection) {
+            $filterInput.val(app.instance.connection.search || '').change();
         }
     });
 
@@ -200,6 +204,9 @@
         } else {
             $filterInputGrp.removeClass('has-search-term');
             app.show('.db-lst-item', $dbLst);
+        }
+        if (app.instance && app.instance.connection) {
+            app.instance.connection.search = searchTxt;
         }
         updateStatusText();
     }, 200));
@@ -231,14 +238,14 @@
         function runFilteredQuery(val) {
             // do some funky stuff
             if (root.$trigger && root.$trigger[0]) {
-                var db = $(root.$trigger[0]).data('app-db');
+                var db = $(root.$trigger[0]).data('db');
 
                 if (db && item.sql) {
                     runQuery(item.sql.replace('{0}', val), db);
                 }
             }
         }
-        
+
         var $filter = $(`<div class="input-group input-group-sm">
             <input type="text" class="form-control" placeholder="Filter" aria-label="Filter" aria-describedby="run-query-filter">
             <div class="input-group-append">
@@ -275,7 +282,7 @@
             if (key === 'copy') {
                 app.copyToClipboard($(this).text().trim());
             } else {
-                var db = $(this).data('app-db');
+                var db = $(this).data('db');
                 if (db && opts.commands && opts.commands[key] && opts.commands[key].sql) {
                     runQuery(opts.commands[key].sql, db);
                 }

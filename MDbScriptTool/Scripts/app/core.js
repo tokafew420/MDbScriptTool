@@ -41,7 +41,9 @@
                 length = listeners.length;
 
                 for (i = 0; i < length; i++) {
-                    listeners[i].apply(this, args);
+                    if (listeners[i].apply(this, args) === false) {
+                        break;
+                    }
                 }
             }
 
