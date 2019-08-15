@@ -31,16 +31,36 @@
     font-size: 0.85em;
     white-space: nowrap;
 
-    .nav-link:not(.active) {
-      background-color: @light-5;
-
-      &:not(:hover) {
-        border-color: @light-3 @light-3 @light-4;
+    .instance-tab {
+      &:not(.executing) {
+        .spinner {
+          display: none;
+        }
       }
-    }
 
-    .nav-link.plus-tab:not(.active) {
-      background-color: @light-2;
+      .spinner {
+        // Fix for icon wobble
+        filter: blur(0);
+        font-size: 14px;
+        height: 1em;
+        width: 1em;
+      }
+
+      .close-instance {
+        margin-left: 4px;
+      }
+
+      .nav-link:not(.active) {
+        background-color: @light-5;
+
+        &:not(:hover) {
+          border-color: @light-3 @light-3 @light-4;
+        }
+      }
+
+      .nav-link.plus-tab:not(.active) {
+        background-color: @light-2;
+      }
     }
   }
 
@@ -49,7 +69,6 @@
 
     .instance {
       position: relative;
-
       // Editor
       .editor {
         z-index: 10;

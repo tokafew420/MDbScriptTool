@@ -58,7 +58,7 @@
     app.on('create-instance', function (instance) {
         if (instance) {
             var $tab = instance.$tab = $(`<li class="nav-item instance-tab">
-            <a class="nav-link" id="${instance.id}-tab" data-toggle="tab" href="#${instance.id}" role="tab" aria-controls="${instance.id}" aria-selected="false">${instance.name} <i class="fa fa-times" aria-hidden="true"></i></a>
+            <a class="nav-link" id="${instance.id}-tab" data-toggle="tab" href="#${instance.id}" role="tab" aria-controls="${instance.id}" aria-selected="false">${instance.name} <i class="spinner fa fa-circle-o-notch spin text-accent-0" aria-hidden="true">&nbsp;</i><i class="close-instance fa fa-times" aria-hidden="true"></i></a>
         </li>`).data('instance', instance);
 
             $tab.insertBefore($('.nav-item:last', $tabs));
@@ -72,6 +72,14 @@
     }).on('switch-instance', function (instance) {
         if (instance && instance.$tab) {
             $('a', instance.$tab).tab('show');
+        }
+    }).on(['parse-sql', 'execute-sql'], function (instance) {
+        if (instance && instance.$tab) {
+            instance.$tab.addClass('executing');
+        }
+    }).on(['sql-parsed', 'sql-executed'], function (instance) {
+        if (instance && instance.$tab) {
+            instance.$tab.removeClass('executing');
         }
     });
 }(window, window.app = window.app || {}, window.os, jQuery));
