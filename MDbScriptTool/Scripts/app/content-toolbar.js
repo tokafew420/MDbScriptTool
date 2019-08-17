@@ -10,6 +10,8 @@
     /** Execute buttons **/
     var $executeBtn = $('.execute-btn', $toolbar);
     var $parseBtn = $('.parse-btn', $toolbar);
+    /** File buttons **/
+    var $openFile = $('.open-file-btn', $toolbar);
     /** Editor  buttons **/
     var $commentBtn = $('.comment-btn', $toolbar);
     var $uncommentBtn = $('.uncomment-btn', $toolbar);
@@ -54,6 +56,49 @@
                 _toggleToolbarBtns(false);
             }
         }
+    });
+
+    $openFile.on('click', function () {
+        $('#open-file-file', $toolbar).click();
+        return false;
+    });
+
+    var osFiles;
+    $('#open-file-file', $toolbar).on('click', function () {
+        osFiles = null;
+        os.once('file-dialog-closed', function (err, cancelled, files) {
+            if (!cancelled) osFiles = files;
+        });
+    }).on('change', function () {
+        var $this = $(this);
+        if (osFiles && osFiles.length && this.files && this.files.length) {
+            var name = this.files[0].name;
+            var osFile = app.findBy(osFiles, 'Name', name);
+            if (osFile) {
+                console.log(osFile);
+                var path = (osFile.WebkitRelativePath + '/' + osFile.Name).replace(/\\/g, '/');
+                console.log(path);
+
+                app.openFile(path, function (err, res) {
+                    if (err) {
+                        return app.alert.error(err);
+                    } 
+
+                    var instance = app.createInstance({
+                        path: path,
+                        name: name,
+                        code: res,
+                        dirty: false
+                    });
+
+                    // Let the editor instance create itself first.
+                    setTimeout(function () {
+                        app.switchInstance(instance);
+                    }, 0);
+                });
+            }
+        }
+        osFiles = null;
     });
 
     $commentBtn.on('click', function () {

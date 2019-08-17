@@ -648,6 +648,8 @@
     <Content Include="Scripts\jquery-3.4.1.slim.min.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.js" />
     <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\js-spark-md5\spark-md5.js" />
+    <Content Include="Scripts\js-spark-md5\spark-md5.min.js" />
     <Content Include="Scripts\popper-utils.js" />
     <Content Include="Scripts\popper-utils.min.js" />
     <Content Include="Scripts\popper.js" />
@@ -809,6 +811,9 @@
     <None Include="Scripts\esm\popper.min.js.map" />
     <None Include="Scripts\jquery-3.4.1.min.map" />
     <None Include="Scripts\jquery-3.4.1.slim.min.map" />
+    <None Include="Scripts\js-spark-md5\LICENSE" />
+    <None Include="Scripts\js-spark-md5\package.json" />
+    <None Include="Scripts\js-spark-md5\README.md" />
     <None Include="Scripts\popper-utils.js.map" />
     <None Include="Scripts\popper-utils.min.js.map" />
     <None Include="Scripts\popper.js.map" />

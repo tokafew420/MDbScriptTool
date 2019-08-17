@@ -215,6 +215,40 @@
         };
 
         /**
+         * A no-op function.
+         **/
+        app.noop = function () { };
+
+        /**
+         * Open a file a the specified path.
+         * 
+         * @param {string} path The path to the file.
+         * @param {Function} callback The callback function which will receive text in the file.
+         */
+        app.openFile = function (path, callback) {
+            callback = callback || app.noop;
+            if (!path) {
+                callback(new Error('Missing argument file path'));
+            }
+            if (path.indexOf('http') !== 0) {
+                // Append filesystem schema
+                // Add guid to disable chrome caching
+                path = 'fs://' + path + '?' + app.guid();
+            }
+            $.ajax({
+                type: 'GET',
+                dataType: 'text',
+                url: path
+            }).always(function (res, textStatus, jqXhr) {
+                if (textStatus === 'success') {
+                    callback(null, res);
+                } else {
+                    callback(new Error(res && res.responseText || 'Failed to open file'));
+                }
+            });
+        };
+
+        /**
          * Pick out the specified properties of an object.
          * 
          * @param {object} obj The source object.
@@ -289,10 +323,12 @@
         function _createInstance(instance) {
             return Object.assign({
                 id: 'instance-' + app.guid(),
-                name: 'New *',
+                name: 'New',
                 active: true,
                 pending: 0,
+                original: null,
                 code: '',
+                dirty: false,
                 connections: [],
                 connection: null
             }, instance);
@@ -310,20 +346,24 @@
             var conn = _createInstanceConnection(app.connection);
             var conns = conn ? [conn] : [];
 
-            var inst = Object.assign(_createInstance(), {
+            instance = Object.assign(_createInstance(), {
                 connections: conns,
                 connection: conn
             }, instance);
 
-            app.emit('create-instance', inst);
+            if (!instance.original) {
+                instance.original = SparkMD5.hash(instance.code || '');
+            }
 
-            app.instances.push(inst);
+            app.emit('create-instance', instance);
 
-            app.emit('instance-created', inst);
+            app.instances.push(instance);
+
+            app.emit('instance-created', instance);
 
             app.saveState('instances');
 
-            return inst;
+            return instance;
         };
 
         /**
@@ -777,17 +817,8 @@
             // Initialize addons
             var addonJs = app.settings.addonJs;
             if (addonJs) {
-                if (addonJs.indexOf('http') !== 0) {
-                    // Append filesystem schema
-                    // Add guid to disable chrome caching
-                    addonJs = 'fs://' + addonJs + '?' + app.guid();
-                }
-                $.ajax({
-                    type: 'GET',
-                    dataType: 'text',
-                    url: addonJs
-                }).always(function (res, textStatus, jqXhr) {
-                    if (textStatus === 'success') {
+                app.openFile(addonJs, function (err, res) {
+                    if (!err) {
                         res = `(function (window, app, os, $) {
                             try { ${res} } catch (err) { (${alertError.toString()}(err)); }
                         }(window, window.app = window.app || {}, window.os, jQuery));`;
@@ -978,6 +1009,18 @@
         var cmds = CodeMirror.commands;
         var Pos = CodeMirror.Pos;
 
+        cmds.executeSql = function (cm) {
+            $('.content .content-toolbar .execute-btn').click();
+        };
+
+        cmds.parseSql = function (cm) {
+            $('.content .content-toolbar .parse-btn').click();
+        };
+
+        cmds.openFile = function (cm) {
+            $('.content .content-toolbar .open-file-btn').click();
+        };
+
         CodeMirror.defineExtension('appToggleComment', function (opts) {
             opts = opts || {};
 
@@ -1005,14 +1048,6 @@
             cm.appToggleComment({ mode: 'un' });
         };
 
-        cmds.executeSql = function (cm) {
-            $('.content .content-toolbar .execute-btn').click();
-        };
-
-        cmds.parseSql = function (cm) {
-            $('.content .content-toolbar .parse-btn').click();
-        };
-
         var appKeyMap = CodeMirror.keyMap.app = {
             // Commands defined in /Scripts/CodeMirror/keymap/sublime.js
             'Shift-Tab': 'indentLess',
@@ -1025,6 +1060,7 @@
             // Custom commands
             'Ctrl-E': 'executeSql',
             'Ctrl-P': 'parseSql',
+            'Ctrl-O': 'openFile',
             'Ctrl-K Ctrl-C': 'comment',
             'Ctrl-K Ctrl-U': 'uncomment',
             fallthrough: 'default'
@@ -1039,7 +1075,7 @@
         $('[data-toggle="tooltip"]').tooltip({
             boundary: 'window',
             tigger: 'hover'
-        }).on('mouseleave', function () {
+        }).on('mouseleave click', function () {
             $(this).tooltip('hide');
         });
 

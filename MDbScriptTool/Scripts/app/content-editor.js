@@ -26,6 +26,11 @@
                 editor.setValue(instance.code);
             }
 
+            editor.on('change', app.debounce(function() {
+                instance.dirty = instance.original !== SparkMD5.hash(editor.getValue());
+                instance.$tab.toggleClass('is-dirty', instance.dirty);
+            }, 500));
+
             editor.on('change', app.debounce(function () {
                 instance.code = editor.getValue();
                 app.saveState('instances');

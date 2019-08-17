@@ -38,6 +38,12 @@
         }
       }
 
+      &:not(.is-dirty) {
+        .star {
+          display: none;
+        }
+      }
+
       .spinner {
         // Fix for icon wobble
         filter: blur(0);
@@ -57,10 +63,10 @@
           border-color: @light-3 @light-3 @light-4;
         }
       }
+    }
 
-      .nav-link.plus-tab:not(.active) {
-        background-color: @light-2;
-      }
+    .nav-link.plus-tab:not(.active) {
+      background-color: @light-2;
     }
   }
 

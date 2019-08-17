@@ -70,7 +70,7 @@
     var osFiles;
     $('#addon-js-file, #addon-css-file', $dlg).on('click', function () {
         osFiles = null;
-        os.on('file-dialog-closed', function (err, cancelled, files) {
+        os.once('file-dialog-closed', function (err, cancelled, files) {
             if (!cancelled) osFiles = files;
         });
     }).on('change', function () {

@@ -58,15 +58,28 @@
     app.on('create-instance', function (instance) {
         if (instance) {
             var $tab = instance.$tab = $(`<li class="nav-item instance-tab">
-            <a class="nav-link" id="${instance.id}-tab" data-toggle="tab" href="#${instance.id}" role="tab" aria-controls="${instance.id}" aria-selected="false">${instance.name} <i class="spinner fa fa-circle-o-notch spin text-accent-0" aria-hidden="true">&nbsp;</i><i class="close-instance fa fa-times" aria-hidden="true"></i></a>
-        </li>`).data('instance', instance);
+                <a class="nav-link" id="${instance.id}-tab" data-toggle="tab" href="#${instance.id}" role="tab" aria-controls="${instance.id}" aria-selected="false">${instance.name}<span class="star"> *</span> <i class="spinner fa fa-circle-o-notch spin text-accent-0" aria-hidden="true">&nbsp;</i><i class="close-instance fa fa-times" aria-hidden="true"></i></a>
+            </li>`).data('instance', instance);
 
             $tab.insertBefore($('.nav-item:last', $tabs));
+
+            if (instance.path) {
+                $tab.tooltip({
+                    boundary: 'window',
+                    tigger: 'hover',
+                    html: true,
+                    title: `<span style="white-space: nowrap;">${instance.path}</span>`
+                });
+            }
+            if (instance.dirty) {
+                $tab.addClass('is-dirty');
+            }
         }
     }).on('remove-instance', function (instance) {
         if (instance && instance.$tab) {
             var $tab = instance.$tab;
 
+            $tab.tooltip('dispose');
             $tab.tab('dispose').remove();
         }
     }).on('switch-instance', function (instance) {
