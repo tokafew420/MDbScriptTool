@@ -4,7 +4,7 @@ using CefSharp.Handler;
 
 namespace Tokafew420.MDbScriptTool
 {
-    internal class BrowserRequestHandler : DefaultRequestHandler
+    internal class BrowserRequestHandler : RequestHandler
     {
         /// <summary>
         /// Called before browser navigation. If the navigation is allowed CefSharp.IWebBrowser.FrameLoadStart
@@ -19,7 +19,7 @@ namespace Tokafew420.MDbScriptTool
         /// </param>
         /// <param name="isRedirect">Has the request been redirected</param>
         /// <returns>Return true to cancel the navigation or false to allow the navigation to proceed.</returns>
-        public override bool OnBeforeBrowse(IWebBrowser browserControl, IBrowser browser, IFrame frame, IRequest request, bool userGesture, bool isRedirect)
+        protected override bool OnBeforeBrowse(IWebBrowser browserControl, IBrowser browser, IFrame frame, IRequest request, bool userGesture, bool isRedirect)
         {
             if (request.Url.StartsWith("http://") || request.Url.StartsWith("https://"))
             {

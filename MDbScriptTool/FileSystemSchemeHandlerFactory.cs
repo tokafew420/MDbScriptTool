@@ -48,7 +48,16 @@ namespace Tokafew420.MDbScriptTool
 
             if (File.Exists(filepath))
             {
-                return ResourceHandler.FromFilePath(filepath, ResourceHandler.GetMimeType(Path.GetExtension(filepath)), true);
+                // Read file and then copy to a separate memory stream so the file isn't locked.
+                using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    var ms = new MemoryStream();
+
+                    stream.CopyTo(ms);
+                    ms.Seek(0, SeekOrigin.Begin);
+
+                    return ResourceHandler.FromStream(ms, ResourceHandler.GetMimeType(Path.GetExtension(filepath)), false);
+                }
             }
 
             return ResourceHandler.ForErrorMessage("File not found.", HttpStatusCode.NotFound);
