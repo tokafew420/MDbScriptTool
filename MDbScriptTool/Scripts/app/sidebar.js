@@ -315,6 +315,22 @@
                     }
                 }
             },
+            views: {
+                name: 'Views',
+                icon: 'fa-th',
+                accesskey: 'v',
+                items: {
+                    'views-all': {
+                        name: 'All',
+                        icon: 'fa-globe',
+                        sql: 'SELECT * FROM sys.views'
+                    },
+                    'views-filter': {
+                        type: 'filter',
+                        sql: "SELECT * FROM sys.views WHERE [name] LIKE '%{0}%'"
+                    }
+                }
+            },
             procedures: {
                 name: 'Stored Procedures',
                 icon: 'fa-code',
