@@ -37,6 +37,26 @@
         };
 
         /**
+         * Download the specified text as a file.
+         * 
+         * @param {string} text The text to download.
+         * @param {string} filename The file name or full path include.
+         * @param {string} mime The file mime type.
+         */
+        app.downloadText = function (text, filename, mime) {
+            mime = mime || 'text/plain';
+            var blob = new Blob([text], { type: 'text/plain' });
+            var downloadLink = document.createElement('a');
+            downloadLink.download = filename;
+
+            // Chrome allows the link to be clicked
+            // without actually adding it to the DOM.
+            downloadLink.href = window.webkitURL.createObjectURL(blob);
+
+            downloadLink.click();
+        };
+
+        /**
          * A case insensitive and numeric aware compare. (using 'en' Collator)
          * 
          * @param {string} x The first string to compare.
@@ -614,6 +634,35 @@
         };
 
         /**
+         * Save the current instance sql to a file.
+         *
+         * @param {boolean} saveAs true to invoke "Save As"
+         **/
+        app.saveInstanceToFile = function (saveAs) {
+            if (app.instance) {
+                var instance = app.instance;
+                var sql = instance.editor.getValue();
+
+                app.emit('saving-instance-file', instance);
+
+                var filename = (saveAs ? 'saveas:' : 'save:') + (instance.path || 'new.sql');
+
+                app.downloadText(sql, encodeURIComponent(filename), 'application/sql');
+
+                os.once('download-completed', function (complete, download) {
+                    if (complete) {
+                        instance.path = download.FullPath.replace(/\\/g, '/');
+                        instance.name = instance.path.split('/').pop();
+                        instance.dirty = false;
+
+                        app.saveState('instances');
+                    }
+                    app.emit('instance-file-saved', instance, complete);
+                });
+            }
+        };
+
+        /**
          * Force the app to redraw (re-render).
          */
         app.redraw = function () {
@@ -920,13 +969,15 @@
                 if (type === 'alert') {
                     opts = Object.assign({
                         cancel: false,
-                        ok: 'Ok',
+                        no: false,
+                        yes: 'Ok',
                         backdrop: 'static'
                     }, opts);
                 } else if (type === 'confirm') {
                     opts = Object.assign({
                         cancel: 'Cancel',
-                        ok: 'Ok',
+                        no: false,
+                        yes: 'Ok',
                         backdrop: 'static',
                         keyboard: false
                     }, opts);
@@ -947,13 +998,21 @@
                 } else {
                     $('.cancel-btn', $alertDlg).empty().removeClass('hidden').text(opts.cancel || 'Cancel').off('click').one('click', function () {
                         $alertDlg.modal('hide');
+                        callback();
+                    });
+                }
+                if (opts.no === false) {
+                    app.hide('.no-btn', $alertDlg);
+                } else {
+                    $('.no-btn', $alertDlg).empty().removeClass('hidden').text(opts.no || 'No').off('click').one('click', function () {
+                        $alertDlg.modal('hide');
                         callback(false);
                     });
                 }
-                if (opts.ok === false) {
-                    app.hide('.ok-btn', $alertDlg);
+                if (opts.yes === false) {
+                    app.hide('.yes-btn', $alertDlg);
                 } else {
-                    $('.ok-btn', $alertDlg).empty().removeClass('hidden').text(opts.ok || 'Ok').focus().off('click').one('click', function () {
+                    $('.yes-btn', $alertDlg).empty().removeClass('hidden').text(opts.yes || 'Ok').off('click').one('click', function () {
                         $alertDlg.modal('hide');
                         callback(true);
                     });
@@ -1002,6 +1061,11 @@
                 }
             };
         })();
+
+        // Auto-focus on the specified element when a modal is open
+        $('body').on('shown.bs.modal', '.modal', function () {
+            $('.auto-focus', this).focus();
+        });
     }());
 
     /* Configure CodeMirror */
@@ -1017,8 +1081,20 @@
             $('.content .content-toolbar .parse-btn').click();
         };
 
+        cmds.newFile = function (cm) {
+            $('.content .content-toolbar .new-file-btn').click();
+        };
+
         cmds.openFile = function (cm) {
             $('.content .content-toolbar .open-file-btn').click();
+        };
+
+        cmds.saveFile = function (cm) {
+            $('.content .content-toolbar .save-file-btn').click();
+        };
+
+        cmds.saveAsFile = function (cm) {
+            $('.content .content-toolbar .save-as-file-btn').click();
         };
 
         CodeMirror.defineExtension('appToggleComment', function (opts) {
@@ -1060,7 +1136,10 @@
             // Custom commands
             'Ctrl-E': 'executeSql',
             'Ctrl-P': 'parseSql',
+            'Ctrl-N': 'newFile',
             'Ctrl-O': 'openFile',
+            'Ctrl-S': 'saveFile',
+            'Shift-Ctrl-S': 'saveAsFile',
             'Ctrl-K Ctrl-C': 'comment',
             'Ctrl-K Ctrl-U': 'uncomment',
             fallthrough: 'default'

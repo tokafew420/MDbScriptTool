@@ -80,6 +80,7 @@ namespace Tokafew420.MDbScriptTool
             _browser.JavascriptObjectRepository.Register("uiEvent", app.UiEvent, true, BindingOptions.DefaultBinder);
 
             _browser.DialogHandler = new FileDialogHandler(this, _browser);
+            _browser.DownloadHandler = new DownloadHandler(this, _browser);
 
             MainPanel.Controls.Add(_browser);
 

@@ -428,6 +428,7 @@ namespace Tokafew420.MDbScriptTool
             {".sor", "text/plain"},
             {".spc", "application/x-pkcs7-certificates"},
             {".spl", "application/futuresplash"},
+            {".sql", "application/sql"},
             {".src", "application/x-wais-source"},
             {".srf", "text/plain"},
             {".SSISDeploymentManifest", "text/xml"},

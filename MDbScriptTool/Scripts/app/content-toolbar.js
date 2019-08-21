@@ -11,7 +11,10 @@
     var $executeBtn = $('.execute-btn', $toolbar);
     var $parseBtn = $('.parse-btn', $toolbar);
     /** File buttons **/
+    var $newFile = $('.new-file-btn', $toolbar);
     var $openFile = $('.open-file-btn', $toolbar);
+    var $saveFile = $('.save-file-btn', $toolbar);
+    var $saveAsFile = $('.save-as-file-btn', $toolbar);
     /** Editor  buttons **/
     var $commentBtn = $('.comment-btn', $toolbar);
     var $uncommentBtn = $('.uncomment-btn', $toolbar);
@@ -58,6 +61,14 @@
         }
     });
 
+    $newFile.on('click', function () {
+        app.once('instance-created', function (inst) {
+            app.switchInstance(inst);
+        });
+
+        app.createInstance();
+    });
+
     $openFile.on('click', function () {
         $('#open-file-file', $toolbar).click();
         return false;
@@ -75,9 +86,7 @@
             var name = this.files[0].name;
             var osFile = app.findBy(osFiles, 'Name', name);
             if (osFile) {
-                console.log(osFile);
                 var path = (osFile.WebkitRelativePath + '/' + osFile.Name).replace(/\\/g, '/');
-                console.log(path);
 
                 app.openFile(path, function (err, res) {
                     if (err) {
@@ -101,20 +110,32 @@
         osFiles = null;
     });
 
-    $commentBtn.on('click', function () {
-        var $instance = $('.instance-container .instance.active', $content);
-        var instance = $instance.data('instance');
+    $saveFile.on('click', function () {
+        if (app.instance && app.instance.editor) {
+            app.saveInstanceToFile(false);
+            app.instance.editor.focus();
+        }
+    });
 
-        instance.editor.appToggleComment();
-        instance.editor.focus();
+    $saveAsFile.on('click', function () {
+        if (app.instance && app.instance.editor) {
+            app.saveInstanceToFile(true);
+            app.instance.editor.focus();
+        }
+    });
+
+    $commentBtn.on('click', function () {
+        if (app.instance && app.instance.editor) {
+            app.instance.editor.appToggleComment();
+            app.instance.editor.focus();
+        }
     });
 
     $uncommentBtn.on('click', function () {
-        var $instance = $('.instance-container .instance.active', $content);
-        var instance = $instance.data('instance');
-
-        instance.editor.appToggleComment({ mode: 'un' });
-        instance.editor.focus();
+        if (app.instance && app.instance.editor) {
+            app.instance.editor.appToggleComment({ mode: 'un' });
+            app.instance.editor.focus();
+        }
     });
 
 }(window, window.app = window.app || {}, window.os, jQuery));

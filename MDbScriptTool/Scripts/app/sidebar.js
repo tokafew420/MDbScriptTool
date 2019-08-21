@@ -222,8 +222,12 @@
     function runQuery(sql, db) {
         if (sql) {
             sql = '-- Database: ' + db.name + '\r\n' + sql + '\r\n';
-            app.once('instance-created', function ($inst) {
-                app.emit('execute-instance', $inst, [db.name]);
+            app.once('instance-created', function (inst) {
+                app.switchInstance(inst);
+            }).once('instance-switched', function (inst) {
+                $('.db-lst-item input[type="checkbox"]', $dbLst).prop('checked', false).change();
+                $('#' + db.name, $dbLst).prop('checked', true).change();
+                app.executeSql();
             });
             app.createInstance({
                 code: sql
