@@ -119,8 +119,8 @@
         var $item = $this.closest('.db-lst-item');
         var db = $item.data('db');
 
-        $item.toggleClass('active', db.checked);
         db.checked = checked;
+        $item.toggleClass('active', checked);
 
         var instDb = app.findBy(app.instance.connection.dbs, 'name', db.name) || {};
         instDb.checked = checked;

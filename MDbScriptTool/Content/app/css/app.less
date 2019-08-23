@@ -36,9 +36,13 @@ body {
 
 /* Links */
 a,
-a:focus,
-a:hover {
+a:hover,
+a.focus {
   color: @light-0;
+}
+
+.accent-link:hover {
+  color: @accent-0 !important;
 }
 
 // Link buttons
@@ -54,8 +58,8 @@ a:hover {
 
     &:hover,
     &:focus {
-      font-weight: normal;
       cursor: default;
+      font-weight: normal;
     }
   }
 }
@@ -108,7 +112,7 @@ a:hover {
 }
 
 .tooltip-inner {
-  border: 1px solid @dark-2;
+  box-shadow: @light-box-shadow;
   max-width: none;
 }
 

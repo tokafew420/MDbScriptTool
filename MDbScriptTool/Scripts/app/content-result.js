@@ -57,7 +57,7 @@
         if (instance && instance.$result) {
             instance.$result.empty();
         }
-    }).on('sql-executed-db-batch', function (instance, db, err, result) {
+    }).on('sql-executed-db-batch', function (instance, err, db, result) {
         if (instance && instance.$result) {
             var $dbTable = $('#' + db, instance.$result);
             if ($dbTable.length === 0) {
@@ -105,6 +105,10 @@
             } else {
                 $dbTable.append('<div class="result-text">Command(s) completed successfully</div>');
             }
+        }
+    }).on('sql-executed', function (instance, err) {
+        if (instance && instance.$result) {
+            app.redraw();
         }
     });
 }(window, window.app = window.app || {}, window.os, jQuery));
