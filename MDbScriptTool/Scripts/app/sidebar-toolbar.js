@@ -70,16 +70,9 @@
 
     // Reset to sort asc icon
     app.on('db-list-rendered', function (dbLst) {
-        console.log('db-list-rendered');
         $('.sort-db-list-btn', $toolbar).attr('data-original-title', 'Sort databases ASC');
         $('.sort-db-list-btn i', $toolbar).removeClass('fa-sort-alpha-desc').addClass('fa-sort-alpha-asc');
     });
-
-    // Set the connection select to the specified value
-    function setConnectionSelect(val) {
-            $connectionSelect.val(val || '');
-    }
-
 
     // Set the connection select to "select" and clear the db list
     function resetConnectionSelect() {
@@ -133,9 +126,7 @@
 
     app.on(['connection-added', 'connection-updated', 'connection-removed'], function (conn) {
         renderConnectionSelect();
-    });
-
-    app.on('connection-switched', function (current, previous) {
+    }).on('connection-switched', function (current, previous) {
         $connectionSelect.val((current || {}).id);
     });
 

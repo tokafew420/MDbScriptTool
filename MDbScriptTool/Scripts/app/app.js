@@ -721,9 +721,8 @@
 
             if (instance) {
                 instance.pending++;
-                console.log('sql-exe-db-begin', instance.pending, instance);
             }
-            app.emit('execute-sql-progress', instance, err, db);
+            app.emit('execute-sql-db-begin', instance, err, db);
         }).on('sql-exe-db-batch-result', function (err, id, db, batchNum, result) {
             var instance = app.findBy(app.instances, 'id', id);
 
@@ -742,16 +741,15 @@
                 }
             }
 
-            app.emit('sql-executed-db-batch', instance, db, err, result);
+            app.emit('sql-executed-db-batch', instance || id, err, db, result);
         }).on('sql-exe-db-complete', function (err, id, db) {
             var instance = app.findBy(app.instances, 'id', id);
 
             if (instance) {
                 instance.pending--;
-                console.log('sql-exe-db-complete', instance.pending, instance);
                 if (instance.pending < 0) instance.pending = 0;
             }
-            app.emit('execute-sql-progress', instance, err, db);
+            app.emit('execute-sql-db-progress', instance || id, err, db);
         }).on(['sql-exe-complete'], function (err, id) {
             // This event only fires when the entire batch failed to execute.
             if (err) {
@@ -763,9 +761,8 @@
 
             if (instance) {
                 instance.pending = 0;
-                console.log('sql-exe-complete', instance.pending, instance);
             }
-            app.emit('sql-executed', instance, err);
+            app.emit('sql-executed', instance || id, err);
         });
 
         /**
