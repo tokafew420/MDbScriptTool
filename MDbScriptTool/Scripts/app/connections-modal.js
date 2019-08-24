@@ -16,6 +16,7 @@
     var $password = $('.password', $dlg);
     var $connStr = $('.connection-string', $dlg);
     var $advancedContainer = $('#advanced-container', $dlg);
+    var $confirmSql = $('#confirm-sql-execution', $dlg);
     var $deleteBtn = $('.delete-btn', $dlg);
     var $addBtn = $('.add-btn', $dlg);
 
@@ -36,6 +37,7 @@
     function resetFields() {
         $('input', $dlg).val('').removeClass('is-valid').removeClass('is-invalid');
         $advancedContainer.collapse('hide');
+        $confirmSql.prop('checked', false);
     }
 
     // Reset buttons
@@ -80,6 +82,7 @@
                 $username.val(conn.username);
                 $password.val(conn.password);
                 $connStr.val(conn.raw);
+                $confirmSql.prop('checked', !!conn.confirmSql);
 
                 $addBtn.text('Save');
             }
@@ -188,7 +191,7 @@
 
     $addBtn.click(function () {
         // Verify fields
-        $('input', $dlg).not('.connection-string').each(function () {
+        $('input', $dlg).not('.connection-string, #confirm-sql-execution').each(function () {
             var $this = $(this);
 
             if ($this[0].checkValidity()) {
@@ -211,7 +214,8 @@
                     server: $server.val(),
                     username: $username.val(),
                     password: $password.val(),
-                    raw: $connStr.val()
+                    raw: $connStr.val(),
+                    confirmSql: $confirmSql.is(':checked')
                 };
 
                 os.emit('encrypt-password', $password.val());
@@ -227,6 +231,7 @@
                     conn.username = $username.val();
                     conn.password = $password.val();
                     conn.raw = $connStr.val();
+                    conn.confirmSql = $confirmSql.is(':checked');
 
                     _tmpConn = conn;
 

@@ -240,6 +240,24 @@
         app.noop = function () { };
 
         /**
+         * A function that executes the first function parameter and return its result.
+         * If a function is not found then return the 1st arguments.
+         *
+         *@returns {any} The result of the 1st function or the 1st argument. 
+         **/
+        app.op = function () {
+            var args = [].slice.call(arguments);
+
+            for (var i = 0, ii = args.length; i < ii; i++) {
+                if (typeof args[i] === 'function') {
+                    return args[i]();
+                }
+            }
+
+            return args[0];
+        };
+
+        /**
          * Open a file a the specified path.
          * 
          * @param {string} path The path to the file.
@@ -745,12 +763,21 @@
                             .map(function (db) { return db.name; });
 
                         if (dbs.length) {
-                            app.emit('execute-sql', app.instance, app.connection, dbs, sql);
+                            (app.connection.confirmSql ? app.confirm : app.op)(`Confirm SQL execution against <strong>${dbs.length}</strong> database(s) on <strong>${app.connection.name}</strong>.`, 'Confirm', {
+                                yes: 'Execute',
+                                html: true
+                            }, function (confirmed) {
+                                if (!app.connection.confirmSql || confirmed) {
+                                    app.emit('execute-sql', app.instance, app.connection, dbs, sql);
 
-                            app.instance.pending = 1;
-                            app.instance.totalRows = null;
+                                    app.instance.pending = 1;
+                                    app.instance.totalRows = null;
 
-                            return app.executeSql(app.connection.raw, dbs, sql, app.instance.id);
+                                    return app.executeSql(app.connection.raw, dbs, sql, app.instance.id);
+                                }
+                            });
+
+                            return !app.connection.confirmSql;
                         }
                     }
                 }

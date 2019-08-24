@@ -136,7 +136,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <div class="input-group input-group-sm mb-3">
+          <div class="input-group input-group-sm mb-2">
             <div class="input-group-prepend">
               <label class="input-group-text" id="select-connection-lbl">Connections</label>
             </div>
@@ -145,51 +145,57 @@
             </select>
           </div>
           <hr>
-          <div class="input-group input-group-sm mb-3">
+          <div class="input-group input-group-sm mb-2">
             <div class="input-group-prepend">
               <span class="input-group-text" id="name-lbl">Name</span>
             </div>
-            <input type="text" class="form-control name" aria-label="Name" aria-describedby="name-lbl" required>
+            <input type="text" class="form-control last-child name" aria-label="Name" aria-describedby="name-lbl" required>
             <div class="invalid-feedback">
               Name required (i.e. "My Server")
             </div>
           </div>
-          <div class="input-group input-group-sm mb-3">
+          <div class="input-group input-group-sm mb-2">
             <div class="input-group-prepend">
               <span class="input-group-text" id="server-lbl">Server</span>
             </div>
-            <input type="text" class="form-control server" aria-label="Server" aria-describedby="server-lbl" required>
+            <input type="text" class="form-control last-child server" aria-label="Server" aria-describedby="server-lbl" required>
             <div class="invalid-feedback">
               Server name required
             </div>
           </div>
-          <div class="input-group input-group-sm mb-3">
+          <div class="input-group input-group-sm mb-2">
             <div class="input-group-prepend">
               <span class="input-group-text" id="username-lbl">Username</span>
             </div>
-            <input type="text" class="form-control username" aria-label="Username" aria-describedby="username-lbl" required>
+            <input type="text" class="form-control last-child username" aria-label="Username" aria-describedby="username-lbl" required>
             <div class="invalid-feedback">
               Username required, User must have access to <strong>master</strong> database
             </div>
           </div>
-          <div class="input-group input-group-sm mb-3">
+          <div class="input-group input-group-sm mb-2">
             <div class="input-group-prepend">
               <span class="input-group-text" id="password-lbl">Password</span>
             </div>
-            <input type="text" class="form-control password" aria-label="Password" aria-describedby="password-lbl" required>
+            <input type="text" class="form-control last-child password" aria-label="Password" aria-describedby="password-lbl" required>
             <div class="invalid-feedback">
               Password required
             </div>
           </div>
-          <div class="answer-text p-2">
+          <div class="input-group input-group-sm mb-2">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="confirm-sql-execution">
+              <label class="custom-control-label" for="confirm-sql-execution" data-toggle="tooltip" title="Prompt for confirmation before executing SQL against this connection">Confirm SQL Execution</label>
+            </div>
+          </div>
+          <div class="advanced-text pb-2">
             <a class="advanced-lnk accent-link" href="#" data-toggle="collapse" data-target="#advanced-container">Advanced</a>
           </div>
           <div class="collapse" id="advanced-container">
-            <div class="input-group input-group-sm mb-3">
+            <div class="input-group input-group-sm mb-2">
               <div class="input-group-prepend">
                 <span class="input-group-text" id="connection-string-lbl">Connection String</span>
               </div>
-              <input type="text" class="form-control connection-string" aria-label="Connection string" aria-describedby="connection-string-lbl">
+              <input type="text" class="form-control last-child connection-string" aria-label="Connection string" aria-describedby="connection-string-lbl">
               <div class="invalid-feedback">
                 Invalid connection string
               </div>

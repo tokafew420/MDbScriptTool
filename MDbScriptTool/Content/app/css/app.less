@@ -130,12 +130,36 @@ a.focus {
 
   .modal-header {
     cursor: move;
+
+    .close {
+      padding: .5rem 1rem;
+      margin: -.5rem -1rem -1rem auto;
+    }
   }
 }
 
 .tooltip-inner {
   box-shadow: @light-box-shadow;
   max-width: none;
+}
+
+.input-group > .form-control.last-child,
+.input-group > .custom-select.last-child {
+  border-top-right-radius: .2rem;
+  border-bottom-right-radius: .2rem;
+}
+
+// Remove validation icons
+.was-validated .form-control:valid,
+.form-control.is-valid,
+.was-validated .custom-select:valid {
+  background-image: none;
+}
+
+.was-validated .form-control:invalid,
+.form-control.is-invalid,
+.was-validated .custom-select:invalid {
+  background-image: none;
 }
 
 /* CodeMirror overrides */

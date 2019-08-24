@@ -141,7 +141,7 @@
         // // Update selected db text
         updateStatusText();
     }).on('change', '.db-lst-item input[type="checkbox"]', app.debounce(function () {
-        app.saveState('connections');
+        app.saveState('instances');
     }, 1000));
 
     app.on('sort-db-list', function (asc) {
