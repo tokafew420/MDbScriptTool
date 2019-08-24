@@ -111,6 +111,28 @@ a.focus {
   }
 }
 
+.nav-link {
+  padding: .25rem .5rem;
+}
+
+.modal-content {
+  box-shadow: @light-box-shadow;
+
+  &:hover {
+    box-shadow: @light-raised-box-shadow;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: .5rem 1rem;
+  }
+
+  .modal-header {
+    cursor: move;
+  }
+}
+
 .tooltip-inner {
   box-shadow: @light-box-shadow;
   max-width: none;

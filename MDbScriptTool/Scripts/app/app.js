@@ -1102,9 +1102,23 @@
             };
         })();
 
-        // Auto-focus on the specified element when a modal is open
         $('body').on('shown.bs.modal', '.modal', function () {
+            // Make modals draggable
+            $('.modal-content', this).draggable({
+                addClasses: false,
+                containment: 'body',
+                handle: '.modal-header'
+            });
+            // Auto-focus on the specified element when a modal is open
             $('.auto-focus', this).focus();
+        }).on('hidden.bs.modal', '.modal', function () {
+            // Reposition modals
+            $('.modal-content', this)
+                .draggable('destroy')
+                .css({
+                    top: '',
+                    left: ''
+                });
         });
     }());
 
