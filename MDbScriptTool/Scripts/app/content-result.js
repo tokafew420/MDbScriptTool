@@ -61,7 +61,10 @@
         if (instance && instance.$result) {
             var $dbTable = $('#' + db, instance.$result);
             if ($dbTable.length === 0) {
-                instance.$result.append(`<div id="${db}" class="result-sets-container"><div class="result-sets-header">${db}</div></div>`);
+                var conn = app.findBy(app.connections, 'id', instance.connection.id) || {};
+                var conndb = app.findBy(conn.dbs, 'name', db);
+
+                instance.$result.append(`<div id="${db}" class="result-sets-container"><div class="result-sets-header">${conndb && conndb.label || db}</div></div>`);
                 $dbTable = $('#' + db, instance.$result);
             }
 

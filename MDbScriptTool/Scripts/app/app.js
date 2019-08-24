@@ -177,7 +177,7 @@
         app.findBy = function (arr, key, val) {
             var idx = app.indexBy(arr, key, val);
 
-            return arr[idx];
+            return (arr || {})[idx];
         };
 
         function _s4() {
@@ -628,10 +628,53 @@
          */
         app.refreshDbs = function () {
             if (app.connection && app.connection.raw) {
+                app.emit('fetch-connection-dbs', app.connection);
                 app.loading.show('Getting Databases...');
-                os.emit('list-databases', app.connection.raw);
+                os.emit('fetch-connection-dbs', app.connection.raw, app.connection.id);
             }
         };
+        os.on('connection-dbs-fetched', function (err, dbs, id) {
+            var connection = app.findBy(app.connections, 'id', id);
+            dbs = dbs || [];
+
+            if (err) {
+                console.log(err);
+                app.alert(err.Message, 'Error Listing Databases');
+            } else {
+                if (connection) {
+                    // Pull out properties
+                    connection.dbs = dbs.map(function (db) {
+                        return {
+                            name: db.name,
+                            create_date: db.create_date,
+                            compatibility_level: db.compatibility_level,
+                            is_read_only: db.is_read_only,
+                            state: db.state,    // 0 = ONLINE
+                            recovery_model: db.recovery_model,   // 1 = FULL
+                            is_encrypted: db.is_encrypted,
+                            // Don't check master by default
+                            checked: db.name !== 'master'
+                        };
+                    }).sort(function (a, b) {
+                        // Sort by database name, case insensitive and accounting for numerics
+                        return app.compare(a.name, b.name);
+                    });
+
+
+                    if (app.instance) {
+                        // Reapply checked databaases
+                        var instanceConn = app.findBy(app.instance.connections, 'id', connection.id) || {};
+                        (instanceConn.dbs || []).forEach(function (db) {
+                            (app.findBy(connection.dbs, 'name', db.name) || {}).checked = !!db.checked;
+                        });
+                    }
+
+                    app.saveState('connections');
+                }
+            }
+            app.loading.hide();
+            app.emit('connection-dbs-fetched', connection || id, err, dbs);
+        });
 
         /**
          * Save the current instance sql to a file.

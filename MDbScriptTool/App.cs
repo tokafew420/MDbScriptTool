@@ -40,7 +40,7 @@ namespace Tokafew420.MDbScriptTool
             // Register event handlers
             UiEvent.On("parse-connection-string", ParseConnectionString);
             UiEvent.On("encrypt-password", EncryptPassword);
-            UiEvent.On("list-databases", GetDatabases);
+            UiEvent.On("fetch-connection-dbs", GetDatabases);
             UiEvent.On("execute-sql", ExecuteSql);
             UiEvent.On("parse-sql", ParseSql);
             UiEvent.On("get-versions", GetVersions);
@@ -173,22 +173,23 @@ namespace Tokafew420.MDbScriptTool
         /// [0] The connection string.
         /// </param>
         /// <remarks>
-        /// Emits event: database-list
+        /// Emits event: connection-dbs-fetched
         /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] An array of databases.
         /// </remarks>
         private void GetDatabases(object[] args)
         {
-            var replyMsgName = "database-list";
+            var replyMsgName = "connection-dbs-fetched";
 
-            if (args == null || args.Length != 1 || string.IsNullOrWhiteSpace(args[0] as string))
+            var connStr = args.Length > 0 ? args[0] as string : "";
+            var connId = args.Length > 1 ? args[1] as string : "";
+
+            if (string.IsNullOrWhiteSpace(connStr))
             {
-                OsEvent.Emit(replyMsgName, new ArgumentNullException("connectionString"));
+                OsEvent.Emit(replyMsgName, new ArgumentNullException("connectionString"), connId);
                 return;
             }
-
-            var connStr = args[0] as string;
 
             try
             {
@@ -208,14 +209,14 @@ namespace Tokafew420.MDbScriptTool
 
                         using (var reader = cmd.ExecuteReader())
                         {
-                            OsEvent.Emit(replyMsgName, null, ConvertToExpando(reader));
+                            OsEvent.Emit(replyMsgName, null, ConvertToExpando(reader), connId);
                         }
                     }
                 }
             }
             catch (Exception e)
             {
-                OsEvent.Emit(replyMsgName, e);
+                OsEvent.Emit(replyMsgName, e, connId);
             }
         }
 

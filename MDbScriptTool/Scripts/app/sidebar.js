@@ -84,7 +84,7 @@
                 var $item = $(`<li class="db-lst-item ${db.checked ? 'active' : ''}">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox" class="custom-control-input" id="${db.name}" ${db.checked ? 'checked' : ''}>
-                                <label class="custom-control-label" for="${db.name}">${db.name}</label>
+                                <label class="custom-control-label" for="${db.name}">${db.label || db.name}</label>
                             </div>
                         </li>`);
 
@@ -106,6 +106,19 @@
         }
     }
 
+    /**
+     * Refesh the database list labels.
+     **/
+    app.refreshDbLabels = function () {
+        if (app.connection && app.connection.dbs) {
+            app.connection.dbs.forEach(function (db) {
+                if (db.name) {
+                    $('.db-lst-item label[for="' + db.name + '"]').text(db.label || db.name);
+                }
+            });
+        }
+    };
+
     app.on('toggle-all-databases', function (checked) {
         checked = !!checked;
 
@@ -124,13 +137,10 @@
 
         var instDb = app.findBy(app.instance.connection.dbs, 'name', db.name) || {};
         instDb.checked = checked;
-    });
 
-    // Update selected db text
-    $dbLst.on('change', '.db-lst-item input[type="checkbox"]', updateStatusText);
-
-    // Save state on db toggles
-    $dbLst.on('change', '.db-lst-item input[type="checkbox"]', app.debounce(function () {
+        // // Update selected db text
+        updateStatusText();
+    }).on('change', '.db-lst-item input[type="checkbox"]', app.debounce(function () {
         app.saveState('connections');
     }, 1000));
 
@@ -147,35 +157,9 @@
         });
     });
 
-    os.on('database-list', function (err, dbs) {
-        app.loading.hide();
-        if (err) {
-            console.log(err);
-            return app.alert(err.Message, 'Error Listing Databases');
-        }
-        if (dbs && dbs.length) {
-            // Pull out properties
-            dbs = dbs.map(function (db) {
-                return {
-                    name: db.name,
-                    create_date: db.create_date,
-                    compatibility_level: db.compatibility_level,
-                    is_read_only: db.is_read_only,
-                    state: db.state,    // 0 = ONLINE
-                    recovery_model: db.recovery_model,   // 1 = FULL
-                    is_encrypted: db.is_encrypted,
-                    // Don't check master by default
-                    checked: db.name !== 'master'
-                };
-            }).sort(function (a, b) {
-                // Sort by database name, case insensitive and accounting for numerics
-                return app.compare(a.name, b.name);
-            });
-
-            app.connection.dbs = dbs;
-            app.saveState('connections');
-
-            renderDbList(app.connection.dbs);
+    app.on('connection-dbs-fetched', function (connection, err, dbs) {
+        if (!err && connection && connection.dbs) {
+            renderDbList(connection.dbs);
         }
     });
 
@@ -221,7 +205,7 @@
 
     function runQuery(sql, db) {
         if (sql) {
-            sql = '-- Database: ' + db.name + '\r\n' + sql + '\r\n';
+            sql = '-- Database: ' + (db.label || db.name) + '\r\n' + sql + '\r\n';
             app.once('instance-created', function (inst) {
                 app.switchInstance(inst);
             }).once('instance-switched', function (inst) {
