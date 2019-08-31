@@ -77,7 +77,10 @@
             containment: 'parent',
             drag: function (event, ui) {
                 resizeInstance(instance);
-                _delayedResizeInstance(instance);
+            },
+            stop: function (event, ui) {
+                resizeInstance(instance);
+                app.emit('instance-slider-moved', instance);
             }
         }).data('instance', instance);
 
@@ -88,7 +91,6 @@
         }
     }).on('instance-switched', function (instance, prevInstance) {
         if (instance && typeof instance.totalRows === 'number' && !isNaN(instance.totalRows)) {
-            /* eslint-enable eqeqeq */
             app.emit('update-content-status', `Total Rows: <strong>${instance.totalRows}</strong>`);
         } else {
             app.emit('update-content-status', '');
@@ -110,6 +112,7 @@
         }
 
         resizeInstance(instance);
+        app.emit('instance-slider-moved', instance);
     });
 
     // Toggle collapse on navbar's sidebar toggle click

@@ -349,7 +349,7 @@
 
         // Restore the state of the connection to reflect the instance's stored connection state.
         function _restoreInstanceConnection(connection, instanceConnection) {
-            connection.dbs.forEach(function (db) {
+            (connection.dbs || []).forEach(function (db) {
                 db.checked = !!(app.findBy(instanceConnection.dbs, 'name', db.name) || {}).checked;
             });
             connection.search = instanceConnection.search;
@@ -510,7 +510,7 @@
             states.forEach(function (key) {
                 if (key === 'instances') {
                     var instances = app.instances.map(function (instance) {
-                        return app.exclude(instance, ['editor', 'pending', 'totalRows', '$editor', '$instance', '$tab', '$result', '$slider']);
+                        return app.exclude(instance, ['editor', 'pending', 'result', 'totalRows', '$editor', '$instance', '$tab', '$result', '$slider']);
                     });
                     localStorage.setItem('app-' + key, JSON.stringify(instances));
                 } else {
