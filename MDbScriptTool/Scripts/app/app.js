@@ -195,6 +195,16 @@
         };
 
         /**
+         * An identity function that returns the passed function or a no-op function if the argument is not a function.
+         *
+         * @param {any} fn Any function
+         * @returns {function} The passed in function or a no-op function.
+         **/
+        app.identity = function (fn) {
+            return typeof fn === 'function' ? fn : app.noop;
+        };
+
+        /**
          * Finds the index of an element in an array or object by a property key and value.
          * 
          * @param {Array|Object} arr The array or object to search.
@@ -320,8 +330,214 @@
         };
     }());
 
+    /* UI Utilities */
+    (function () {
+        /*
+         * Shows the element hidden by hide() by removing the .hidden class.
+         * 
+         * @param {any} selectors List of any valid jQuery selector.
+         * @returns {any} The jQuery wrapped selector.
+         */
+        app.show = function () {
+            return $.apply(null, arguments).removeClass('hidden').css('display', '');
+        };
+        $.fn.appShow = function () {
+            return app.show(this);
+        };
 
-    /* App setup */
+        /**
+         * Hides the element by adding the .hidden class.
+         * 
+         * @param {any} selectors List of any valid jQuery selector.
+         * @returns {any} The jQuery wrapped selector.
+         */
+        app.hide = function () {
+            return $.apply(null, arguments).addClass('hidden').css('display', '');
+        };
+        $.fn.appHide = function () {
+            return app.hide(this);
+        };
+
+        // Setup alert dialog
+        app.dialog = (function () {
+            var $alertDlg = $('#alert-modal');
+
+            var bsAlert = function (type, msg, title, opts, callback) {
+                if (typeof title === 'object' || typeof title === 'function') {
+                    callback = opts;
+                    opts = title;
+                    title = null;
+                }
+                if (typeof opts === 'function') {
+                    callback = opts;
+                    opts = {};
+                }
+                opts = opts || {};
+                callback = callback || function () { };
+
+                if (type === 'alert') {
+                    opts = Object.assign({
+                        cancel: false,
+                        no: false,
+                        yes: 'Ok',
+                        backdrop: 'static'
+                    }, opts);
+                } else if (type === 'confirm') {
+                    opts = Object.assign({
+                        cancel: 'Cancel',
+                        no: false,
+                        yes: 'Ok',
+                        backdrop: 'static',
+                        keyboard: false
+                    }, opts);
+                }
+
+                var fn = opts.html ? 'html' : 'text';
+
+                if (title) {
+                    app.show($('.modal-header', $alertDlg).empty())[fn](title);
+                } else {
+                    app.hide('.modal-header', $alertDlg).empty();
+                }
+
+                $('.modal-body', $alertDlg).empty()[fn](msg);
+
+                if (opts.cancel === false) {
+                    app.hide('.cancel-btn', $alertDlg);
+                } else {
+                    $('.cancel-btn', $alertDlg).empty().removeClass('hidden').text(opts.cancel || 'Cancel').off('click').one('click', function () {
+                        $alertDlg.modal('hide');
+                        callback();
+                    });
+                }
+                if (opts.no === false) {
+                    app.hide('.no-btn', $alertDlg);
+                } else {
+                    $('.no-btn', $alertDlg).empty().removeClass('hidden').text(opts.no || 'No').off('click').one('click', function () {
+                        $alertDlg.modal('hide');
+                        callback(false);
+                    });
+                }
+                if (opts.yes === false) {
+                    app.hide('.yes-btn', $alertDlg);
+                } else {
+                    $('.yes-btn', $alertDlg).empty().removeClass('hidden').text(opts.yes || 'Ok').off('click').one('click', function () {
+                        $alertDlg.modal('hide');
+                        callback(true);
+                    });
+                }
+
+                $alertDlg.modal({
+                    backdrop: opts.backdrop === false ? false : opts.backdrop || true,
+                    keyboard: typeof opts.keyboard === 'boolean' ? opts.keyboard : true
+                }).modal('show');
+            };
+
+            return bsAlert;
+        })();
+
+        // Shortcut for dialog of type alert
+        app.alert = app.dialog.bind(this, 'alert');
+
+        // Shortcut for dialog of type confirm
+        app.confirm = app.dialog.bind(this, 'confirm');
+
+        // Setup loading div
+        app.loading = (function () {
+            var $container = $('.loader-container');
+            var $spinner = $('.loader', $container);
+            var $msg = $('.msg', $container);
+
+            return {
+                show: function (opts) {
+                    if (typeof opts === 'string') {
+                        opts = {
+                            msg: opts
+                        };
+                    }
+                    opts = opts || {};
+
+                    if (opts.msg) {
+                        $msg.text(opts.msg);
+                    } else {
+                        $msg.empty();
+                    }
+
+                    $container.show();
+                },
+                hide: function (opts) {
+                    $container.hide();
+                }
+            };
+        })();
+
+        var keyMap = new WeakMap();
+        /**
+         * Map key events to a function.
+         * 
+         * @param {any} el The element where key events are mapped to.
+         * @param {string} key The key combination.
+         * @param {function} fn The callback function when the key combination is encountered.
+         * @returns {object} The app object.
+         */
+        app.mapKeys = function (el, key, fn) {
+            el = $(el)[0];
+
+            if (el) {
+                var map = keyMap.get(el);
+
+                if (!map) {
+                    map = {};
+                    keyMap.set(el, map);
+
+                    el.addEventListener('keydown', function (e) {
+                        var keys = [];
+
+                        // Use code mirror ordering for consistency
+                        if (e.shiftKey) keys.push('shift');
+                        if (e.metaKey) keys.push('cmd');    // This is the Windows key on a PC
+                        if (e.ctrlKey) keys.push('ctrl');
+                        if (e.altKey) keys.push('alt');
+
+                        switch (e.key) {
+                            case 'ArrowUp': keys.push('up'); break;
+                            case 'ArrowDown': keys.push('down'); break;
+                            case 'ArrowLeft': keys.push('left'); break;
+                            case 'ArrowRight': keys.push('right'); break;
+                            default: keys.push(e.key.toLowerCase()); break;
+                        }
+
+                        return app.identity(map[keys.join('-')])(e, el);
+                    }, true);
+                }
+
+                map[key.toLowerCase()] = fn;
+            }
+
+            return app;
+        };
+
+        $('body').on('shown.bs.modal', '.modal', function () {
+            // Make modals draggable
+            $('.modal-content', this).draggable({
+                addClasses: false,
+                containment: 'body',
+                handle: '.modal-header'
+            });
+            // Auto-focus on the specified element when a modal is open
+            $('.auto-focus', this).focus();
+        }).on('hidden.bs.modal', '.modal', function () {
+            // Reposition modals
+            $('.modal-content', this)
+                .draggable('destroy')
+                .css({
+                    top: '',
+                    left: ''
+                });
+        });
+    }());
+
+    /* App */
     (function () {
         Object.assign(app, {
             connection: null,   // THe current active connection
@@ -988,167 +1204,6 @@
         });
     }());
 
-    /* UI Utilities */
-    (function () {
-        /*
-         * Shows the element hidden by hide() by removing the .hidden class.
-         * 
-         * @param {any} selectors List of any valid jQuery selector.
-         * @returns {any} The jQuery wrapped selector.
-         */
-        app.show = function () {
-            return $.apply(null, arguments).removeClass('hidden').css('display', '');
-        };
-        $.fn.appShow = function () {
-            return app.show(this);
-        };
-
-        /**
-         * Hides the element by adding the .hidden class.
-         * 
-         * @param {any} selectors List of any valid jQuery selector.
-         * @returns {any} The jQuery wrapped selector.
-         */
-        app.hide = function () {
-            return $.apply(null, arguments).addClass('hidden').css('display', '');
-        };
-        $.fn.appHide = function () {
-            return app.hide(this);
-        };
-
-        // Setup alert dialog
-        app.dialog = (function () {
-            var $alertDlg = $('#alert-modal');
-
-            var bsAlert = function (type, msg, title, opts, callback) {
-                if (typeof title === 'object' || typeof title === 'function') {
-                    callback = opts;
-                    opts = title;
-                    title = null;
-                }
-                if (typeof opts === 'function') {
-                    callback = opts;
-                    opts = {};
-                }
-                opts = opts || {};
-                callback = callback || function () { };
-
-                if (type === 'alert') {
-                    opts = Object.assign({
-                        cancel: false,
-                        no: false,
-                        yes: 'Ok',
-                        backdrop: 'static'
-                    }, opts);
-                } else if (type === 'confirm') {
-                    opts = Object.assign({
-                        cancel: 'Cancel',
-                        no: false,
-                        yes: 'Ok',
-                        backdrop: 'static',
-                        keyboard: false
-                    }, opts);
-                }
-
-                var fn = opts.html ? 'html' : 'text';
-
-                if (title) {
-                    app.show($('.modal-header', $alertDlg).empty())[fn](title);
-                } else {
-                    app.hide('.modal-header', $alertDlg).empty();
-                }
-
-                $('.modal-body', $alertDlg).empty()[fn](msg);
-
-                if (opts.cancel === false) {
-                    app.hide('.cancel-btn', $alertDlg);
-                } else {
-                    $('.cancel-btn', $alertDlg).empty().removeClass('hidden').text(opts.cancel || 'Cancel').off('click').one('click', function () {
-                        $alertDlg.modal('hide');
-                        callback();
-                    });
-                }
-                if (opts.no === false) {
-                    app.hide('.no-btn', $alertDlg);
-                } else {
-                    $('.no-btn', $alertDlg).empty().removeClass('hidden').text(opts.no || 'No').off('click').one('click', function () {
-                        $alertDlg.modal('hide');
-                        callback(false);
-                    });
-                }
-                if (opts.yes === false) {
-                    app.hide('.yes-btn', $alertDlg);
-                } else {
-                    $('.yes-btn', $alertDlg).empty().removeClass('hidden').text(opts.yes || 'Ok').off('click').one('click', function () {
-                        $alertDlg.modal('hide');
-                        callback(true);
-                    });
-                }
-
-                $alertDlg.modal({
-                    backdrop: opts.backdrop === false ? false : opts.backdrop || true,
-                    keyboard: typeof opts.keyboard === 'boolean' ? opts.keyboard : true
-                }).modal('show');
-            };
-
-            return bsAlert;
-        })();
-
-        // Shortcut for dialog of type alert
-        app.alert = app.dialog.bind(this, 'alert');
-
-        // Shortcut for dialog of type confirm
-        app.confirm = app.dialog.bind(this, 'confirm');
-
-        // Setup loading div
-        app.loading = (function () {
-            var $container = $('.loader-container');
-            var $spinner = $('.loader', $container);
-            var $msg = $('.msg', $container);
-
-            return {
-                show: function (opts) {
-                    if (typeof opts === 'string') {
-                        opts = {
-                            msg: opts
-                        };
-                    }
-                    opts = opts || {};
-
-                    if (opts.msg) {
-                        $msg.text(opts.msg);
-                    } else {
-                        $msg.empty();
-                    }
-
-                    $container.show();
-                },
-                hide: function (opts) {
-                    $container.hide();
-                }
-            };
-        })();
-
-        $('body').on('shown.bs.modal', '.modal', function () {
-            // Make modals draggable
-            $('.modal-content', this).draggable({
-                addClasses: false,
-                containment: 'body',
-                handle: '.modal-header'
-            });
-            // Auto-focus on the specified element when a modal is open
-            $('.auto-focus', this).focus();
-        }).on('hidden.bs.modal', '.modal', function () {
-            // Reposition modals
-            $('.modal-content', this)
-                .draggable('destroy')
-                .css({
-                    top: '',
-                    left: ''
-                });
-        });
-    }());
-
     /* Configure CodeMirror */
     (function () {
         var cmds = CodeMirror.commands;
@@ -1160,22 +1215,6 @@
 
         cmds.parseSql = function (cm) {
             $('.content .content-toolbar .parse-btn').click();
-        };
-
-        cmds.newFile = function (cm) {
-            $('.content .content-toolbar .new-file-btn').click();
-        };
-
-        cmds.openFile = function (cm) {
-            $('.content .content-toolbar .open-file-btn').click();
-        };
-
-        cmds.saveFile = function (cm) {
-            $('.content .content-toolbar .save-file-btn').click();
-        };
-
-        cmds.saveAsFile = function (cm) {
-            $('.content .content-toolbar .save-as-file-btn').click();
         };
 
         CodeMirror.defineExtension('appToggleComment', function (opts) {
@@ -1217,10 +1256,6 @@
             // Custom commands
             'Ctrl-E': 'executeSql',
             'Ctrl-P': 'parseSql',
-            'Ctrl-N': 'newFile',
-            'Ctrl-O': 'openFile',
-            'Ctrl-S': 'saveFile',
-            'Shift-Ctrl-S': 'saveAsFile',
             'Ctrl-K Ctrl-C': 'comment',
             'Ctrl-K Ctrl-U': 'uncomment',
             fallthrough: 'default'
@@ -1230,6 +1265,7 @@
         CodeMirror.normalizeKeyMap(appKeyMap);
     }());
 
+    /* Init */
     $(function () {
         // Initialize all tooltips
         $('[data-toggle="tooltip"]').tooltip({

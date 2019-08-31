@@ -7,6 +7,7 @@
     var $sidebar = $('.sidebar');
     var $toolbar = $('.sidebar-toolbar', $sidebar);
     var $connectionSelect = $('.select-connection', $sidebar);
+    var $toggleAllDbBtn = $('.toggle-all-db-btn', $toolbar);
 
     // Refresh database list
     $('.refresh-databases-btn', $toolbar).on('click', function () {
@@ -17,8 +18,18 @@
         }
     });
 
+    function _setToggleAllDbBtnState(allChecked) {
+        if (allChecked) {
+            $toggleAllDbBtn.attr('data-original-title', 'Uncheck all databases (Shift-Ctrl-A)');
+            $('i', $toggleAllDbBtn).removeClass('fa-check-square-o').addClass('fa-square-o');
+        } else {
+            $toggleAllDbBtn.attr('data-original-title', 'Check all databases (Ctrl-A)');
+            $('i', $toggleAllDbBtn).removeClass('fa-square-o').addClass('fa-check-square-o');
+        }
+    }
+
     // Toggle all databases selection
-    $('.toggle-all-db-btn', $toolbar).on('mousedown', function (evt) {
+    $toggleAllDbBtn.on('mousedown', function (evt) {
         var $this = $(this);
         var $i = $('i', $this);
 
@@ -26,30 +37,21 @@
             // Left click
             if ($i.hasClass('fa-check-square-o')) {
                 app.emit('toggle-all-databases', true);
-                $this.attr('data-original-title', 'Uncheck all databases');
-                $i.removeClass('fa-check-square-o').addClass('fa-square-o');
+                _setToggleAllDbBtnState(true);
             } else {
                 app.emit('toggle-all-databases', false);
-                $this.attr('data-original-title', 'Check all databases');
-                $i.removeClass('fa-square-o').addClass('fa-check-square-o');
+                _setToggleAllDbBtnState(false);
             }
         } else if (evt.which === 3) {
             // Right click always uncheck all
             app.emit('toggle-all-databases', false);
-            $this.attr('data-original-title', 'Check all databases');
-            $i.removeClass('fa-square-o').addClass('fa-check-square-o');
+            _setToggleAllDbBtnState(false);
         }
     });
 
     // Reset select all icon. Only "unselect all" when all dbs are selected.
     app.on('db-list-selection-changed', function (total, selected, visible) {
-        if (total === selected) {
-            $('.toggle-all-db-btn', $toolbar).attr('data-original-title', 'Uncheck all databases');
-            $('.toggle-all-db-btn i', $toolbar).removeClass('fa-check-square-o').addClass('fa-square-o');
-        } else {
-            $('.toggle-all-db-btn', $toolbar).attr('data-original-title', 'Check all databases');
-            $('.toggle-all-db-btn i', $toolbar).removeClass('fa-square-o').addClass('fa-check-square-o');
-        }
+        _setToggleAllDbBtnState(total === selected);
     });
 
     // Sort database list

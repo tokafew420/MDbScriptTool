@@ -138,7 +138,7 @@
         var instDb = app.findBy(app.instance.connection.dbs, 'name', db.name) || {};
         instDb.checked = checked;
 
-        // // Update selected db text
+        // Update selected db text
         updateStatusText();
     }).on('change', '.db-lst-item input[type="checkbox"]', app.debounce(function () {
         app.saveState('instances');
@@ -348,6 +348,29 @@
                 }
             }
         }
+    });
+
+    // Key maps
+    app.mapKeys($sidebar, 'Ctrl-A', function (e) {
+        e.preventDefault(); // Prevent select all
+
+        app.emit('toggle-all-databases', true);
+    }).mapKeys($sidebar, 'Shift-Ctrl-A', function (e) {
+        app.emit('toggle-all-databases', false);
+    }).mapKeys($sidebar, 'Ctrl-N', function () {
+        app.emit('open-connections-modal');
+    }).mapKeys($sidebar, 'Ctrl-O', function () {
+        $('.content .content-toolbar .open-file-btn').click();
+    }).mapKeys($sidebar, 'Ctrl-Q', function () {
+        if (app.instance && app.instance.$tab) {
+            $('i.fa-times', app.instance.$tab).click();
+        }
+    }).mapKeys($sidebar, 'Ctrl-R', function () {
+        $('.refresh-databases-btn', $sidebar).click();
+    }).mapKeys($sidebar, 'Ctrl-S', function () {
+        $('.content .content-toolbar .save-file-btn').click();
+    }).mapKeys($sidebar, 'Shift-Ctrl-S', function () {
+        $('.content .content-toolbar .save-as-file-btn').click();
     });
 
     // Initializations

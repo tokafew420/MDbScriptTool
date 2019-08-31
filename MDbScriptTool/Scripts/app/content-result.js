@@ -64,18 +64,18 @@
                 var conn = app.findBy(app.connections, 'id', instance.connection.id) || {};
                 var conndb = app.findBy(conn.dbs, 'name', db);
 
-                instance.$result.append(`<div id="${db}" class="result-sets-container"><div class="result-sets-header">${conndb && conndb.label || db}</div></div>`);
+                instance.$result.append(`<div id="${db}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${conndb && conndb.label || db}</div></div>`);
                 $dbTable = $('#' + db, instance.$result);
             }
 
             if (err) {
                 if (err.Errors && err.Errors.length) {
-                    $dbTable.append(`<div class="result-text"><pre class="text-danger">${formatSqlError(err.Errors).join('\n\n')}</pre></div>`);
+                    $dbTable.append(`<div class="result-text" tabindex="0"><pre class="text-danger">${formatSqlError(err.Errors).join('\n\n')}</pre></div>`);
                 } else {
-                    $dbTable.append(`<div class="result-text text-danger">${err.Message}</div>`);
+                    $dbTable.append(`<div class="result-text text-danger" tabindex="0">${err.Message}</div>`);
                 }
             } else if (result && result.length && result[0].length) {
-                var $table = $('<div class="result-set"><table class="table table-sm table-striped table-hover table-dark table-bordered"><thead><tr><th class="row-number"></th></tr></thead><tbody></tbody></table></div>');
+                var $table = $('<div class="result-set" tabindex="0"><table class="table table-sm table-striped table-hover table-dark table-bordered"><thead><tr><th class="row-number"></th></tr></thead><tbody></tbody></table></div>');
 
                 $('thead tr', $table).append(result[0].map(function (columnName) {
                     if (columnName) {
@@ -94,7 +94,7 @@
 
                 app.emit('update-content-status', `Total Rows: <strong>${instance.totalRows}</strong>`);
             } else {
-                $dbTable.append('<div class="result-text">Command(s) completed successfully</div>');
+                $dbTable.append('<div class="result-text" tabindex="0">Command(s) completed successfully</div>');
             }
         }
     }).on('sql-executed', function (instance, err) {

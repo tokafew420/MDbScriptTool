@@ -65,7 +65,7 @@
                     <div class="slider slider-h">
                         <div></div>
                     </div>
-                    <div class="result"></div>
+                    <div class="result" tabindex="0"></div>
                 </div>`).data('instance', instance);
         $instance.appendTo($instanceContainer);
 
@@ -138,5 +138,20 @@
 
     app.on('update-content-status', function (text) {
         $('#content-statusbar .status-text', $content).html(text);
+    });
+
+    // Key maps
+    app.mapKeys($content, 'Ctrl-N', function () {
+        $('.content-toolbar .new-file-btn', $content).click();
+    }).mapKeys($content, 'Ctrl-O', function () {
+        $('.content-toolbar .open-file-btn', $content).click();
+    }).mapKeys($content, 'Ctrl-Q', function () {
+        if (app.instance && app.instance.$tab) {
+            $('i.fa-times', app.instance.$tab).click();
+        }
+    }).mapKeys($content, 'Ctrl-S', function () {
+        $('.content-toolbar .save-file-btn', $content).click();
+    }).mapKeys($content, 'Shift-Ctrl-S', function () {
+        $('.content-toolbar .save-as-file-btn', $content).click();
     });
 }(window, window.app = window.app || {}, window.os, jQuery));

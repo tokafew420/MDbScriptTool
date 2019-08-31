@@ -53,14 +53,14 @@
     </div>
   </nav>
   <!-- Sidebar -->
-  <div class="sidebar">
+  <div class="sidebar" tabindex="0">
     <nav class="sidebar-nav p-2">
       <!-- Sidebar Header -->
       <div class="sidebar-header">
         <div class="btn-toolbar sidebar-toolbar mb-2" role="toolbar" aria-label="Main Connection Toolbar">
-          <div class="btn-group mr-2" role="group" aria-label="First group">
-            <button type="button" class="btn btn-sm refresh-databases-btn" data-toggle="tooltip" title="Refresh databases"><i class="fa fa-refresh" aria-hidden="true"></i></button>
-            <button type="button" class="btn btn-sm toggle-all-db-btn no-context-menu" data-toggle="tooltip" title="Toggle databases"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
+          <div class="btn-group mr-2" role="group" aria-label="Connection Button Group">
+            <button type="button" class="btn btn-sm refresh-databases-btn" data-toggle="tooltip" title="Refresh databases (Ctrl-R)"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-sm toggle-all-db-btn no-context-menu" data-toggle="tooltip" title="Check all databases (Ctrl-A)"><i class="fa fa-check-square-o" aria-hidden="true"></i></button>
             <button type="button" class="btn btn-sm sort-db-list-btn" data-toggle="tooltip" title="Sort databases"><i class="fa fa-sort-alpha-asc" aria-hidden="true"></i></button>
           </div>
         </div>
@@ -97,7 +97,7 @@
     <div></div>
   </div>
   <!-- Content -->
-  <div class="content">
+  <div class="content" tabindex="0">
     <div class="btn-toolbar content-toolbar p-2" role="toolbar" aria-label="Content Toolbar">
       <div class="btn-group mr-2" role="group" aria-label="SQL Button Group">
         <button type="button" class="btn btn-sm execute-btn" data-toggle="tooltip" title="Execute SQL (Ctrl-E)"><i class="fa fa-play text-danger" aria-hidden="true"></i></button>
