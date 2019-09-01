@@ -62,8 +62,11 @@
     });
 
     // Hook onto app event to show modal
-    app.on('open-connections-modal', function () {
+    app.on('open-connections-modal', function (connection) {
         $dlg.modal('show');
+        if (connection) {
+            $selectConnections.val(connection.id).change();
+        }
     });
 
     // Populate the dialog when a connection is selected

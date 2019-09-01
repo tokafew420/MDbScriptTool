@@ -7,10 +7,25 @@
     var $sidebar = $('.sidebar');
     var $toolbar = $('.sidebar-toolbar', $sidebar);
     var $connectionSelect = $('.select-connection', $sidebar);
+    // Connection btns
+    var $newConnectionBtn = $('.new-connection-btn', $toolbar);
+    var $editConnectionBtn = $('.edit-connection-btn', $toolbar);
+    var $refreshDbsBtn = $('.refresh-databases-btn', $toolbar);
+    // Db list btns
     var $toggleAllDbBtn = $('.toggle-all-db-btn', $toolbar);
 
+    $newConnectionBtn.on('click', function () {
+        app.emit('open-connections-modal');
+    });
+
+    $editConnectionBtn.on('click', function () {
+        if (app.connection) {
+            app.emit('open-connections-modal', app.connection);
+        }
+    });
+
     // Refresh database list
-    $('.refresh-databases-btn', $toolbar).on('click', function () {
+    $refreshDbsBtn.on('click', function () {
         if (app.connection) {
             app.refreshDbs();
         } else {
@@ -77,59 +92,58 @@
     });
 
     // Set the connection select to "select" and clear the db list
-    function resetConnectionSelect() {
-        app.switchConnection(null);
-
+    function resetConnectionSelect(isTrusted) {
+        if (isTrusted) {
+            // Only switch if it's a user generated event
+            app.switchConnection(null);
+        }
+        $editConnectionBtn.prop('disabled', true);
         $connectionSelect.val('');
         app.emit('update-sidebar-status', '');
     }
 
     // Handle connection selection
-    $connectionSelect.on('change', function () {
+    $connectionSelect.on('change', function (e) {
+        // isTrusted === true when the change event was caused by user select
+        var isTrusted = e.originalEvent && e.originalEvent.isTrusted;
         var selectedConnId = $('option:selected', $connectionSelect).val();
 
         // Clear db list
-        if (selectedConnId === '') return resetConnectionSelect();
+        if (selectedConnId === '') return resetConnectionSelect(isTrusted);
 
-        // Open connection dialog
-        if (selectedConnId === '_new') {
-            if (app.connection) {
-                // Go back to previously selected connection
-                $connectionSelect.val(app.connection.id || '');
-            } else {
-                $connectionSelect.val('');
-            }
-            app.emit('open-connections-modal');
-        } else {
-            // List databases
-            var conn = app.findBy(app.connections, 'id', selectedConnId);
-            if (conn) {
+        // List databases
+        var conn = app.findBy(app.connections, 'id', selectedConnId);
+        if (conn) {
+            $editConnectionBtn.prop('disabled', false);
+            if (isTrusted) {
+                // Only switch if it's a user generated event
                 app.switchConnection(conn);
-            } else {
-                resetConnectionSelect();
             }
+        } else {
+            $('option:selected', $connectionSelect).remove();
+            resetConnectionSelect(isTrusted);
         }
     });
 
 
     function renderConnectionSelect() {
-        $connectionSelect.html('<option value="">Select Connection</option><option value="_new">New...</option>');
+        $connectionSelect.html('<option value="">Select Connection</option>');
 
         app.connections.forEach(function (c) {
             $('<option value="' + c.id + '">' + c.name + '</option>').appendTo($connectionSelect);
         });
 
         if (app.connection) {
-            $connectionSelect.val(app.connection.id);
+            $connectionSelect.val(app.connection.id).change();
         } else {
-            resetConnectionSelect();
+            resetConnectionSelect(false);
         }
     }
 
     app.on(['connection-added', 'connection-updated', 'connection-removed'], function (conn) {
         renderConnectionSelect();
     }).on('connection-switched', function (current, previous) {
-        $connectionSelect.val((current || {}).id);
+        $connectionSelect.val((current || {}).id).change();
     });
 
     // Initialization

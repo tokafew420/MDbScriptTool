@@ -358,7 +358,7 @@
     }).mapKeys($sidebar, 'Shift-Ctrl-A', function (e) {
         app.emit('toggle-all-databases', false);
     }).mapKeys($sidebar, 'Ctrl-N', function () {
-        app.emit('open-connections-modal');
+        $('.sidebar-toolbar .new-connection-btn', $sidebar).click();
     }).mapKeys($sidebar, 'Ctrl-O', function () {
         $('.content .content-toolbar .open-file-btn').click();
     }).mapKeys($sidebar, 'Ctrl-Q', function () {
@@ -371,6 +371,8 @@
         $('.content .content-toolbar .save-file-btn').click();
     }).mapKeys($sidebar, 'Shift-Ctrl-S', function () {
         $('.content .content-toolbar .save-as-file-btn').click();
+    }).mapKeys($sidebar, 'Ctrl-X', function () {
+        $('.sidebar-toolbar .edit-connection-btn', $sidebar).click();
     });
 
     // Initializations
