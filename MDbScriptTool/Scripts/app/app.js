@@ -74,9 +74,10 @@
          * https://stackoverflow.com/a/30810322
          * 
          * @param {string} text The text to copy.
+         * @param {Element} container Optional, The DOM element to append the textarea to.
          * @returns {boolean} true if the copy operation was successful, otherwise false.
          */
-        app.copyToClipboard = function (text) {
+        app.copyToClipboard = function (text, container) {
             var textArea = document.createElement('textarea');
 
             //
@@ -119,17 +120,17 @@
 
             textArea.value = text;
 
-            document.body.appendChild(textArea);
+            (container || document.body).appendChild(textArea);
             textArea.focus();
             textArea.select();
 
             try {
                 var successful = document.execCommand('copy');
-                document.body.removeChild(textArea);
+                (container || document.body).removeChild(textArea);
                 return successful;
             } catch (err) {
                 console.error('Copy failed', err);
-                document.body.removeChild(textArea);
+                (container || document.body).removeChild(textArea);
                 return false;
             }
         };
@@ -1278,6 +1279,14 @@
         // Prevent right-click context menu
         $(window.document).on('contextmenu', '.no-context-menu', function () {
             return false;
+        });
+
+        $(window.document).on('click', '.input-group-copy-btn', function (e) {
+            var val = $('input', $(this).closest('.input-group')).val();
+
+            if (val) {
+                app.copyToClipboard(val, this);
+            }
         });
     });
 }(window, window.app = window.app || {}, window.os, jQuery));

@@ -29,7 +29,7 @@
         if (app.connection) {
             app.refreshDbs();
         } else {
-            app.alert('No connection selected');
+            app.alert('No connection selected', 'Oops!');
         }
     });
 

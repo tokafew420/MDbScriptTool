@@ -75,7 +75,7 @@
       </div>
       <div id="additional-ctrls" class="hidden">
         <div id="db-list-filter" class="input-group input-group-sm mb-2">
-          <input id="db-list-filter-input" type="search" class="form-control" placeholder="Search">
+          <input id="db-list-filter-input" type="search" class="form-control" placeholder="Search" spellcheck="false">
           <div id="db-list-filter-clear" class="input-group-append">
             <button class="btn btn-secondary" type="button">
               <i class="fa fa-remove"></i>
@@ -153,7 +153,10 @@
             <div class="input-group-prepend">
               <span class="input-group-text" id="name-lbl">Name</span>
             </div>
-            <input type="text" class="form-control last-child name" aria-label="Name" aria-describedby="name-lbl" required>
+            <input type="text" class="form-control name" aria-label="Name" aria-describedby="name-lbl" required spellcheck="false">
+            <div class="input-group-append">
+              <button type="button" class="btn icon-btn last-child input-group-copy-btn" data-toggle="tooltip" title="Copy"><i class="fa fa-copy" aria-hidden="true"></i></button>
+            </div>
             <div class="invalid-feedback">
               Name required (i.e. "My Server")
             </div>
@@ -162,7 +165,10 @@
             <div class="input-group-prepend">
               <span class="input-group-text" id="server-lbl">Server</span>
             </div>
-            <input type="text" class="form-control last-child server" aria-label="Server" aria-describedby="server-lbl" required>
+            <input type="text" class="form-control server" aria-label="Server" aria-describedby="server-lbl" required spellcheck="false">
+            <div class="input-group-append">
+              <button type="button" class="btn icon-btn last-child input-group-copy-btn" data-toggle="tooltip" title="Copy"><i class="fa fa-copy" aria-hidden="true"></i></button>
+            </div>
             <div class="invalid-feedback">
               Server name required
             </div>
@@ -171,7 +177,10 @@
             <div class="input-group-prepend">
               <span class="input-group-text" id="username-lbl">Username</span>
             </div>
-            <input type="text" class="form-control last-child username" aria-label="Username" aria-describedby="username-lbl" required>
+            <input type="text" class="form-control username" aria-label="Username" aria-describedby="username-lbl" required spellcheck="false">
+            <div class="input-group-append">
+              <button type="button" class="btn icon-btn last-child input-group-copy-btn" data-toggle="tooltip" title="Copy"><i class="fa fa-copy" aria-hidden="true"></i></button>
+            </div>
             <div class="invalid-feedback">
               Username required, User must have access to <strong>master</strong> database
             </div>
@@ -180,7 +189,10 @@
             <div class="input-group-prepend">
               <span class="input-group-text" id="password-lbl">Password</span>
             </div>
-            <input type="text" class="form-control last-child password" aria-label="Password" aria-describedby="password-lbl" required>
+            <input type="text" class="form-control password" aria-label="Password" aria-describedby="password-lbl" required spellcheck="false">
+            <div class="input-group-append">
+              <button type="button" class="btn icon-btn last-child input-group-copy-btn" data-toggle="tooltip" title="Copy"><i class="fa fa-copy" aria-hidden="true"></i></button>
+            </div>
             <div class="invalid-feedback">
               Password required
             </div>
@@ -199,7 +211,10 @@
               <div class="input-group-prepend">
                 <span class="input-group-text" id="connection-string-lbl">Connection String</span>
               </div>
-              <input type="text" class="form-control last-child connection-string" aria-label="Connection string" aria-describedby="connection-string-lbl">
+              <input type="text" class="form-control connection-string" aria-label="Connection string" aria-describedby="connection-string-lbl" spellcheck="false">
+              <div class="input-group-append">
+                <button type="button" class="btn icon-btn last-child input-group-copy-btn" data-toggle="tooltip" title="Copy"><i class="fa fa-copy" aria-hidden="true"></i></button>
+              </div>
               <div class="invalid-feedback">
                 Invalid connection string
               </div>
@@ -277,13 +292,14 @@
                         JS AddOn
                       </span>
                     </div>
-                    <input type="text" id="addon-js" class="form-control" placeholder="JS path or URL" aria-label="Script Add-On" aria-describedby="addon-js-label" style="background-clip: border-box;" />
+                    <input type="text" id="addon-js" class="form-control" placeholder="JS path or URL" aria-label="Script Add-On" aria-describedby="addon-js-label" spellcheck="false" />
                     <div class="input-group-append">
-                      <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="sr-only">Toggle Dropdown</span>
+                      <button type="button" class="btn icon-btn input-group-copy-btn" data-toggle="tooltip" title="Copy"><i class="fa fa-copy" aria-hidden="true"></i></button>
+                      <button type="button" class="btn last-child icon-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
                       </button>
                       <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#" onclick="$('#addon-js-file').click(); return false;" >
+                        <a class="dropdown-item" href="#" onclick="$('#addon-js-file').val(null).click(); return false;">
                           Browse Local
                         </a>
                         <input type="file" id="addon-js-file" accept=".js,.*" class="hidden">
@@ -300,13 +316,14 @@
                         CSS AddOn
                       </span>
                     </div>
-                    <input type="text" id="addon-css" class="form-control" placeholder="CSS path or URL" aria-label="CSS Add-On" aria-describedby="addon-css-label" style="background-clip: border-box;" />
+                    <input type="text" id="addon-css" class="form-control" placeholder="CSS path or URL" aria-label="CSS Add-On" aria-describedby="addon-css-label" spellcheck="false" />
                     <div class="input-group-append">
-                      <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span class="sr-only">Toggle Dropdown</span>
+                      <button type="button" class="btn icon-btn input-group-copy-btn" data-toggle="tooltip" title="Copy"><i class="fa fa-copy" aria-hidden="true"></i></button>
+                      <button type="button" class="btn last-child icon-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
                       </button>
                       <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#"  onclick="$('#addon-css-file').click(); return false;" >
+                        <a class="dropdown-item" href="#" onclick="$('#addon-css-file').val(null).click(); return false;">
                           Browse Local
                         </a>
                         <input type="file" id="addon-css-file" accept=".css,.*" class="hidden">

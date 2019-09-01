@@ -126,7 +126,7 @@
         }
     });
 
-    app.mapKeys(window, 'Ctrl-Tab', function () {
+    function nextTab() {
         // Switch to next tab
         if (app.instance) {
             var idx = app.instances.indexOf(app.instance);
@@ -135,7 +135,9 @@
 
             next !== idx && app.switchInstance(app.instances[next]);
         }
-    }).mapKeys(window, 'Shift-Ctrl-Tab', function () {
+    }
+
+    function prevTab() {
         // Switch to previous tab
         if (app.instance) {
             var idx = app.instances.indexOf(app.instance);
@@ -144,5 +146,10 @@
 
             prev !== idx && app.switchInstance(app.instances[prev]);
         }
-    });
+    }
+
+    app.mapKeys($content, 'Ctrl-Tab', nextTab)
+        .mapKeys($('.sidebar'), 'Ctrl-Tab', nextTab)
+        .mapKeys($content, 'Shift-Ctrl-Tab', prevTab)
+        .mapKeys($('.sidebar'), 'Shift-Ctrl-Tab', prevTab);
 }(window, window.app = window.app || {}, window.os, jQuery));

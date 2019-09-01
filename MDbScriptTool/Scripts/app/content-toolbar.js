@@ -70,7 +70,7 @@
     });
 
     $openFile.on('click', function () {
-        $('#open-file-file', $toolbar).click();
+        $('#open-file-file', $toolbar).val(null).click();
         return false;
     });
 

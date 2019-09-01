@@ -64,6 +64,26 @@ a.focus {
   }
 }
 
+.icon-btn {
+  &.btn {
+    background-color: @dark-0;
+    border-color: @light-0;
+    color: @light-0;
+
+    &.disabled,
+    &:disabled {
+      background-color: @dark-4;
+    }
+
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active,
+    &:not(:disabled):not(.disabled):focus,
+    &:not(:disabled):not(.disabled):hover {
+      background-color: @dark-2;
+    }
+  }
+}
+
 .btn-toolbar {
   .btn {
     background-color: @dark-0;
@@ -129,12 +149,17 @@ a.focus {
   }
 
   .modal-header {
+    background-color: @dark-0;
     cursor: move;
 
     .close {
       padding: .5rem 1rem;
       margin: -.5rem -1rem -1rem auto;
     }
+  }
+
+  .modal-footer {
+    background-color: @dark-0;
   }
 }
 
@@ -143,10 +168,20 @@ a.focus {
   max-width: none;
 }
 
-.input-group > .form-control.last-child,
-.input-group > .custom-select.last-child {
-  border-top-right-radius: .2rem;
-  border-bottom-right-radius: .2rem;
+.input-group {
+  .input-group-text {
+    background-color: @dark-0;
+    color: @light-0;
+  }
+
+  input[type="text"] {
+    background-clip: border-box;
+  }
+
+  .last-child {
+    border-top-right-radius: .2rem !important;
+    border-bottom-right-radius: .2rem !important;
+  }
 }
 
 // Remove validation icons
