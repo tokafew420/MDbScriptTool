@@ -125,4 +125,24 @@
             instance.$tab.removeClass('is-dirty');
         }
     });
+
+    app.mapKeys(window, 'Ctrl-Tab', function () {
+        // Switch to next tab
+        if (app.instance) {
+            var idx = app.instances.indexOf(app.instance);
+
+            var next = (idx + 1) % app.instances.length;
+
+            next !== idx && app.switchInstance(app.instances[next]);
+        }
+    }).mapKeys(window, 'Shift-Ctrl-Tab', function () {
+        // Switch to previous tab
+        if (app.instance) {
+            var idx = app.instances.indexOf(app.instance);
+
+            var prev = (idx + app.instances.length - 1) % app.instances.length;
+
+            prev !== idx && app.switchInstance(app.instances[prev]);
+        }
+    });
 }(window, window.app = window.app || {}, window.os, jQuery));
