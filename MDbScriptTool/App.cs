@@ -193,24 +193,55 @@ namespace Tokafew420.MDbScriptTool
 
             try
             {
-                var builder = new SqlConnectionStringBuilder(connStr)
-                {
-                    InitialCatalog = "master"
-                };
+                var builder = new SqlConnectionStringBuilder(connStr);
+                var targetDatabase = builder.InitialCatalog;
+
+                builder.InitialCatalog = "master";
                 builder.Password = TryDecrypt(builder.Password);
 
-                using (var conn = new SqlConnection(builder.ToString()))
+                try
                 {
-                    conn.Open();
-                    using (var cmd = conn.CreateCommand())
+                    // Try connecting to master first
+                    using (var conn = new SqlConnection(builder.ToString()))
                     {
-                        cmd.CommandType = CommandType.Text;
-                        cmd.CommandText = "SELECT * FROM sys.databases";
-
-                        using (var reader = cmd.ExecuteReader())
+                        conn.Open();
+                        using (var cmd = conn.CreateCommand())
                         {
-                            OsEvent.Emit(replyMsgName, null, ConvertToExpando(reader), connId);
+                            cmd.CommandType = CommandType.Text;
+                            cmd.CommandText = "SELECT * FROM sys.databases";
+
+                            using (var reader = cmd.ExecuteReader())
+                            {
+                                OsEvent.Emit(replyMsgName, null, ConvertToExpando(reader), connId);
+                            }
                         }
+                    }
+                }
+                catch (Exception)
+                {
+                    if (!string.IsNullOrWhiteSpace(targetDatabase) && !targetDatabase.Equals("master", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // If a different database was specified then try connecting to that single database
+                        builder.InitialCatalog = targetDatabase;
+
+                        using (var conn = new SqlConnection(builder.ToString()))
+                        {
+                            conn.Open();
+                            using (var cmd = conn.CreateCommand())
+                            {
+                                cmd.CommandType = CommandType.Text;
+                                cmd.CommandText = "SELECT * FROM sys.databases";
+
+                                using (var reader = cmd.ExecuteReader())
+                                {
+                                    OsEvent.Emit(replyMsgName, null, ConvertToExpando(reader), connId);
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        throw;
                     }
                 }
             }
@@ -719,6 +750,8 @@ namespace Tokafew420.MDbScriptTool
         /// <returns>The decrypted cipher if decryption is successful, otherwise the original cipher.</returns>
         internal static string TryDecrypt(string cipher)
         {
+            if (string.IsNullOrWhiteSpace(cipher)) return cipher;
+
             try
             {
                 return Decrypt(cipher);

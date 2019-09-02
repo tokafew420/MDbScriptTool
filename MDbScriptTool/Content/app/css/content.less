@@ -56,8 +56,13 @@
         margin-left: 4px;
       }
 
+      .nav-link.active {
+        background-color: @dark-0;
+        color: @light-0;
+      }
+
       .nav-link:not(.active) {
-        background-color: @light-5;
+        background-color: @dark-4;
 
         &:not(:hover) {
           border-color: @light-3 @light-3 @light-4;
@@ -66,7 +71,7 @@
     }
 
     .nav-link.plus-tab:not(.active) {
-      background-color: @light-2;
+      background-color: @dark-1;
     }
   }
 

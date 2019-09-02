@@ -184,6 +184,23 @@ a.focus {
   }
 }
 
+.form-control,
+.custom-select {
+  background-color: @dark-0;
+  color: @light-0;
+
+  &:focus {
+    background-color: @dark-0;
+    color: @light-0;
+  }
+
+  &:disabled,
+  &[readonly] {
+    background-color: @dark-4;
+  }
+}
+
+
 // Remove validation icons
 .was-validated .form-control:valid,
 .form-control.is-valid,

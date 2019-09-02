@@ -7,16 +7,22 @@
     const serverRegex = new RegExp('(?:Data Source|Server)=[^;]*;', 'i');
     const usernameRegex = new RegExp('User ID=[^;]*;', 'i');
     const passwordRegex = new RegExp('Password=[^;]*;', 'i');
+    const integratedSecurityRegex = new RegExp('(?:Integrated Security|Trusted_Connection)=[^;]*;', 'i');
+    const databaseRegex = new RegExp('(?:Initial Catalog|Database)=[^;]*;', 'i');
+    const timeoutRegex = new RegExp('(?:Connection|Connect) Timeout=[^;]*;', 'i');
 
     var $dlg = $('#connections-modal');
     var $selectConnections = $('.select-connections', $dlg);
     var $name = $('.name', $dlg);
     var $server = $('.server', $dlg);
+    var $integratedSecurity = $('#integrated-security', $dlg);
     var $username = $('.username', $dlg);
     var $password = $('.password', $dlg);
     var $connStr = $('.connection-string', $dlg);
     var $advancedContainer = $('#advanced-container', $dlg);
     var $confirmSql = $('#confirm-sql-execution', $dlg);
+    var $database = $('.database-name', $dlg);
+    var $timeout = $('.connection-timeout', $dlg);
     var $deleteBtn = $('.delete-btn', $dlg);
     var $addBtn = $('.add-btn', $dlg);
 
@@ -35,6 +41,7 @@
 
     // Reset feilds
     function resetFields() {
+        $integratedSecurity.prop('checked', false).change();
         $('input', $dlg).val('').removeClass('is-valid').removeClass('is-invalid');
         $advancedContainer.collapse('hide');
         $confirmSql.prop('checked', false);
@@ -82,10 +89,13 @@
                 $deleteBtn.removeClass('hidden');
                 $name.val(conn.name);
                 $server.val(conn.server);
+                $integratedSecurity.prop('checked', !!conn.integratedSecurity).change();
                 $username.val(conn.username);
                 $password.val(conn.password);
-                $connStr.val(conn.raw);
                 $confirmSql.prop('checked', !!conn.confirmSql);
+                $database.val(conn.database);
+                $timeout.val(conn.timeout);
+                $connStr.val(conn.raw);
 
                 $addBtn.text('Save');
             }
@@ -105,7 +115,7 @@
         var connStr = $connStr.val();
 
         if (serverRegex.test(connStr)) {
-            $connStr.val(connStr.replace(serverRegex, 'Data Source=' + server + ";"));
+            $connStr.val(connStr.replace(serverRegex, 'Data Source=' + server + ';'));
         } else {
             $connStr.val(`Data Source=${server};${connStr}`);
         }
@@ -117,12 +127,25 @@
         }
     }, 100));
 
+    $integratedSecurity.on('change', function () {
+        var checked = $integratedSecurity.is(':checked');
+        var connStr = $connStr.val();
+        $username.prop('disabled', checked).removeClass('is-invalid is-valid');
+        $password.prop('disabled', checked).removeClass('is-invalid is-valid');
+
+        if (integratedSecurityRegex.test(connStr)) {
+            $connStr.val(connStr.replace(integratedSecurityRegex, 'Integrated Security=' + checked + ';'));
+        } else {
+            $connStr.val(`Integrated Security=${checked};${connStr}`);
+        }
+    });
+
     $username.on('keydown change', app.debounce(function () {
         var username = $username.val();
         var connStr = $connStr.val();
 
         if (usernameRegex.test(connStr)) {
-            $connStr.val(connStr.replace(usernameRegex, 'User ID=' + username + ";"));
+            $connStr.val(connStr.replace(usernameRegex, 'User ID=' + username + ';'));
         } else {
             $connStr.val(`User ID=${username};${connStr}`);
         }
@@ -139,7 +162,7 @@
         var connStr = $connStr.val();
 
         if (passwordRegex.test(connStr)) {
-            $connStr.val(connStr.replace(passwordRegex, 'Password=' + password + ";"));
+            $connStr.val(connStr.replace(passwordRegex, 'Password=' + password + ';'));
         } else {
             $connStr.val(`Password=${password};${connStr}`);
         }
@@ -148,6 +171,48 @@
             $password.removeClass('is-invalid').addClass('is-valid');
         } else {
             $password.removeClass('is-valid').addClass('is-invalid');
+        }
+    }, 100));
+
+    $database.on('keydown change', app.debounce(function () {
+        var database = $database.val();
+        var connStr = $connStr.val();
+
+        if (database) {
+            if (databaseRegex.test(connStr)) {
+                $connStr.val(connStr.replace(databaseRegex, 'Initial Catalog=' + database + ';'));
+            } else {
+                $connStr.val(`Initial Catalog=${database};${connStr}`);
+            }
+        } else {
+            $connStr.val(connStr.replace(databaseRegex, ''));
+        }
+
+        if ($database[0].checkValidity()) {
+            $database.removeClass('is-invalid').addClass('is-valid');
+        } else {
+            $database.removeClass('is-valid').addClass('is-invalid');
+        }
+    }, 100));
+
+    $timeout.on('keydown change', app.debounce(function () {
+        var timeout = $timeout.val();
+        var connStr = $connStr.val();
+
+        if (timeout) {
+            if (timeoutRegex.test(connStr)) {
+                $connStr.val(connStr.replace(timeoutRegex, 'Connect Timeout=' + timeout + ';'));
+            } else {
+                $connStr.val(`Connect Timeout=${timeout};${connStr}`);
+            }
+        } else {
+            $connStr.val(connStr.replace(timeoutRegex, ''));
+        }
+
+        if ($timeout[0].checkValidity()) {
+            $timeout.removeClass('is-invalid').addClass('is-valid');
+        } else {
+            $timeout.removeClass('is-valid').addClass('is-invalid');
         }
     }, 100));
 
@@ -179,6 +244,15 @@
         if (connBuilder['User ID']) {
             $username.val(connBuilder['User ID']);
         }
+        if (connBuilder['Integrated Security']) {
+            $integratedSecurity.prop('checked', connBuilder['Integrated Security'] === 'True').change();
+        }
+        if (connBuilder['Initial Catalog']) {
+            $database.val(connBuilder['Initial Catalog']);
+        }
+        if (connBuilder['Connect Timeout']) {
+            $timeout.val(connBuilder['Connect Timeout']);
+        }
     });
 
     $deleteBtn.click(function () {
@@ -194,7 +268,7 @@
 
     $addBtn.click(function () {
         // Verify fields
-        $('input', $dlg).not('.connection-string, #confirm-sql-execution').each(function () {
+        $('input', $dlg).not('.connection-string, #confirm-sql-execution, #integrated-security').each(function () {
             var $this = $(this);
 
             if ($this[0].checkValidity()) {
@@ -215,14 +289,14 @@
                     id: 'connection-' + app.guid(),
                     name: $name.val(),
                     server: $server.val(),
+                    integratedSecurity: $integratedSecurity.is(':checked'),
                     username: $username.val(),
                     password: $password.val(),
+                    database: $database.val(),
+                    timeout: $timeout.val(),
                     raw: $connStr.val(),
                     confirmSql: $confirmSql.is(':checked')
                 };
-
-                os.emit('encrypt-password', $password.val());
-
             } else {
                 var conn = app.findBy(app.connections, 'id', id);
                 if (conn) {
@@ -231,15 +305,22 @@
 
                     conn.name = $name.val();
                     conn.server = $server.val();
+                    conn.integratedSecurity = $integratedSecurity.is(':checked');
                     conn.username = $username.val();
                     conn.password = $password.val();
+                    conn.database = $database.val();
+                    conn.timeout = $timeout.val();
                     conn.raw = $connStr.val();
                     conn.confirmSql = $confirmSql.is(':checked');
 
                     _tmpConn = conn;
-
-                    os.emit('encrypt-password', $password.val());
                 }
+            }
+
+            if ($password.val()) {
+                os.emit('encrypt-password', $password.val());
+            } else {
+                _save();
             }
         } else {
             // Focus on first invalid field
@@ -248,12 +329,17 @@
     });
 
     os.on('password-encrypted', function (err, cipher) {
+        if (err) {
+            console.error(err);
+            app.loading.hide();
+            return;
+        }
         var connStr = $connStr.val();
 
         _tmpConn.password = cipher;
 
         if (passwordRegex.test(connStr)) {
-            _tmpConn.raw = connStr = connStr.replace(passwordRegex, 'Password=' + _tmpConn.password + ";");
+            _tmpConn.raw = connStr = connStr.replace(passwordRegex, 'Password=' + _tmpConn.password + ';');
         } else {
             _tmpConn.raw = connStr = `Password=${_tmpConn.password};${connStr}`;
         }
@@ -261,6 +347,10 @@
         $password.val(cipher);
         $connStr.val(connStr);
 
+        _save();
+    });
+
+    function _save() {
         app.saveConnection(_tmpConn);
 
         if (_hideAfterSave) {
@@ -270,5 +360,5 @@
         _tmpConn = null;
         _hideAfterSave = false;
         app.loading.hide();
-    });
+    }
 }(window, window.app = window.app || {}, window.os, jQuery));

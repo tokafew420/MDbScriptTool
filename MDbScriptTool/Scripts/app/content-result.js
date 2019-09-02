@@ -59,13 +59,14 @@
         }
     }).on('sql-executed-db-batch', function (instance, err, db, result) {
         if (instance && instance.$result) {
-            var $dbTable = $('#' + db, instance.$result);
+            var id = SparkMD5.hash(db);
+            var $dbTable = $('#' + id, instance.$result);
             if ($dbTable.length === 0) {
                 var conn = app.findBy(app.connections, 'id', instance.connection.id) || {};
                 var conndb = app.findBy(conn.dbs, 'name', db);
 
-                instance.$result.append(`<div id="${db}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${conndb && conndb.label || db}</div></div>`);
-                $dbTable = $('#' + db, instance.$result);
+                instance.$result.append(`<div id="${id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${conndb && conndb.label || db}</div></div>`);
+                $dbTable = $('#' + id, instance.$result);
             }
 
             if (err) {
@@ -121,9 +122,9 @@
         that.container = $('tbody', $table)[0]; // Container for dynamic rows
         that.data = data || [];
         that.len = that.data.length - 1;    // Number of rows (minus 1 for header row)
-        that.rowHeight = 22;                  // Row height. TODO: Dynamically determine value.
+        that.rowHeight = 22;                // Row height. TODO: Dynamically determine value.
         that.chunksPerBlock = 3;            // Number of chunks in a block
-        that.blockNum = 0;                      // Current block number
+        that.blockNum = 0;                  // Current block number
         that.top = 0;                       // Current top position
         that.topOffset = 0;                 // Amount of space from top of block to top of container
         that.bottomOffset = 0;              // Amount of space from bottom of block to bottom of container
