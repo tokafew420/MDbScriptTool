@@ -83,8 +83,8 @@
             dbLst.forEach(function (db, idx) {
                 var $item = $(`<li class="db-lst-item ${db.checked ? 'active' : ''}">
                             <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="${db.name}" ${db.checked ? 'checked' : ''}>
-                                <label class="custom-control-label" for="${db.name}">${db.label || db.name}</label>
+                                <input type="checkbox" class="custom-control-input" id="${db.id}" ${db.checked ? 'checked' : ''}>
+                                <label class="custom-control-label" for="${db.id}">${db.label || db.name}</label>
                             </div>
                         </li>`);
 
@@ -112,9 +112,7 @@
     app.refreshDbLabels = function () {
         if (app.connection && app.connection.dbs) {
             app.connection.dbs.forEach(function (db) {
-                if (db.name) {
-                    $('.db-lst-item label[for="' + db.name + '"]').text(db.label || db.name);
-                }
+                $('.db-lst-item label[for="' + db.id + '"]').text(db.label || db.name);
             });
         }
     };
@@ -210,8 +208,10 @@
                 app.switchInstance(inst);
             }).once('instance-switched', function (inst) {
                 $('.db-lst-item input[type="checkbox"]', $dbLst).prop('checked', false).change();
-                $('#' + db.name, $dbLst).prop('checked', true).change();
-                app.executeSql();
+                $('#' + db.id, $dbLst).prop('checked', true).change();
+                setTimeout(function () {
+                    app.executeSql();
+                }, 100);
             });
             app.createInstance({
                 code: sql

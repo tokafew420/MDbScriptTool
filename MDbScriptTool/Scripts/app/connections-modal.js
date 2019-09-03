@@ -286,7 +286,7 @@
                 app.loading.show('Adding...');
                 _hideAfterSave = true;
                 _tmpConn = {
-                    id: 'connection-' + app.guid(),
+                    id: app.id('c'),
                     name: $name.val(),
                     server: $server.val(),
                     integratedSecurity: $integratedSecurity.is(':checked'),

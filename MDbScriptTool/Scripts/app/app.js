@@ -196,6 +196,16 @@
         };
 
         /**
+         *  Generates a random id;
+         *
+         * @param {string} prefix An optional prefix. Defaults to 'x'.
+         *  @returns {string} A random id.
+         **/
+        app.id = function (prefix) {
+            return (prefix || 'x') + app.guid();
+        };
+
+        /**
          * An identity function that returns the passed function or a no-op function if the argument is not a function.
          *
          * @param {any} fn Any function
@@ -577,7 +587,7 @@
         // Create a new instance object.
         function _createInstance(instance) {
             return Object.assign({
-                id: 'instance-' + app.guid(),
+                id: app.id('i'),
                 name: 'New',
                 active: true,
                 pending: 0,
@@ -880,6 +890,7 @@
                     // Pull out properties
                     connection.dbs = dbs.map(function (db) {
                         return {
+                            id: app.id('d'),
                             name: db.name,
                             create_date: db.create_date,
                             compatibility_level: db.compatibility_level,
@@ -1010,10 +1021,13 @@
                 instance.pending++;
             }
             app.emit('execute-sql-db-begin', instance, err, db);
-        }).on('sql-exe-db-batch-result', function (err, id, db, batchNum, result) {
+        }).on('sql-exe-db-batch-result', function (err, id, dbname, batchNum, result) {
             var instance = app.findBy(app.instances, 'id', id);
 
             if (instance) {
+                var conn = app.findBy(app.connections, 'id', instance.connection.id) || {};
+                var db = app.findBy(conn.dbs, 'name', dbname);
+
                 var _result = instance.result = instance.result || {};
                 var _db = _result[db] = _result[db] || [];
 
@@ -1028,7 +1042,7 @@
                 }
             }
 
-            app.emit('sql-executed-db-batch', instance || id, err, db, result);
+            app.emit('sql-executed-db-batch', instance || id, err, db || dbname, result);
         }).on('sql-exe-db-complete', function (err, id, db) {
             var instance = app.findBy(app.instances, 'id', id);
 
@@ -1129,6 +1143,19 @@
                 console.error(`Failed to load saved state. [${key}]`, e);
             }
         });
+
+        // Migration from v0.4.16
+        if (app.connections) {
+            app.connections.forEach(function (c) {
+                if (c.dbs) {
+                    c.dbs.forEach(function (db) {
+                        if (!db.id) {
+                            db.id = app.id('d');
+                        }
+                    });
+                }
+            });
+        }
 
         $(function () {
             function alertError(err) {

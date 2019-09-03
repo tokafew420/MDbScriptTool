@@ -58,15 +58,11 @@
             instance.$result.empty();
         }
     }).on('sql-executed-db-batch', function (instance, err, db, result) {
-        if (instance && instance.$result) {
-            var id = SparkMD5.hash(db);
-            var $dbTable = $('#' + id, instance.$result);
+        if (instance && instance.$result && db && db.id) {
+            var $dbTable = $('#r' + db.id, instance.$result);
             if ($dbTable.length === 0) {
-                var conn = app.findBy(app.connections, 'id', instance.connection.id) || {};
-                var conndb = app.findBy(conn.dbs, 'name', db);
-
-                instance.$result.append(`<div id="${id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${conndb && conndb.label || db}</div></div>`);
-                $dbTable = $('#' + id, instance.$result);
+                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}</div></div>`);
+                $dbTable = $('#r' + db.id, instance.$result);
             }
 
             if (err) {
