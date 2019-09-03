@@ -106,6 +106,7 @@
     <Compile Include="DownloadHandler.cs" />
     <Compile Include="FileDialogHandler.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="SqlLogger.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="FileSystemSchemeHandlerFactory.cs" />

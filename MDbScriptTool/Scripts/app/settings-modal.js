@@ -5,9 +5,10 @@
  */
 (function (window, app, os, $) {
     // Sync logging settings
-    os.emit('get-log-settings');
-    os.once('log-settings', function (err, settings) {
-        app.settings.logging = settings || {};
+    os.emit('get-settings');
+    os.once('settings', function (err, settings) {
+        app.settings.logging = settings.logging || {};
+        app.settings.sqlLogging = settings.sqlLogging || {};
     });
 
     var $dlg = $('#settings-modal');
@@ -16,12 +17,15 @@
     var $loggingInfo = $('#enable-logs-info', $dlg);
     var $loggingWarn = $('#enable-logs-warn', $dlg);
     var $loggingError = $('#enable-logs-error', $dlg);
+    var $sqlLogging = $('#enable-sql-logs', $dlg);
+    var $sqlLoggingDir = $('#sql-log-dir', $dlg);
+    var $sqlLogRetention = $('#sql-log-retention', $dlg);
     var $addonJs = $('#addon-js', $dlg);
     var $addonCss = $('#addon-css', $dlg);
 
     var $saveBtn = $('.save-btn', $dlg);
 
-    $logging.change(function () {
+    $logging.on('change', function () {
         var enabled = $logging.is(':checked');
 
         $loggingDebug.prop('disabled', !enabled);
@@ -30,55 +34,90 @@
         $loggingError.prop('disabled', !enabled);
     });
 
+    $sqlLogging.on('change', function () {
+        var enabled = $sqlLogging.is(':checked');
+
+        $sqlLoggingDir.prop('disabled', !enabled);
+        $sqlLogRetention.prop('disabled', !enabled);
+    });
+
+    $sqlLogRetention.on('change keydown', function () {
+        var isValid = $sqlLogRetention[0].checkValidity();
+        $sqlLogRetention.toggleClass('is-invalid', !isValid)
+            .toggleClass('is-valid', isValid);
+    });
+
     $saveBtn.click(function () {
-        app.settings.logging.enabled = $logging.is(':checked');
-        app.settings.logging.debug = $loggingDebug.is(':checked');
-        app.settings.logging.info = $loggingInfo.is(':checked');
-        app.settings.logging.warn = $loggingWarn.is(':checked');
-        app.settings.logging.error = $loggingError.is(':checked');
+        if ($('input.is-invalid', $dlg).length === 0) {
+            app.settings.logging.enabled = $logging.is(':checked');
+            app.settings.logging.debug = $loggingDebug.is(':checked');
+            app.settings.logging.info = $loggingInfo.is(':checked');
+            app.settings.logging.warn = $loggingWarn.is(':checked');
+            app.settings.logging.error = $loggingError.is(':checked');
 
-        os.emit('set-log-settings', app.settings.logging);
 
-        // If check add-on values change
-        var addonChanged = false;
-        var addonJs = $addonJs.val().trim().toLowerCase();
-        if (addonJs !== app.settings.addonJs) {
-            app.settings.addonJs = addonJs;
-            addonChanged = true;
-        }
-        var addonCss = $addonCss.val().trim().toLowerCase();
-        if (addonCss !== app.settings.addonCss) {
-            app.settings.addonCss = addonCss;
-            addonChanged = true;
-        }
+            var retention = $sqlLogRetention.val();
+            app.settings.sqlLogging.enabled = $sqlLogging.is(':checked');
+            app.settings.sqlLogging.directory = $sqlLoggingDir.val();
+            app.settings.sqlLogging.retention = retention ? +retention : null;
 
-        $dlg.modal('hide');
+            os.emit('set-settings', app.settings);
 
-        if (addonChanged) {
-            app.saveState('settings');
-            app.alert('AddOn Script and CSS file will be apply on next reload.', {
-                cancel: 'Later',
-                ok: 'Reload'
-            }, function (reload) {
-                if (reload) {
-                    window.location.reload(true);
-                }
-            });
+            // If check add-on values change
+            var addonChanged = false;
+            var addonJs = $addonJs.val().trim().toLowerCase();
+            if (addonJs !== app.settings.addonJs) {
+                app.settings.addonJs = addonJs;
+                addonChanged = true;
+            }
+            var addonCss = $addonCss.val().trim().toLowerCase();
+            if (addonCss !== app.settings.addonCss) {
+                app.settings.addonCss = addonCss;
+                addonChanged = true;
+            }
+
+            $dlg.modal('hide');
+
+            if (addonChanged) {
+                app.saveState('settings');
+                app.alert('AddOn Script and CSS file will be apply on next reload.', {
+                    cancel: 'Later',
+                    ok: 'Reload'
+                }, function (reload) {
+                    if (reload) {
+                        window.location.reload(true);
+                    }
+                });
+            }
         }
     });
 
     var osFiles;
-    $('#addon-js-file, #addon-css-file', $dlg).on('click', function () {
+    $('#sql-log-dir-file, #addon-js-file, #addon-css-file', $dlg).on('click', function () {
+        var $this = $(this);
         osFiles = null;
         os.once('file-dialog-closed', function (err, cancelled, files) {
-            if (!cancelled) osFiles = files;
+            if (!cancelled) {
+                osFiles = files;
+
+                if ($this[0].hasAttribute('webkitdirectory')) {
+                    $this.change();
+                }
+            }
         });
     }).on('change', function () {
         var $this = $(this);
-        if (osFiles && osFiles.length && this.files && this.files.length) {
-            var osFile = app.findBy(osFiles, 'Name', this.files[0].name);
+        var osFile;
+
+        if (osFiles && osFiles.length) {
+            if (this.files && this.files.length) {
+                osFile = app.findBy(osFiles, 'Name', this.files[0].name);
+            } else if (osFiles[0].Type === 'directory' && osFiles[0].WebkitRelativePath) {
+                osFile = osFiles[0];
+            }
+
             if (osFile) {
-                var id = '#' + $this.attr('id').replace('-file', '');
+                let id = '#' + $this.attr('id').replace('-file', '');
 
                 $(id, $dlg).val((osFile.WebkitRelativePath + '/' + osFile.Name).replace(/\\/g, '/'));
             }
@@ -92,6 +131,9 @@
         $loggingInfo.prop('checked', app.settings.logging.info);
         $loggingWarn.prop('checked', app.settings.logging.warn);
         $loggingError.prop('checked', app.settings.logging.error);
+        $sqlLogging.prop('checked', app.settings.sqlLogging.enabled).change();
+        $sqlLoggingDir.val(app.settings.sqlLogging.directory);
+        $sqlLogRetention.val(app.settings.sqlLogging.retention);
         $addonJs.val(app.settings.addonJs);
         $addonCss.val(app.settings.addonCss);
     });

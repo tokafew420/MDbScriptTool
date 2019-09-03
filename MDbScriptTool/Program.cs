@@ -115,6 +115,24 @@ namespace Tokafew420.MDbScriptTool
                 {
                     Logger.Level = AppSettings.Get<Logger.LogLevel>("LogLevel");
                 }
+                if (AppSettings.Exists("SqlLoggingEnabled"))
+                {
+                    SqlLogger.Enabled = AppSettings.Get<bool>("SqlLoggingEnabled");
+                }
+                if (AppSettings.Exists("SqlLoggingDir"))
+                {
+                    SqlLogger.Directory = AppSettings.Get<string>("SqlLoggingDir");
+                }
+                else
+                {
+                    SqlLogger.Directory = Path.GetFullPath(Path.Combine(DataDirectory, "../Logs"));
+                }
+                if (AppSettings.Exists("SqlLoggingRetention"))
+                {
+                    SqlLogger.Retention = AppSettings.Get<int?>("SqlLoggingRetention");
+                }
+
+                SqlLogger.InitialilzeAsync();
             }
             catch (Exception err)
             {
@@ -157,6 +175,9 @@ namespace Tokafew420.MDbScriptTool
             AppSettings.Set("WindowIsMaximized", WindowState == FormWindowState.Maximized);
             AppSettings.Set("LogToBrowser", Logger.Browser != null);
             AppSettings.Set("LogLevel", Logger.Level);
+            AppSettings.Set("SqlLoggingEnabled", SqlLogger.Enabled);
+            AppSettings.Set("SqlLoggingDir", SqlLogger.Directory);
+            AppSettings.Set("SqlLoggingRetention", SqlLogger.Retention);
 
             AppSettings.Save();
         }

@@ -130,7 +130,7 @@
     <div id="content-statusbar" class="p-2"><small class="status-text"></small></div>
   </div>
   <!-- Modals -->
-   <!-- Settings dialog -->
+  <!-- Execute Options dialog -->
   <div class="modal fade" id="execute-options-modal" tabindex="-1" role="dialog" aria-labelledby="execute-options-modal" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content">
@@ -153,12 +153,12 @@
               Defaults: 30 seconds. A value of 0 indicates no limit.
             </small>
           </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-sm btn-outline-primary save-btn">Save</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn auto-focus" data-dismiss="modal">Cancel</button>
-          </div>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-outline-primary save-btn">Save</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn auto-focus" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
     </div>
   </div>
   <!-- Connections dialog -->
@@ -303,55 +303,105 @@
           </button>
         </div>
         <div class="modal-body">
-          <table class="table table-dark table-sm">
-            <tbody class="">
-              <tr>
-                <td>
-                  <div class="custom-control custom-checkbox" data-toggle="tooltip" title="View logs from native code in browser console">
+          <section id="logging-setting" class="mb-2">
+            <label for="logging-seting">Logging <i class="fa fa-info-circle" data-toggle="tooltip" title="View logs from native code in browser console" aria-hidden="true"></i></label>
+            <div class="container-fluid settings">
+              <div class="row my-2">
+                <div class="col">
+                  <div class="custom-control custom-checkbox">
                     <input type="checkbox" class="custom-control-input" id="enable-logs" />
                     <label class="custom-control-label" for="enable-logs">Enable Native Logs</label>
                   </div>
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="container-fluid log-flags">
-                    <div class="row">
-                      <div class="col-sm">
-                        <div class="custom-control custom-checkbox">
-                          <input type="checkbox" class="custom-control-input" id="enable-logs-debug" />
-                          <label class="custom-control-label" for="enable-logs-debug">Debug</label>
-                        </div>
-                      </div>
-                      <div class="col-sm">
-                        <div class="custom-control custom-checkbox">
-                          <input type="checkbox" class="custom-control-input" id="enable-logs-info" />
-                          <label class="custom-control-label" for="enable-logs-info">Info</label>
-                        </div>
-                      </div>
-                      <div class="col-sm">
-                        <div class="custom-control custom-checkbox">
-                          <input type="checkbox" class="custom-control-input" id="enable-logs-warn" />
-                          <label class="custom-control-label" for="enable-logs-warn">Warn</label>
-                        </div>
-                      </div>
-                      <div class="col-sm">
-                        <div class="custom-control custom-checkbox">
-                          <input type="checkbox" class="custom-control-input" id="enable-logs-error" />
-                          <label class="custom-control-label" for="enable-logs-error">Error</label>
-                        </div>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col-sm">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="enable-logs-debug" />
+                    <label class="custom-control-label" for="enable-logs-debug">Debug</label>
+                  </div>
+                </div>
+                <div class="col-sm">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="enable-logs-info" />
+                    <label class="custom-control-label" for="enable-logs-info">Info</label>
+                  </div>
+                </div>
+                <div class="col-sm">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="enable-logs-warn" />
+                    <label class="custom-control-label" for="enable-logs-warn">Warn</label>
+                  </div>
+                </div>
+                <div class="col-sm">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="enable-logs-error" />
+                    <label class="custom-control-label" for="enable-logs-error">Error</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="sql-logging-setting" class="mb-2">
+            <label for="sql-logging-seting">SQL Logging <i class="fa fa-info-circle" data-toggle="tooltip" title="Save SQL execution history" aria-hidden="true"></i></label>
+            <div class="container-fluid settings">
+              <div class="row">
+                <div class="col my-2">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="enable-sql-logs" />
+                    <label class="custom-control-label" for="enable-sql-logs">Enable SQL Logs</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col">
+                  <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" id="sql-log-dir-lbl" for="sql-log-dir">
+                        SQL Log Directory
+                      </span>
+                    </div>
+                    <input type="text" id="sql-log-dir" class="form-control" placeholder="Log Directory" aria-label="SQL Log Directory" aria-describedby="sql-log-dir-lbl" spellcheck="false" />
+                    <div class="input-group-append">
+                      <button type="button" class="btn icon-btn input-group-copy-btn" data-toggle="tooltip" title="Copy"><i class="fa fa-copy" aria-hidden="true"></i></button>
+                      <button type="button" class="btn last-child icon-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                      </button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#" onclick="$('#sql-log-dir-file').val(null).click(); return false;">
+                          Browse Local
+                        </a>
+                        <input type="file" id="sql-log-dir-file" webkitdirectory class="hidden" />
                       </div>
                     </div>
                   </div>
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <td colspan="2">
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col">
                   <div class="input-group input-group-sm">
                     <div class="input-group-prepend">
-                      <span class="input-group-text" id="addon-js-label" for="addon-js" data-toggle="tooltip" title="Add your own custom script file">
+                      <span class="input-group-text" id="sql-log-retention-lbl" for="sql-log-retention" data-toggle="tooltip" title="Save the last x files (one per day)">
+                        Retention
+                      </span>
+                    </div>
+                    <input type="number" id="sql-log-retention" class="form-control" placeholder="Number of files" aria-label="Retention" aria-describedby="sql-log-retention-lbl" min="0" />
+                    <div class="invalid-feedback">
+                      Invalid retention value
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section id="addon-setting" class="mb-2">
+            <label for="addon-seting">Addons <i class="fa fa-info-circle" data-toggle="tooltip" title="Customization via script addons" aria-hidden="true"></i></label>
+            <div class="container-fluid settings">
+              <div class="row my-2">
+                <div class="col">
+                  <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" id="addon-js-label" for="addon-js">
                         JS AddOn
                       </span>
                     </div>
@@ -369,13 +419,13 @@
                       </div>
                     </div>
                   </div>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="2">
+                </div>
+              </div>
+              <div class="row mb-2">
+                <div class="col">
                   <div class="input-group input-group-sm">
                     <div class="input-group-prepend">
-                      <span class="input-group-text" id="addon-css-label" for="addon-css" data-toggle="tooltip" title="Add your own custom CSS file">
+                      <span class="input-group-text" id="addon-css-label" for="addon-css">
                         CSS AddOn
                       </span>
                     </div>
@@ -393,10 +443,10 @@
                       </div>
                     </div>
                   </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-sm btn-outline-primary save-btn">Save</button>

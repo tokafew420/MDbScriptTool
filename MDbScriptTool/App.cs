@@ -44,8 +44,8 @@ namespace Tokafew420.MDbScriptTool
             UiEvent.On("execute-sql", ExecuteSql);
             UiEvent.On("parse-sql", ParseSql);
             UiEvent.On("get-versions", GetVersions);
-            UiEvent.On("get-log-settings", GetLogSettings);
-            UiEvent.On("set-log-settings", SetLogSettings);
+            UiEvent.On("get-settings", GetLogSettings);
+            UiEvent.On("set-settings", SetLogSettings);
         }
 
         /// <summary>
@@ -287,7 +287,7 @@ namespace Tokafew420.MDbScriptTool
             var id = args[3] as string;
 
             dynamic opts = null;
-            if(args.Length == 5)
+            if (args.Length == 5)
             {
                 opts = args[4] as dynamic;
             }
@@ -306,6 +306,8 @@ namespace Tokafew420.MDbScriptTool
                     var batches = GetSqlBatches(sql);
                     var builder = new SqlConnectionStringBuilder(connStr);
                     builder.Password = TryDecrypt(builder.Password);
+
+                    SqlLogger.Log(builder.ToString(), dbs, sql);
 
                     var tasks = new List<Task>();
 
@@ -443,15 +445,24 @@ namespace Tokafew420.MDbScriptTool
         /// </remarks>
         private void GetLogSettings(object[] args)
         {
-            var replyMsgName = "log-settings";
+            var replyMsgName = "settings";
 
             OsEvent.Emit(replyMsgName, null, new
             {
-                enabled = Logger.Browser != null,
-                debug = (Logger.Level & Logger.LogLevel.Debug) != Logger.LogLevel.None,
-                info = (Logger.Level & Logger.LogLevel.Info) != Logger.LogLevel.None,
-                warn = (Logger.Level & Logger.LogLevel.Warn) != Logger.LogLevel.None,
-                error = (Logger.Level & Logger.LogLevel.Error) != Logger.LogLevel.None
+                logging = new
+                {
+                    enabled = Logger.Browser != null,
+                    debug = (Logger.Level & Logger.LogLevel.Debug) != Logger.LogLevel.None,
+                    info = (Logger.Level & Logger.LogLevel.Info) != Logger.LogLevel.None,
+                    warn = (Logger.Level & Logger.LogLevel.Warn) != Logger.LogLevel.None,
+                    error = (Logger.Level & Logger.LogLevel.Error) != Logger.LogLevel.None
+                },
+                sqlLogging = new
+                {
+                    enabled = SqlLogger.Enabled,
+                    directory = SqlLogger.Directory,
+                    retention = SqlLogger.Retention
+                }
             });
         }
 
@@ -468,7 +479,7 @@ namespace Tokafew420.MDbScriptTool
         /// </remarks>
         private void SetLogSettings(object[] args)
         {
-            var replyMsgName = "log-settings-saved";
+            var replyMsgName = "settings-saved";
 
             if (args == null && args.Length != 1)
             {
@@ -479,20 +490,30 @@ namespace Tokafew420.MDbScriptTool
 
             if (settings != null)
             {
-                if (settings.enabled)
+                if (settings.logging != null)
                 {
-                    Logger.Browser = _browser;
-                }
-                else
-                {
-                    Logger.Browser = null;
+                    if (settings.logging.enabled)
+                    {
+                        Logger.Browser = _browser;
+                    }
+                    else
+                    {
+                        Logger.Browser = null;
+                    }
+
+                    Logger.Level = Logger.LogLevel.None;
+                    if (settings.logging.debug) Logger.Level = Logger.Level | Logger.LogLevel.Debug;
+                    if (settings.logging.info) Logger.Level = Logger.Level | Logger.LogLevel.Info;
+                    if (settings.logging.warn) Logger.Level = Logger.Level | Logger.LogLevel.Warn;
+                    if (settings.logging.error) Logger.Level = Logger.Level | Logger.LogLevel.Error;
                 }
 
-                Logger.Level = Logger.LogLevel.None;
-                if (settings.debug) Logger.Level = Logger.Level | Logger.LogLevel.Debug;
-                if (settings.info) Logger.Level = Logger.Level | Logger.LogLevel.Info;
-                if (settings.warn) Logger.Level = Logger.Level | Logger.LogLevel.Warn;
-                if (settings.error) Logger.Level = Logger.Level | Logger.LogLevel.Error;
+                if (settings.sqlLogging != null)
+                {
+                    SqlLogger.Enabled = settings.sqlLogging.enabled;
+                    SqlLogger.Directory = settings.sqlLogging.directory;
+                    SqlLogger.Retention = settings.sqlLogging.retention;
+                }
 
                 OsEvent.Emit(replyMsgName);
             }
@@ -567,9 +588,9 @@ namespace Tokafew420.MDbScriptTool
                         {
                             cmd.CommandText = batch;
 
-                            if(opts != null)
+                            if (opts != null)
                             {
-                                if(opts.timeout as int? >= 0)
+                                if (opts.timeout as int? >= 0)
                                 {
                                     cmd.CommandTimeout = opts.timeout;
                                 }
