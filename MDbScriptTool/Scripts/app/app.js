@@ -966,6 +966,7 @@
          * @param {Array} dbs A list of databases on the target server to execute the sql.
          * @param {string} sql The sql to execute.
          * @param {string} id The id of the execution.
+         * @param {object} opts Execution options.
          * @returns {boolean} true if some sql was submitted for execution.
          *
          * @event execute-sql If called with no arguments
@@ -974,9 +975,9 @@
          * @type {Array} The array of database names.
          * @type {string} The sql being executed.
          */
-        app.executeSql = function (connectionString, dbs, sql, id) {
+        app.executeSql = function (connectionString, dbs, sql, id, opts) {
             if (connectionString && typeof connectionString === 'string') {
-                os.emit('execute-sql', connectionString, dbs, sql, id);
+                os.emit('execute-sql', connectionString, dbs, sql, id, opts);
                 return true;
             } else {
                 if (app.instance && app.connection) {
@@ -1001,7 +1002,11 @@
                                     app.instance.pending = 1;
                                     app.instance.totalRows = null;
 
-                                    return app.executeSql(app.connection.raw, dbs, sql, app.instance.id);
+                                    opts = Object.assign({}, opts, {
+                                        timeout: app.instance.timeout
+                                    });
+
+                                    return app.executeSql(app.connection.raw, dbs, sql, app.instance.id, opts);
                                 }
                             });
 
@@ -1052,17 +1057,18 @@
             }
             app.emit('execute-sql-db-progress', instance || id, err, db);
         }).on(['sql-exe-complete'], function (err, id) {
-            // This event only fires when the entire batch failed to execute.
-            if (err) {
-                console.log(err);
-                app.alert(err.Message, 'Error Executing SQL');
-            }
-
             var instance = app.findBy(app.instances, 'id', id);
 
             if (instance) {
                 instance.pending = 0;
             }
+
+            // This event only fires when the entire batch failed to execute.
+            if (err) {
+                console.error(err);
+                app.alert(err.Message, 'Error Executing SQL');
+            }
+
             app.emit('sql-executed', instance || id, err);
         });
 

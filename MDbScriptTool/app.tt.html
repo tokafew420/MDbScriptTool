@@ -106,6 +106,7 @@
       <div class="btn-group mr-2" role="group" aria-label="SQL Button Group">
         <button type="button" class="btn btn-sm execute-btn" data-toggle="tooltip" title="Execute SQL (Ctrl-E)"><i class="fa fa-play text-danger" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-sm parse-btn" data-toggle="tooltip" title="Parse SQL (Ctrl-P)"><i class="fa fa-check text-success" aria-hidden="true"></i></button>
+        <button type="button" class="btn btn-sm execute-options-btn" data-toggle="tooltip" title="Execution Options"><i class="fa fa-cogs" aria-hidden="true"></i></button>
       </div>
       <div class="btn-group mr-2" role="group" aria-label="File Button Group">
         <button type="button" class="btn btn-sm new-file-btn" data-toggle="tooltip" title="New (Ctrl-N)"><i class="fa fa-file-o" aria-hidden="true"></i></button>
@@ -129,6 +130,37 @@
     <div id="content-statusbar" class="p-2"><small class="status-text"></small></div>
   </div>
   <!-- Modals -->
+   <!-- Settings dialog -->
+  <div class="modal fade" id="execute-options-modal" tabindex="-1" role="dialog" aria-labelledby="execute-options-modal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="execute-options-modal-title">Execution Options</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group input-group-sm mb-2">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="cmd-timeout-lbl">Command Timeout</span>
+            </div>
+            <input type="number" class="form-control cmd-timeout" aria-label="cmd-timeout" aria-describedby="cmd-timeout-lbl" min="0" />
+            <div class="invalid-feedback">
+              Invalid value
+            </div>
+            <small class="form-text w-100">
+              Defaults: 30 seconds. A value of 0 indicates no limit.
+            </small>
+          </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-sm btn-outline-primary save-btn">Save</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn auto-focus" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+    </div>
+  </div>
   <!-- Connections dialog -->
   <div class="modal fade" id="connections-modal" tabindex="-1" role="dialog" aria-labelledby="connections-modal" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -503,6 +535,7 @@
   <script src="./Scripts/app/content-instance.js"></script>
   <script src="./Scripts/app/content-editor.js"></script>
   <script src="./Scripts/app/content-result.js"></script>
+  <script src="./Scripts/app/execute-options-modal.js"></script>
   <script src="./Scripts/app/connections-modal.js"></script>
   <script src="./Scripts/app/settings-modal.js"></script>
   <script src="./Scripts/app/about-modal.js"></script>

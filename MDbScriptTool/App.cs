@@ -275,7 +275,7 @@ namespace Tokafew420.MDbScriptTool
         private async void ExecuteSql(object[] args)
         {
             var replyMsgName = "sql-exe-complete";
-            if (args == null || args.Length != 4)
+            if (args == null || args.Length < 4)
             {
                 OsEvent.Emit(replyMsgName, new ArgumentException("Invalid arguments"));
                 return;
@@ -285,6 +285,12 @@ namespace Tokafew420.MDbScriptTool
             var dbs = (args[1] as List<object>).OfType<string>();
             var sql = args[2] as string;
             var id = args[3] as string;
+
+            dynamic opts = null;
+            if(args.Length == 5)
+            {
+                opts = args[4] as dynamic;
+            }
 
             try
             {
@@ -309,7 +315,7 @@ namespace Tokafew420.MDbScriptTool
                         {
                             builder.InitialCatalog = db;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                            tasks.Add(ExecuteSqlBatches(builder.ToString(), db, batches, id));
+                            tasks.Add(ExecuteSqlBatches(builder.ToString(), db, batches, id, opts));
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         }
                     }
@@ -533,7 +539,7 @@ namespace Tokafew420.MDbScriptTool
         /// [3] The batch number.
         /// [4] The resultset.
         /// </remarks>
-        internal async Task ExecuteSqlBatches(string connectionString, string db, IEnumerable<string> batches, string id)
+        internal async Task ExecuteSqlBatches(string connectionString, string db, IEnumerable<string> batches, string id, dynamic opts = null)
         {
             OsEvent.Emit("sql-exe-db-begin", null, id, db);
             Logger.Debug($"Begin batches for {db}");
@@ -560,6 +566,14 @@ namespace Tokafew420.MDbScriptTool
                         foreach (var batch in batches)
                         {
                             cmd.CommandText = batch;
+
+                            if(opts != null)
+                            {
+                                if(opts.timeout as int? >= 0)
+                                {
+                                    cmd.CommandTimeout = opts.timeout;
+                                }
+                            }
 
                             OsEvent.Emit("sql-exe-db-batch-executing", null, id, db, batchNum);
                             Logger.Debug($"Executing to {connectionString}");
