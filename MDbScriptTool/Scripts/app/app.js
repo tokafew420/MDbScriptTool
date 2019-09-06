@@ -1048,14 +1048,18 @@
             }
 
             app.emit('sql-executed-db-batch', instance || id, err, db || dbname, result);
-        }).on('sql-exe-db-complete', function (err, id, db) {
+        }).on('sql-exe-db-complete', function (err, id, dbname) {
             var instance = app.findBy(app.instances, 'id', id);
 
             if (instance) {
+                var conn = app.findBy(app.connections, 'id', instance.connection.id) || {};
+                var db = app.findBy(conn.dbs, 'name', dbname);
+
                 instance.pending--;
                 if (instance.pending < 0) instance.pending = 0;
             }
-            app.emit('execute-sql-db-progress', instance || id, err, db);
+
+            app.emit('execute-sql-db-complete', instance || id, err, db || dbname);
         }).on(['sql-exe-complete'], function (err, id) {
             var instance = app.findBy(app.instances, 'id', id);
 

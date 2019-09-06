@@ -70,7 +70,6 @@
         </div>
         <Select class="select-connection custom-select custom-select-sm">
           <option value="">Select Connection</option>
-          <option value="_new">New...</option>
         </Select>
       </div>
       <div id="additional-ctrls" class="hidden">
@@ -145,7 +144,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text" id="cmd-timeout-lbl">Command Timeout</span>
             </div>
-            <input type="number" class="form-control cmd-timeout" aria-label="cmd-timeout" aria-describedby="cmd-timeout-lbl" min="0" />
+            <input type="number" class="form-control cmd-timeout last-child" aria-label="cmd-timeout" aria-describedby="cmd-timeout-lbl" min="0" />
             <div class="invalid-feedback">
               Invalid value
             </div>
@@ -538,6 +537,7 @@
   <script src="./Scripts/jquery-3.4.1.min.js"></script>
   <script src="./Scripts/jquery-ui-1.12.1.min.js"></script>
   <script src="./Scripts/umd/popper.min.js"></script>
+  <script src="./Scripts/js-spark-md5/spark-md5.min.js"></script>
   <script src="./Content/bootstrap-4.2.1/js/bootstrap.min.js"></script>
   <script src="./Content/jQuery-contextMenu/jquery.contextMenu.min.js"></script>
   <script src="./Scripts/CodeMirror/lib/codemirror.js"></script>
@@ -548,7 +548,6 @@
   <!--<# } else { #>-->
   <script src="./Scripts/cm-tsql-mode.min.js"></script>
   <!--<# } #>-->
-  <script src="Scripts/js-spark-md5/spark-md5.min.js"></script>
   <!--<# if (config =="Debug") { #>-->
   <!-- Core app to load first -->
   <script src="./Scripts/app/core.js"></script>

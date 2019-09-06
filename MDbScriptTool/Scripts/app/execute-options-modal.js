@@ -17,8 +17,8 @@
     $cmdTimeout.on('keydown change', app.debounce(function () {
         var isValid = $cmdTimeout[0].checkValidity();
         $cmdTimeout.toggleClass('is-invalid', !isValid)
-            .toggleClass('is-valid', isValid);
-    }, 100));
+            .toggleClass('is-valid', isValid && !!$cmdTimeout.val());
+    }, 300));
 
     $saveBtn.click(function () {
         if (app.instance && $('input.is-invalid', $dlg).length === 0) {
@@ -33,12 +33,12 @@
     });
 
     $dlg.on('hidden.bs.modal', function (e) {
-        $cmdTimeout.val('').remove('is-invalid is-valid');
+        $cmdTimeout.val('').removeClass('is-invalid is-valid');
     }).on('show.bs.modal', function (e) {
         if (app.instance) {
             if (app.instance.timeout >= 0) {
-                $cmdTimeout.val(app.instance.timeout).change();
-
+                $cmdTimeout.val(app.instance.timeout)
+                    .change();
             }
         }
     });

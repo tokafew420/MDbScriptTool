@@ -94,6 +94,22 @@
                 $dbTable.append('<div class="result-text" tabindex="0">Command(s) completed successfully</div>');
             }
         }
+    }).on('execute-sql-db-complete', function (instance, err, db) {
+        if (err) {
+            if (instance && instance.$result && db && db.id) {
+                var $dbTable = $('#r' + db.id, instance.$result);
+                if ($dbTable.length === 0) {
+                    instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}</div></div>`);
+                    $dbTable = $('#r' + db.id, instance.$result);
+                }
+
+                if (err.Errors && err.Errors.length) {
+                    $dbTable.append(`<div class="result-text" tabindex="0"><pre class="text-danger">${formatSqlError(err.Errors).join('\n\n')}</pre></div>`);
+                } else {
+                    $dbTable.append(`<div class="result-text text-danger" tabindex="0">${err.Message}</div>`);
+                }
+            }
+        }
     }).on('sql-executed', function (instance, err) {
         if (instance && instance.$result) {
             app.redraw();

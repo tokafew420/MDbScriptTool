@@ -44,8 +44,8 @@ namespace Tokafew420.MDbScriptTool
             UiEvent.On("execute-sql", ExecuteSql);
             UiEvent.On("parse-sql", ParseSql);
             UiEvent.On("get-versions", GetVersions);
-            UiEvent.On("get-settings", GetLogSettings);
-            UiEvent.On("set-settings", SetLogSettings);
+            UiEvent.On("get-settings", GetSettings);
+            UiEvent.On("set-settings", SetSettings);
         }
 
         /// <summary>
@@ -193,11 +193,15 @@ namespace Tokafew420.MDbScriptTool
 
             try
             {
+                var sql = "SELECT * FROM sys.databases";
                 var builder = new SqlConnectionStringBuilder(connStr);
                 var targetDatabase = builder.InitialCatalog;
-
                 builder.InitialCatalog = "master";
-                builder.Password = TryDecrypt(builder.Password);
+
+                if (!string.IsNullOrWhiteSpace(builder.Password))
+                {
+                    builder.Password = TryDecrypt(builder.Password);
+                }
 
                 try
                 {
@@ -208,7 +212,7 @@ namespace Tokafew420.MDbScriptTool
                         using (var cmd = conn.CreateCommand())
                         {
                             cmd.CommandType = CommandType.Text;
-                            cmd.CommandText = "SELECT * FROM sys.databases";
+                            cmd.CommandText = sql;
 
                             using (var reader = cmd.ExecuteReader())
                             {
@@ -230,7 +234,7 @@ namespace Tokafew420.MDbScriptTool
                             using (var cmd = conn.CreateCommand())
                             {
                                 cmd.CommandType = CommandType.Text;
-                                cmd.CommandText = "SELECT * FROM sys.databases";
+                                cmd.CommandText = sql;
 
                                 using (var reader = cmd.ExecuteReader())
                                 {
@@ -305,7 +309,10 @@ namespace Tokafew420.MDbScriptTool
 
                     var batches = GetSqlBatches(sql);
                     var builder = new SqlConnectionStringBuilder(connStr);
-                    builder.Password = TryDecrypt(builder.Password);
+                    if (!string.IsNullOrWhiteSpace(builder.Password))
+                    {
+                        builder.Password = TryDecrypt(builder.Password);
+                    }
 
                     SqlLogger.Log(builder.ToString(), dbs, sql);
 
@@ -378,11 +385,16 @@ namespace Tokafew420.MDbScriptTool
                     OsEvent.Emit("sql-parse-begin", null, id);
 
                     var batches = GetSqlBatches(sql);
-                    var builder = new SqlConnectionStringBuilder(connStr)
+                    var builder = new SqlConnectionStringBuilder(connStr);
+
+                    if (string.IsNullOrWhiteSpace(builder.InitialCatalog))
                     {
-                        InitialCatalog = "master"
-                    };
-                    builder.Password = TryDecrypt(builder.Password);
+                        builder.InitialCatalog = "master";
+                    }
+                    if (!string.IsNullOrWhiteSpace(builder.Password))
+                    {
+                        builder.Password = TryDecrypt(builder.Password);
+                    }
                     connStr = builder.ToString();
 
                     using (var conn = new SqlConnection(connStr))
@@ -443,7 +455,7 @@ namespace Tokafew420.MDbScriptTool
         /// [0] Always null
         /// [1] The log settings
         /// </remarks>
-        private void GetLogSettings(object[] args)
+        private void GetSettings(object[] args)
         {
             var replyMsgName = "settings";
 
@@ -477,7 +489,7 @@ namespace Tokafew420.MDbScriptTool
         /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// </remarks>
-        private void SetLogSettings(object[] args)
+        private void SetSettings(object[] args)
         {
             var replyMsgName = "settings-saved";
 

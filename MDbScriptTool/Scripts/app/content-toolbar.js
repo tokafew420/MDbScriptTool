@@ -51,7 +51,7 @@
         _toggleToolbarBtns(false);
     });
 
-    app.on(['instance-switched', 'sql-parsed', 'execute-sql-db-begin', 'execute-sql-db-progress', 'sql-executed'], function (instance) {
+    app.on(['instance-switched', 'sql-parsed', 'execute-sql-db-begin', 'execute-sql-db-complete', 'sql-executed'], function (instance) {
         if (instance && instance.active) {
             if (instance.pending) {
                 _toggleToolbarBtns(true);

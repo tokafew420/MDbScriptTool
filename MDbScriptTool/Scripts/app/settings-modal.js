@@ -4,11 +4,16 @@
  * Settings Modal
  */
 (function (window, app, os, $) {
-    // Sync logging settings
-    os.emit('get-settings');
-    os.once('settings', function (err, settings) {
-        app.settings.logging = settings.logging || {};
-        app.settings.sqlLogging = settings.sqlLogging || {};
+    app.settings.logging = app.settings.logging || {};
+    app.settings.sqlLogging = app.settings.sqlLogging || {};
+
+    $(function () {
+        // On fresh startup, the app may need time to build out the data/settings directory.
+        // Sync logging settings
+        os.once('settings', function (err, settings) {
+            app.settings.logging = settings.logging || {};
+            app.settings.sqlLogging = settings.sqlLogging || {};
+        }).emit('get-settings');
     });
 
     var $dlg = $('#settings-modal');

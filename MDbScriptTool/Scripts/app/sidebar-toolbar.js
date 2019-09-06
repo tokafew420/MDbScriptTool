@@ -98,6 +98,7 @@
             app.switchConnection(null);
         }
         $editConnectionBtn.prop('disabled', true);
+        $refreshDbsBtn.prop('disabled', true);
         $connectionSelect.val('');
         app.emit('update-sidebar-status', '');
     }
@@ -115,6 +116,7 @@
         var conn = app.findBy(app.connections, 'id', selectedConnId);
         if (conn) {
             $editConnectionBtn.prop('disabled', false);
+            $refreshDbsBtn.prop('disabled', false);
             if (isTrusted) {
                 // Only switch if it's a user generated event
                 app.switchConnection(conn);

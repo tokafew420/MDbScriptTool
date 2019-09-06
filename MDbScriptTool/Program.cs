@@ -23,8 +23,8 @@ namespace Tokafew420.MDbScriptTool
         {
             // Parse commandline args
             var options = new OptionSet() {
-                { "a|app", v => _appDir = v },
-                { "d|data", v => _dataDir = v },
+                { "a|app=", v => _appDir = v },
+                { "d|data=", v => _dataDir = v },
                 { "vs", v => _runningInVs = v != null }
             };
             options.Parse(args);
@@ -125,7 +125,7 @@ namespace Tokafew420.MDbScriptTool
                 }
                 else
                 {
-                    SqlLogger.Directory = Path.GetFullPath(Path.Combine(DataDirectory, "../Logs"));
+                    SqlLogger.Directory = Path.GetFullPath(Path.Combine(DataDirectory, "Logs"));
                 }
                 if (AppSettings.Exists("SqlLoggingRetention"))
                 {
