@@ -169,8 +169,9 @@
     <Content Include="Content\cm-s-twilight-vs-tsql.min.css">
       <DependentUpon>cm-s-twilight-vs-tsql.css</DependentUpon>
     </Content>
-    <Content Include="Content\font-awesome.css" />
-    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\fontawesome-4.7\css\font-awesome.css" />
+    <Content Include="Content\fontawesome-4.7\css\font-awesome.min.css" />
+    <Content Include="Content\fontawesome-4.7\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\jQuery-contextMenu\jquery.contextMenu.css" />
     <Content Include="Content\jQuery-contextMenu\jquery.contextMenu.js" />
     <Content Include="Content\jQuery-contextMenu\jquery.contextMenu.min.css">
@@ -221,7 +222,6 @@
     <Content Include="Content\themes\base\theme.css" />
     <Content Include="Content\themes\base\tooltip.css" />
     <None Include="Content\app\css\cm-s-twilight-vs-tsql.less" />
-    <Content Include="fonts\fontawesome-webfont.svg" />
     <Content Include="Scripts\app-core.min.js" />
     <Content Include="Scripts\app.min.js" />
     <Content Include="Scripts\app\content-tabs.js" />
@@ -678,11 +678,6 @@
     <None Include="Content\app\css\slider.less" />
     <None Include="Content\app\css\sidebar.less" />
     <None Include="Content\app\css\navbar.less" />
-    <Content Include="fonts\fontawesome-webfont.eot" />
-    <Content Include="fonts\fontawesome-webfont.ttf" />
-    <Content Include="fonts\fontawesome-webfont.woff" />
-    <Content Include="fonts\fontawesome-webfont.woff2" />
-    <Content Include="fonts\FontAwesome.otf" />
     <None Include="compilerconfig.json" />
     <None Include="compilerconfig.json.defaults">
       <DependentUpon>compilerconfig.json</DependentUpon>
@@ -781,6 +776,11 @@
     <None Include="Content\bootstrap-4.2.1\scss\_utilities.scss" />
     <None Include="Content\bootstrap-4.2.1\scss\_variables.scss" />
     <None Include="Content\bootstrap.scss" />
+    <None Include="Content\fontawesome-4.7\fonts\fontawesome-webfont.eot" />
+    <None Include="Content\fontawesome-4.7\fonts\fontawesome-webfont.ttf" />
+    <None Include="Content\fontawesome-4.7\fonts\fontawesome-webfont.woff" />
+    <None Include="Content\fontawesome-4.7\fonts\fontawesome-webfont.woff2" />
+    <None Include="Content\fontawesome-4.7\fonts\FontAwesome.otf" />
     <None Include="Content\jQuery-contextMenu\jquery.contextMenu.min.css.map">
       <DependentUpon>jquery.contextMenu.min.css</DependentUpon>
     </None>
@@ -892,18 +892,14 @@
 ECHO Command: xcopy "$(ProjectDir)Content" "$(TargetDir)Content" /S /I /Y
 xcopy "$(ProjectDir)Content" "$(TargetDir)Content" /S /I /Y
 ECHO Command: xcopy "$(ProjectDir)Scripts" "$(TargetDir)Scripts" /S /I /Y
-xcopy "$(ProjectDir)Scripts" "$(TargetDir)Scripts" /S /I /Y
-ECHO Command: xcopy "$(ProjectDir)fonts" "$(TargetDir)fonts" /S /I /Y
-xcopy "$(ProjectDir)fonts" "$(TargetDir)fonts" /S /I /Y</PostBuildEvent>
+xcopy "$(ProjectDir)Scripts" "$(TargetDir)Scripts" /S /I /Y</PostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PreBuildEvent>ECHO Cleaning output directories
 ECHO Command: rd /s /q "$(TargetDir)Content"
 rd /s /q "$(TargetDir)Content"
 ECHO Command: rd /s /q "$(TargetDir)Scripts"
-rd /s /q "$(TargetDir)Scripts"
-ECHO Command: rd /s /q "$(TargetDir)fonts"
-rd /s /q "$(TargetDir)fonts"</PreBuildEvent>
+rd /s /q "$(TargetDir)Scripts"</PreBuildEvent>
   </PropertyGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
