@@ -286,18 +286,7 @@ __pycache__/
 *.btm.cs
 *.odx.cs
 *.xsd.cs
-/MDbScriptTool/fonts
-/MDbScriptTool/Content/themes/base
-/MDbScriptTool/Content/font-awesome.*
-/MDbScriptTool/Scripts/codemirror-2.37/keymap
-/MDbScriptTool/Scripts/umd
-/MDbScriptTool/Scripts/esm
-/MDbScriptTool/Scripts/CodeMirror
-/MDbScriptTool/Scripts/README.md
-/MDbScriptTool/Scripts/popper*
-/MDbScriptTool/Scripts/jquery*
-/MDbScriptTool/Scripts/index.d.ts
-/MDbScriptTool/Scripts/bootstrap*
+
 /MDbScriptTool/Data
 
 # Generated files

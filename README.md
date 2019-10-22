@@ -25,11 +25,6 @@ Download the latest release from [here](https://github.com/tokafew420/MDbScriptT
 
 ## Running Solution ##
 
-On a fresh clone of the repository, Nuget only downloads the dependencies to the packages
-directory. The install script of the dependency package is what actually places the files into
-the project directories (i.e. `Scripts/`). To get the client files to "unpack" to the project
-directory you will need to open the NuGet console and run `Update-Package -reinstall -FileConflictAction OverwriteAll`.
-
 The [Web Essentials 2017](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebExtensionPack2017) extension is used to compile `css` and `js` files for releases. Install the extension from the VS market place.
 
 ## Alternatives ##
