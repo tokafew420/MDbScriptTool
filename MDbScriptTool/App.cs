@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CefSharp.WinForms;
+using Microsoft.SqlServer.Types;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -689,7 +690,23 @@ namespace Tokafew420.MDbScriptTool
             {
                 var row = new object[count];
 
-                for (i = 0; i < count; i++) row[i] = reader[i];
+                for (i = 0; i < count; i++)
+                {
+                    if (reader.IsDBNull(i))
+                    {
+                        row[i] = null;
+                    }
+                    else if (reader[i] is ISqlSpatialGridIndexable)
+                    {
+                        // Just get the string of the SqlGeography or SqlGeometry types
+                        // because Json.Net can't deserialize these types
+                        row[i] = reader[i].ToString();
+                    }
+                    else
+                    {
+                        row[i] = reader[i];
+                    }
+                }
 
                 yield return row;
             }

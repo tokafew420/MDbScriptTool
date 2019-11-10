@@ -56,6 +56,9 @@ namespace Tokafew420.MDbScriptTool
                     TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
                 };
 
+            // Load SqlServer types
+            SqlServerTypes.Utilities.LoadNativeAssemblies(AppDomain.CurrentDomain.BaseDirectory);
+
             Application.Run(new Program());
         }
 
