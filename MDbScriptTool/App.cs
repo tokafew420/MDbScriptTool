@@ -596,18 +596,17 @@ namespace Tokafew420.MDbScriptTool
                     using (var cmd = conn.CreateCommand())
                     {
                         cmd.CommandType = CommandType.Text;
+                        if (opts != null)
+                        {
+                            if (opts.timeout as int? >= 0)
+                            {
+                                cmd.CommandTimeout = opts.timeout;
+                            }
+                        }
 
                         foreach (var batch in batches)
                         {
                             cmd.CommandText = batch;
-
-                            if (opts != null)
-                            {
-                                if (opts.timeout as int? >= 0)
-                                {
-                                    cmd.CommandTimeout = opts.timeout;
-                                }
-                            }
 
                             OsEvent.Emit("sql-exe-db-batch-executing", null, id, db, batchNum);
                             Logger.Debug($"Executing to {connectionString}");
@@ -618,7 +617,7 @@ namespace Tokafew420.MDbScriptTool
                                 {
                                     do
                                     {
-                                        OsEvent.Emit("sql-exe-db-batch-result", null, id, db, batchNum, ConvertToResultset(reader));
+                                        OsEvent.Emit("sql-exe-db-batch-result", null, id, db, batchNum, ConvertToResultset(reader), reader.RecordsAffected);
                                     } while (reader.NextResult());
                                 }
                             }
@@ -677,38 +676,41 @@ namespace Tokafew420.MDbScriptTool
             var count = reader.FieldCount;
             var i = 0;
 
-            var columnNames = new object[count];
-            for (; i < count; i++)
+            if (count > 0)
             {
-                columnNames[i] = reader.GetName(i);
-            }
-
-            // Return header
-            yield return columnNames;
-
-            while (reader.Read())
-            {
-                var row = new object[count];
-
-                for (i = 0; i < count; i++)
+                var columnNames = new object[count];
+                for (; i < count; i++)
                 {
-                    if (reader.IsDBNull(i))
-                    {
-                        row[i] = null;
-                    }
-                    else if (reader[i] is ISqlSpatialGridIndexable)
-                    {
-                        // Just get the string of the SqlGeography or SqlGeometry types
-                        // because Json.Net can't deserialize these types
-                        row[i] = reader[i].ToString();
-                    }
-                    else
-                    {
-                        row[i] = reader[i];
-                    }
+                    columnNames[i] = reader.GetName(i);
                 }
 
-                yield return row;
+                // Return header
+                yield return columnNames;
+
+                while (reader.Read())
+                {
+                    var row = new object[count];
+
+                    for (i = 0; i < count; i++)
+                    {
+                        if (reader.IsDBNull(i))
+                        {
+                            row[i] = null;
+                        }
+                        else if (reader[i] is ISqlSpatialGridIndexable)
+                        {
+                            // Just get the string of the SqlGeography or SqlGeometry types
+                            // because Json.Net can't deserialize these types
+                            row[i] = reader[i].ToString();
+                        }
+                        else
+                        {
+                            row[i] = reader[i];
+                        }
+                    }
+
+                    yield return row;
+                }
             }
         }
 

@@ -737,7 +737,7 @@
             states.forEach(function (key) {
                 if (key === 'instances') {
                     var instances = app.instances.map(function (instance) {
-                        return app.exclude(instance, ['editor', 'pending', 'result', 'totalRows', '$editor', '$instance', '$tab', '$result', '$slider']);
+                        return app.exclude(instance, ['editor', 'pending', 'results', 'totalRows', 'affectedRows', '$editor', '$instance', '$tab', '$result', '$slider']);
                     });
                     localStorage.setItem('app-' + key, JSON.stringify(instances));
                 } else {
@@ -960,7 +960,7 @@
         $(window).on('resize', app.redraw);
 
         /**
-         * Executes the given sql. If not arguments are provided, then the sql from the current instance is executed.
+         * Executes the given sql. If no arguments are provided, then the sql from the current instance is executed.
          * 
          * @param {string} connectionString The target server connection string.
          * @param {Array} dbs A list of databases on the target server to execute the sql.
@@ -1000,7 +1000,9 @@
                                     app.emit('execute-sql', app.instance, app.connection, dbs, sql);
 
                                     app.instance.pending = 1;
+                                    app.instance.results = null;
                                     app.instance.totalRows = null;
+                                    app.instance.affectedRows = null;
 
                                     opts = Object.assign({}, opts, {
                                         timeout: app.instance.timeout
@@ -1026,24 +1028,35 @@
                 instance.pending++;
             }
             app.emit('execute-sql-db-begin', instance, err, db);
-        }).on('sql-exe-db-batch-result', function (err, id, dbname, batchNum, result) {
+        }).on('sql-exe-db-batch-result', function (err, id, dbname, batchNum, result, affectedRows) {
             var instance = app.findBy(app.instances, 'id', id);
 
             if (instance) {
                 var conn = app.findBy(app.connections, 'id', instance.connection.id) || {};
                 var db = app.findBy(conn.dbs, 'name', dbname);
 
-                var _result = instance.result = instance.result || {};
-                var _db = _result[db] = _result[db] || [];
+                var results = instance.results = instance.results || {};
+                var dbResult = results[db.id] = results[db.id] || [];
 
-                _db.push({
+                dbResult.push({
                     error: err,
-                    result: result
+                    result: result,
+                    affectedRows: affectedRows
                 });
 
-                if (!err && result) {
+                if (!err && result && result.length) {
+                    dbResult.totalRows = dbResult.totalRows || 0;
+                    dbResult.totalRows += result.length - 1;
+
                     instance.totalRows = instance.totalRows || 0;
                     instance.totalRows += result.length - 1;
+                }
+                if (affectedRows !== -1) {
+                    dbResult.affectedRows = dbResult.affectedRows || 0;
+                    dbResult.affectedRows += affectedRows;
+
+                    instance.affectedRows = instance.affectedRows || 0;
+                    instance.affectedRows += affectedRows;
                 }
             }
 

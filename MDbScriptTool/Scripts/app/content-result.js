@@ -61,7 +61,7 @@
         if (instance && instance.$result && db && db.id) {
             var $dbTable = $('#r' + db.id, instance.$result);
             if ($dbTable.length === 0) {
-                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}</div></div>`);
+                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}<span class="result-sets-meta"></span></div></div>`);
                 $dbTable = $('#r' + db.id, instance.$result);
             }
 
@@ -88,11 +88,24 @@
                     var vTable = new VirtualTable(instance, $table, result);
                     $table.data('virtual-table', vTable);
                 }
-
-                app.emit('update-content-status', `Total Rows: <strong>${instance.totalRows}</strong>`);
             } else {
                 $dbTable.append('<div class="result-text" tabindex="0">Command(s) completed successfully</div>');
             }
+
+            var meta = instance.results[db.id] || {};
+            var metas = [];
+            if (meta) {
+                if (meta.totalRows !== null && meta.totalRows >= 0) {
+                    metas.push(`Total Rows: <strong>${meta.totalRows}</strong>`);
+                }
+                if (meta.affectedRows !== null && meta.affectedRows >= 0) {
+                    metas.push(`Rows Affected: <strong>${meta.affectedRows}</strong>`);
+                }
+                if (metas.length) metas.unshift('');
+            }
+            $('.result-sets-meta', $dbTable).html(metas.join(' - '));
+
+            app.updateStatusBarForInstance(instance);
         }
     }).on('execute-sql-db-complete', function (instance, err, db) {
         if (err) {

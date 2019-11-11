@@ -90,12 +90,26 @@
             instance.$instance.remove();
         }
     }).on('instance-switched', function (instance, prevInstance) {
-        if (instance && typeof instance.totalRows === 'number' && !isNaN(instance.totalRows)) {
-            app.emit('update-content-status', `Total Rows: <strong>${instance.totalRows}</strong>`);
-        } else {
-            app.emit('update-content-status', '');
-        }
+        app.updateStatusBarForInstance(instance);
     });
+
+    /**
+     * Update the status bar with the current instance's metadata
+     * @param {any} instance The  current instance.
+     */
+    app.updateStatusBarForInstance = function (instance) {
+        var metas = [];
+        if (instance) {
+            if (instance.totalRows !== null && instance.totalRows >= 0) {
+                metas.push(`Total Rows: <strong>${instance.totalRows}</strong>`);
+            }
+            if (instance.affectedRows !== null && instance.affectedRows >= 0) {
+                metas.push(`Rows Affected: <strong>${instance.affectedRows}</strong>`);
+            }
+        }
+
+        app.emit('update-content-status', metas.join(' - '));
+    };
 
     $instanceContainer.on('dblclick', '.slider.slider-h', function (e) {
         var $slider = $(this);
