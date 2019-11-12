@@ -106,6 +106,7 @@
             if (instance.affectedRows !== null && instance.affectedRows >= 0) {
                 metas.push(`Rows Affected: <strong>${instance.affectedRows}</strong>`);
             }
+            metas.push(`Max Time: <strong>${app.msToTime(instance.time)}</strong>`);
         }
 
         app.emit('update-content-status', metas.join(' - '));

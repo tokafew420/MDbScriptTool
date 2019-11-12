@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
@@ -580,6 +581,7 @@ namespace Tokafew420.MDbScriptTool
 
             batches = batches.Where(b => !string.IsNullOrWhiteSpace(b));
 
+            var stopWatch = new Stopwatch();
             var batchCt = batches.Count();
             var batchNum = 0;
 
@@ -613,17 +615,21 @@ namespace Tokafew420.MDbScriptTool
 
                             try
                             {
+                                stopWatch.Reset();
+                                stopWatch.Start();
                                 using (var reader = await cmd.ExecuteReaderAsync())
                                 {
+                                    stopWatch.Stop();
                                     do
                                     {
-                                        OsEvent.Emit("sql-exe-db-batch-result", null, id, db, batchNum, ConvertToResultset(reader), reader.RecordsAffected);
+                                        OsEvent.Emit("sql-exe-db-batch-result", null, id, db, batchNum, ConvertToResultset(reader), reader.RecordsAffected, stopWatch.ElapsedMilliseconds);
                                     } while (reader.NextResult());
                                 }
                             }
                             catch (Exception e)
                             {
-                                OsEvent.Emit("sql-exe-db-batch-result", e, id, db, batchNum);
+                                stopWatch.Stop();
+                                OsEvent.Emit("sql-exe-db-batch-result", e, id, db, batchNum, null, null, stopWatch.ElapsedMilliseconds);
                                 Logger.Error(e.ToString());
                             }
 

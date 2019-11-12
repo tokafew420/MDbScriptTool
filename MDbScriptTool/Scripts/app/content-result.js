@@ -93,7 +93,7 @@
             }
 
             var meta = instance.results[db.id] || {};
-            var metas = [];
+            var metas = [''];
             if (meta) {
                 if (meta.totalRows !== null && meta.totalRows >= 0) {
                     metas.push(`Total Rows: <strong>${meta.totalRows}</strong>`);
@@ -101,7 +101,7 @@
                 if (meta.affectedRows !== null && meta.affectedRows >= 0) {
                     metas.push(`Rows Affected: <strong>${meta.affectedRows}</strong>`);
                 }
-                if (metas.length) metas.unshift('');
+                metas.push(`Time: <strong>${app.msToTime(meta.time)}</strong>`);
             }
             $('.result-sets-meta', $dbTable).html(metas.join(' - '));
 

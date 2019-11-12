@@ -256,6 +256,28 @@
         };
 
         /**
+         * Get the formatted time (hh:mm:ss.fff) from the number of milliseconds
+         * 
+         * @param {number} ms The number of milliseconds
+         * @returns {string} The formatted time.
+         */
+        app.msToTime = function (ms) {
+            var t = +ms || 0;
+
+            ms = t % 1000;
+            t = (t - ms) / 1000;    // seconds
+            var s = t % 60;
+            t = (t - s) / 60;   // minutes
+            var m = t % 60;
+            var h = (t - m) / 60;   // hours
+
+            return h.toString().padStart(2, '0') + ':' +
+                m.toString().padStart(2, '0') + ':' +
+                s.toString().padStart(2, '0') + '.' +
+                ms.toString().padStart(3, '0');
+        };
+
+        /**
          * A no-op function.
          **/
         app.noop = function () { };
@@ -737,7 +759,7 @@
             states.forEach(function (key) {
                 if (key === 'instances') {
                     var instances = app.instances.map(function (instance) {
-                        return app.exclude(instance, ['editor', 'pending', 'results', 'totalRows', 'affectedRows', '$editor', '$instance', '$tab', '$result', '$slider']);
+                        return app.exclude(instance, ['editor', 'pending', 'results', 'totalRows', 'affectedRows', 'time', '$editor', '$instance', '$tab', '$result', '$slider']);
                     });
                     localStorage.setItem('app-' + key, JSON.stringify(instances));
                 } else {
@@ -1003,6 +1025,7 @@
                                     app.instance.results = null;
                                     app.instance.totalRows = null;
                                     app.instance.affectedRows = null;
+                                    app.instance.time = 0;
 
                                     opts = Object.assign({}, opts, {
                                         timeout: app.instance.timeout
@@ -1028,7 +1051,7 @@
                 instance.pending++;
             }
             app.emit('execute-sql-db-begin', instance, err, db);
-        }).on('sql-exe-db-batch-result', function (err, id, dbname, batchNum, result, affectedRows) {
+        }).on('sql-exe-db-batch-result', function (err, id, dbname, batchNum, result, affectedRows, time) {
             var instance = app.findBy(app.instances, 'id', id);
 
             if (instance) {
@@ -1041,8 +1064,18 @@
                 dbResult.push({
                     error: err,
                     result: result,
-                    affectedRows: affectedRows
+                    affectedRows: affectedRows,
+                    time: time
                 });
+
+                time = time || 0;
+                dbResult.time = dbResult.time || 0;
+                dbResult.time += time;
+
+                if (instance.time < dbResult.time) {
+                    // Get greatest elapsed time
+                    instance.time = dbResult.time;
+                }
 
                 if (!err && result && result.length) {
                     dbResult.totalRows = dbResult.totalRows || 0;
@@ -1051,7 +1084,7 @@
                     instance.totalRows = instance.totalRows || 0;
                     instance.totalRows += result.length - 1;
                 }
-                if (affectedRows !== -1) {
+                if (affectedRows && affectedRows !== -1) {
                     dbResult.affectedRows = dbResult.affectedRows || 0;
                     dbResult.affectedRows += affectedRows;
 
