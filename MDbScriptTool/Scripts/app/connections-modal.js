@@ -39,7 +39,7 @@
         });
     }
 
-    // Reset feilds
+    // Reset fields
     function resetFields() {
         $integratedSecurity.prop('checked', false).change();
         $('input', $dlg).val('').removeClass('is-valid').removeClass('is-invalid');

@@ -2,7 +2,7 @@
     var document = window.document;
     var localStorage = window.localStorage;
 
-    // Initalize app object
+    // Initialize app object
     // Inherit event emitter
     EventEmitter.call(app);
     Object.assign(app, EventEmitter.prototype);
@@ -13,7 +13,7 @@
          *  A function that takes in a wrapper function which will delay the execution
          *  of the original function until a specific amount of time has passed.
          *  Generally used to prevent a function from running multiple times in quick
-         *  sucession.
+         *  succession.
          * https://davidwalsh.name/javascript-debounce-function
          * 
          * @param {function} func The function to run.
@@ -86,7 +86,7 @@
             // Why is it here? To ensure:
             // 1. the element is able to have focus and selection.
             // 2. if element was to flash render it has minimal visual impact.
-            // 3. less flakyness with selection and copying which **might** occur if
+            // 3. less flakiness with selection and copying which **might** occur if
             //    the textarea element is not visible.
             //
             // The likelihood is the element won't even render, not even a
@@ -930,7 +930,7 @@
 
 
                     if (app.instance) {
-                        // Reapply checked databaases
+                        // Reapply checked databases
                         var instanceConn = app.findBy(app.instance.connections, 'id', connection.id) || {};
                         (instanceConn.dbs || []).forEach(function (db) {
                             (app.findBy(connection.dbs, 'name', db.name) || {}).checked = !!db.checked;
@@ -979,9 +979,6 @@
          * @param {array} data An array of objects containing the data to export.
          * @param {string} filename Optional The name of the downloaded file. Defaults to the current date time as 'yyyymmddhhMMss.csv'
          * @returns {boolean} true if the download is successful, otherwise false.
-         *
-         * @remarks Since object property enumeration does not guarantee the order, use the headers param to
-         * specify the order.
          */
         app.exportCsv = function (data, filename) {
             if (!Array.isArray(data)) throw new Error('InvalidArgument: Expecting [data] to be an array.');
@@ -1341,7 +1338,7 @@
 
         // Inits
 
-        // Mirgation from v0.3.12
+        // Migration from v0.3.12
         // TODO: Remove after 4.x
         app.savedStates.forEach(function (key) {
             savedState = localStorage.getItem(`app-state-${key}`);
