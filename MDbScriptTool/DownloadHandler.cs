@@ -62,7 +62,7 @@ namespace Tokafew420.MDbScriptTool
                         {
                             InitialDirectory = string.IsNullOrWhiteSpace(path) ? "" : Path.GetDirectoryName(path),
                             FileName = filename,
-                            Filter = $"SQL Script | *.sql|All Files | *.*",
+                            Filter = $"{downloadItem.MimeType} | *.{Utils.GetFileExtenstion(filename)}|All Files | *.*",
                             Title = saveas ? "Save As" : "Save"
                         };
 

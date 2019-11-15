@@ -17,7 +17,7 @@ namespace Tokafew420.MDbScriptTool
         public OsEvent OsEvent { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of App
+        /// Initalizes a new instance of App
         /// </summary>
         /// <param name="form"></param>
         /// <param name="browser"></param>

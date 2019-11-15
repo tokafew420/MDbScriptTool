@@ -61,11 +61,13 @@
         if (instance && instance.$result && db && db.id) {
             var $dbTable = $('#r' + db.id, instance.$result);
             if ($dbTable.length === 0) {
-                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}<span class="result-sets-meta"></span></div></div>`);
+                var excelBtn = `<i onclick=app.downloadExcel('${db.id}') data-toggle="tooltip" db="${db.id}" title="Download to excel" class="fa fa-file-excel-o float-right text-white excel-btn" style="cursor: pointer; margin-top: 2px;"></i>`;
+                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}<span class="result-sets-meta"></span>${excelBtn}</div></div>`);
                 $dbTable = $('#r' + db.id, instance.$result);
             }
 
             if (err) {
+                $(`.excel-btn[db="${db.id}"]`).hide();
                 if (err.Errors && err.Errors.length) {
                     $dbTable.append(`<div class="result-text" tabindex="0"><pre class="text-danger">${formatSqlError(err.Errors).join('\n\n')}</pre></div>`);
                 } else {
@@ -106,6 +108,7 @@
             $('.result-sets-meta', $dbTable).html(metas.join(' - '));
 
             app.updateStatusBarForInstance(instance);
+            $('[data-toggle="tooltip"]').tooltip();
         }
     }).on('execute-sql-db-complete', function (instance, err, db) {
         if (err) {
@@ -242,6 +245,45 @@
                     return `<td>${app.escapeHtml(data)}</td>`;
                 }
             }).join('') + '</tr>';
+        }
+    };
+
+    app.downloadExcel = function (Id) {
+        var excelDataSet = [];
+        var fileName = [];
+        var date = app.date.format(new Date(), 'yyyymmddhhMMss');
+        if (Id) {
+            var dbData = app.connection.dbs.find(db => db.id === Id);
+            var dbName = dbData.label || dbData.name;
+            fileName = dbName + "-" + date;
+
+            app.instance.results[Id].forEach(function (dataSet) {
+                if (dataSet.result) {
+                    excelDataSet = excelDataSet.concat(dataSet.result);
+                }
+            });
+        }
+        else {
+            var dbIds = Object.keys(app.instance.results);
+            dbIds.forEach(function (dbId) {
+                var dbData = app.connection.dbs.find(db => db.id === dbId);
+                var dbName = dbData.label || dbData.name;
+                app.instance.results[dbId].forEach(function (dataSet) {
+                    if (dataSet.result) {
+                        var dataSetResults = dataSet.result.map(function (arr) {
+                            return arr.slice();
+                        });
+                        dataSetResults[0].unshift('DataBase');
+                        for (var i = 1; i < Object.keys(dataSetResults).length; i++) {
+                            dataSetResults[i].unshift(dbName);
+                        }
+                        excelDataSet = excelDataSet.concat(dataSetResults);
+                    }
+                });
+            });
+        }
+        if (excelDataSet.length) {
+            app.exportCsv(excelDataSet);
         }
     };
 }(window, window.app = window.app || {}, window.os, jQuery));

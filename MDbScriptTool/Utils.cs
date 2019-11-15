@@ -603,6 +603,13 @@ namespace Tokafew420.MDbScriptTool
             return _mimeMapping.FirstOrDefault(m => m.Value == type).Key;
         }
 
+        public static string GetFileExtenstion(string filename)
+        {
+            var index = filename.LastIndexOf(".");
+            if (index == -1) return null;
+            else return filename.Substring(index + 1);
+        }
+
         public static double ConvertToUnixTimestamp(DateTime date)
         {
             var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
