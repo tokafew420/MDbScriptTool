@@ -91,7 +91,7 @@ namespace Tokafew420.MDbScriptTool
         }
 
         /// <summary>
-        /// Add a listner to the script event of interest that only executes once.
+        /// Add a listener to the script event of interest that only executes once.
         /// </summary>
         /// <param name="name">The event name.</param>
         /// <param name="handler">The event handler.</param>

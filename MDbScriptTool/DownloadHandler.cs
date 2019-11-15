@@ -15,7 +15,7 @@ namespace Tokafew420.MDbScriptTool
         public OsEvent OsEvent { get; set; }
 
         /// <summary>
-        /// Initalizes a new instance of DownloadHandler
+        /// Initializes a new instance of DownloadHandler
         /// </summary>
         internal DownloadHandler(Form form, ChromiumWebBrowser browser)
         {
