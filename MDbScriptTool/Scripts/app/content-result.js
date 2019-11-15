@@ -91,6 +91,7 @@
                     $table.data('virtual-table', vTable);
                 }
             } else {
+                $(`.excel-btn[db="${db.id}"]`).hide();
                 $dbTable.append('<div class="result-text" tabindex="0">Command(s) completed successfully</div>');
             }
 
