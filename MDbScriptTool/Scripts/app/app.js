@@ -396,7 +396,7 @@
                 });
             }
             if (excelDataSet.length) {
-                app.downloadCsv(excelDataSet, fileName);
+                app.exportCsv(excelDataSet, fileName);
             }
         };
 
