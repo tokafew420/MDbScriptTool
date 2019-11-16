@@ -361,6 +361,69 @@
 
             return obj;
         };
+
+        app.downloadToCsv = function (id) {
+            var excelDataSet = [];
+            var fileName = '';
+            var date = app.date.format(new Date(), 'yyyymmddhhMMss');
+            if (id) {
+                var dbData = app.connection.dbs.find(db => db.id === id);
+                var dbName = dbData.label || dbData.name;
+                fileName = dbName + "-" + date;
+
+                app.instance.results[id].forEach(function (dataSet) {
+                    if (dataSet.result) {
+                        excelDataSet = excelDataSet.concat(dataSet.result);
+                    }
+                });
+            } else {
+                var dbIds = Object.keys(app.instance.results);
+                dbIds.forEach(function (dbId) {
+                    var dbData = app.connection.dbs.find(db => db.id === dbId);
+                    var dbName = dbData.label || dbData.name;
+                    app.instance.results[dbId].forEach(function (dataSet) {
+                        if (dataSet.result) {
+                            var dataSetResults = dataSet.result.map(function (arr) {
+                                return arr.slice();
+                            });
+                            dataSetResults[0].unshift('DataBase');
+                            for (var i = 1; i < Object.keys(dataSetResults).length; i++) {
+                                dataSetResults[i].unshift(dbName);
+                            }
+                            excelDataSet = excelDataSet.concat(dataSetResults);
+                        }
+                    });
+                });
+            }
+            if (excelDataSet.length) {
+                app.downloadCsv(excelDataSet, fileName);
+            }
+        };
+
+        /**
+         * Exports a data array as a CSV download.
+         *
+         * @param {array} data An array of objects containing the data to export.
+         * @param {string} filename Optional The name of the downloaded file. Defaults to the current date time as 'yyyymmddhhMMss.csv'
+         * @returns {boolean} true if the download is successful, otherwise false.
+         */
+        app.exportCsv = function (data, filename) {
+            if (!Array.isArray(data)) throw new Error('InvalidArgument: Expecting [data] to be an array.');
+
+            if (!filename) filename = app.date.format(new Date(), 'yyyymmddhhMMss') + '.csv';
+
+            var csv = data.map(function (row) {
+                return row.map(function (col, idx) {
+                    var cell = row[idx];
+                    if (cell) cell = String(cell).replace(/"/g, '""');
+                    return '"' + cell + '"';
+                }).join(',');
+            }).join('\r\n');
+
+            app.downloadText(csv, encodeURIComponent(filename), 'text/csv;charset=utf-8');
+            return true;
+        };
+
     }());
 
     /* UI Utilities */
@@ -972,49 +1035,6 @@
                 });
             }
         };
-
-        /**
-         * Exports a data array as a CSV download.
-         *
-         * @param {array} data An array of objects containing the data to export.
-         * @param {string} filename Optional The name of the downloaded file. Defaults to the current date time as 'yyyymmddhhMMss.csv'
-         * @returns {boolean} true if the download is successful, otherwise false.
-         */
-        app.exportCsv = function (data, filename) {
-            if (!Array.isArray(data)) throw new Error('InvalidArgument: Expecting [data] to be an array.');
-
-            if (!filename) filename = app.date.format(new Date(), 'yyyymmddhhMMss') + '.csv';
-
-            var csv = data.map(function (row) {
-                return row.map(function (col, idx) {
-                    var cell = row[idx];
-                    if (cell) cell = String(cell).replace(/"/g, '""');
-                    return '"' + cell + '"';
-                }).join(',');
-            }).join('\r\n');
-
-            // Temp anchor to execute the download.
-            var $a = $("<a>");
-            var blob;
-
-            // HTML5 Blob supported
-            blob = new Blob([csv], {
-                type: 'text/csv;charset=utf-8'
-            });
-            var blobUrl = URL.createObjectURL(blob);
-
-            $a.attr({
-                'download': filename,
-                'href': blobUrl
-            });
-
-            $('body').append($a);
-            $a[0].click();
-            $a.remove();
-
-            return true;
-        };
-
 
         /** Functions (date) **/
         var date = app.date = app.date || {};
