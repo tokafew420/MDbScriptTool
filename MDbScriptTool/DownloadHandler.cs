@@ -58,21 +58,31 @@ namespace Tokafew420.MDbScriptTool
                     }
                     else
                     {
-                        var saveFileDialog = new SaveFileDialog
+                        var filter = "All Files | *.*";
+                        var ext = Path.GetExtension(filename);
+                        var fileType = Utils.GetFileType(ext);
+
+                        if(!string.IsNullOrWhiteSpace(fileType))
+                        {
+                            filter = $"{fileType} | *{ext}|" + filter;
+                        }
+
+                        using (var saveFileDialog = new SaveFileDialog
                         {
                             InitialDirectory = string.IsNullOrWhiteSpace(path) ? "" : Path.GetDirectoryName(path),
                             FileName = filename,
-                            Filter = $"{downloadItem.MimeType} | *.{Utils.GetFileExtenstion(filename)}|All Files | *.*",
+                            Filter = filter,
                             Title = saveas ? "Save As" : "Save"
-                        };
-
-                        if (saveFileDialog.ShowDialog() == DialogResult.OK && saveFileDialog.FileName != "")
+                        })
                         {
-                            callback.Continue(saveFileDialog.FileName, showDialog: false);
-                        }
-                        else
-                        {
-                            IsCancelled = true;
+                            if (saveFileDialog.ShowDialog() == DialogResult.OK && saveFileDialog.FileName != "")
+                            {
+                                callback.Continue(saveFileDialog.FileName, showDialog: false);
+                            }
+                            else
+                            {
+                                IsCancelled = true;
+                            }
                         }
                     }
                 }

@@ -61,19 +61,21 @@
         if (instance && instance.$result && db && db.id) {
             var $dbTable = $('#r' + db.id, instance.$result);
             if ($dbTable.length === 0) {
-                var excelBtn = `<i onclick="app.downloadToCsv('${db.id}')" data-toggle="tooltip" db="${db.id}" title="Download results to csv" class="fa fa-download float-right text-white excel-btn" style="cursor: pointer; margin-top: 2px;"></i>`;
-                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}<span class="result-sets-meta"></span>${excelBtn}</div></div>`);
+                var exportBtn = `<a href="#" class="export-btn float-right d-none" data-toggle="tooltip" title="Export Database Results"><i class="fa fa-download"></i></a>`;
+                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}<span class="result-sets-meta"></span>${exportBtn}</div ></div >`);
                 $dbTable = $('#r' + db.id, instance.$result);
+
+                $('.export-btn', instance.$result).tooltip();
             }
 
             if (err) {
-                $(`.excel-btn[db="${db.id}"]`).hide();
                 if (err.Errors && err.Errors.length) {
                     $dbTable.append(`<div class="result-text" tabindex="0"><pre class="text-danger">${formatSqlError(err.Errors).join('\n\n')}</pre></div>`);
                 } else {
                     $dbTable.append(`<div class="result-text text-danger" tabindex="0">${err.Message}</div>`);
                 }
             } else if (result && result.length && result[0].length) {
+                $('.export-btn', instance.$result).removeClass('d-none');
                 var $table = $('<div class="result-set" tabindex="0"><table class="table table-sm table-striped table-hover table-dark table-bordered"><thead><tr><th class="row-number"></th></tr></thead><tbody></tbody></table></div>');
 
                 $('thead tr', $table).append(result[0].map(function (columnName) {
@@ -91,7 +93,6 @@
                     $table.data('virtual-table', vTable);
                 }
             } else {
-                $(`.excel-btn[db="${db.id}"]`).hide();
                 $dbTable.append('<div class="result-text" tabindex="0">Command(s) completed successfully</div>');
             }
 
@@ -109,7 +110,6 @@
             $('.result-sets-meta', $dbTable).html(metas.join(' - '));
 
             app.updateStatusBarForInstance(instance);
-            $('[data-toggle="tooltip"]').tooltip();
         }
     }).on('execute-sql-db-complete', function (instance, err, db) {
         if (err) {
@@ -140,6 +140,16 @@
                     vTable.resize(instance).update(true);
                 }
             });
+        }
+    });
+
+    $('.instance-container').on('click', '.instance .export-btn', function (e) {
+        e.preventDefault();
+        var $btn = $(this).tooltip('hide');
+        var instance = $btn.closest('.instance').data('instance');
+        var dbId = $btn.closest('.result-sets-container').attr('id').substr(1);
+        if (instance) {
+            app.downloadToCsv(instance, dbId);
         }
     });
 

@@ -15,7 +15,7 @@ namespace Tokafew420.MDbScriptTool
         // combination of values from Windows 7 Registry and
         // from C:\Windows\System32\inetsrv\config\applicationHost.config
         // some added, including .7z and .dat
-        private static IDictionary<string, string> _mimeMapping = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        public static IDictionary<string, string> MimeMapping = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {
             {".323", "text/h323"},
             {".3g2", "video/3gpp2"},
@@ -582,6 +582,15 @@ namespace Tokafew420.MDbScriptTool
 
         #endregion Big freaking list of mime types
 
+        public static IDictionary<string, string> FileType = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        {
+            {".*", "All Files"},
+            {".csv", "CSV"},
+            {".css", "CSS"},
+            {".js", "JavaScript"},
+            {".sql", "SQL Script"}
+        };
+
         public static string GetMimeType(string extension)
         {
             if (extension == null) throw new ArgumentNullException(nameof(extension));
@@ -591,7 +600,7 @@ namespace Tokafew420.MDbScriptTool
                 extension = "." + extension;
             }
 
-            return _mimeMapping.TryGetValue(extension, out var mime) ? mime : "application/octet-stream";
+            return MimeMapping.TryGetValue(extension, out var mime) ? mime : "application/octet-stream";
         }
 
         public static string GetMimeExtension(string type)
@@ -600,14 +609,28 @@ namespace Tokafew420.MDbScriptTool
 
             type = type.ToLower();
 
-            return _mimeMapping.FirstOrDefault(m => m.Value == type).Key;
+            return MimeMapping.FirstOrDefault(m => m.Value == type).Key;
         }
 
-        public static string GetFileExtenstion(string filename)
+        public static string GetFileType(string extension)
         {
-            var index = filename.LastIndexOf(".");
-            if (index == -1) return null;
-            else return filename.Substring(index + 1);
+            if (extension == null) throw new ArgumentNullException(nameof(extension));
+
+            if (!extension.StartsWith("."))
+            {
+                extension = "." + extension;
+            }
+
+            return FileType.TryGetValue(extension, out var fileType) ? fileType : GetMimeType(extension);
+        }
+
+        public static string GetFileTypeExtension(string type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            type = type.ToLower();
+
+            return FileType.FirstOrDefault(m => m.Value.ToLower() == type).Key ?? GetMimeExtension(type);
         }
 
         public static double ConvertToUnixTimestamp(DateTime date)

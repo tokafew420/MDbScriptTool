@@ -187,7 +187,7 @@ namespace Tokafew420.MDbScriptTool
 
         #region Properties
 
-        private static Lazy<string> _AppDirectory = new Lazy<string>(() =>
+        private readonly static Lazy<string> _AppDirectory = new Lazy<string>(() =>
         {
             if (!string.IsNullOrWhiteSpace(_appDir))
             {
@@ -213,7 +213,7 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         public static string AppDirectory => _AppDirectory.Value;
 
-        private static Lazy<string> _DataDirectory = new Lazy<string>(() =>
+        private readonly static Lazy<string> _DataDirectory = new Lazy<string>(() =>
         {
             if (!string.IsNullOrWhiteSpace(_dataDir))
             {
@@ -237,7 +237,7 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         public static string DataDirectory => _DataDirectory.Value;
 
-        private static Lazy<string> _CacheDirectory = new Lazy<string>(() => Path.Combine(DataDirectory, "Cache"));
+        private readonly static Lazy<string> _CacheDirectory = new Lazy<string>(() => Path.Combine(DataDirectory, "Cache"));
 
         /// <summary>
         /// Gets the cache directory path.

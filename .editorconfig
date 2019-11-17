@@ -415,3 +415,7 @@ dotnet_naming_rule.parameters_rule.severity = warning
 #
 # ####################################################################
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[*.cs]
+
+# IDE1006: Naming Styles
+dotnet_diagnostic.IDE1006.severity = none

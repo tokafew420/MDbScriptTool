@@ -15,9 +15,11 @@
     var $openFile = $('.open-file-btn', $toolbar);
     var $saveFile = $('.save-file-btn', $toolbar);
     var $saveAsFile = $('.save-as-file-btn', $toolbar);
-    /** Editor  buttons **/
+    /** Editor buttons **/
     var $commentBtn = $('.comment-btn', $toolbar);
     var $uncommentBtn = $('.uncomment-btn', $toolbar);
+    /** Result buttons **/
+    var $exportBtn = $('.export-btn', $toolbar);
 
     function _toggleToolbarBtns(disabled) {
         // Disabled these toolbar button while a sql operation is in progress
@@ -138,4 +140,10 @@
         }
     });
 
+    $exportBtn.on('click', function () {
+        if (app.instance) {
+            app.downloadToCsv(app.instance);
+            app.instance.editor.focus();
+        }
+    });
 }(window, window.app = window.app || {}, window.os, jQuery));

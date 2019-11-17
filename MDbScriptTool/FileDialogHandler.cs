@@ -35,32 +35,34 @@ namespace Tokafew420.MDbScriptTool
                 var files = new List<FsFile>();
                 if (CefFileDialogMode.OpenFolder == (mode & CefFileDialogMode.OpenFolder))
                 {
-                    var dialog = new FolderBrowserDialog()
+                    using (var dialog = new FolderBrowserDialog()
                     {
                         SelectedPath = defaultFilePath
-                    };
-                    if (!string.IsNullOrWhiteSpace(title))
+                    })
                     {
-                        dialog.Description = title;
-                    }
-
-                    if (dialog.ShowDialog() == DialogResult.OK)
-                    {
-                        var dir = new DirectoryInfo(dialog.SelectedPath);
-                        files.Add(new FsFile()
+                        if (!string.IsNullOrWhiteSpace(title))
                         {
-                            Name = dir.Name,
-                            WebkitRelativePath = dir.Parent.FullName,
-                            Type = "directory",
-                            LastModified = (long)Utils.ConvertToUnixTimestamp(dir.LastWriteTime)
-                        });
-                        OsEvent.Emit(replyMsgName, null, false, files);
-                        callback.Continue(selectedAcceptFilter, new List<string> { dialog.SelectedPath });
-                    }
-                    else
-                    {
-                        OsEvent.Emit(replyMsgName, null, true, files);
-                        callback.Cancel();
+                            dialog.Description = title;
+                        }
+
+                        if (dialog.ShowDialog() == DialogResult.OK)
+                        {
+                            var dir = new DirectoryInfo(dialog.SelectedPath);
+                            files.Add(new FsFile()
+                            {
+                                Name = dir.Name,
+                                WebkitRelativePath = dir.Parent.FullName,
+                                Type = "directory",
+                                LastModified = (long)Utils.ConvertToUnixTimestamp(dir.LastWriteTime)
+                            });
+                            OsEvent.Emit(replyMsgName, null, false, files);
+                            callback.Continue(selectedAcceptFilter, new List<string> { dialog.SelectedPath });
+                        }
+                        else
+                        {
+                            OsEvent.Emit(replyMsgName, null, true, files);
+                            callback.Cancel();
+                        }
                     }
                 }
                 else
@@ -69,18 +71,18 @@ namespace Tokafew420.MDbScriptTool
                     {
                         if (string.IsNullOrWhiteSpace(ext)) return "";
 
-                        var mimeType = Utils.GetMimeType(ext);
+                        var fileType = Utils.GetFileType(ext);
 
-                        if (string.IsNullOrWhiteSpace(mimeType))
+                        if (string.IsNullOrWhiteSpace(fileType))
                         {
                             // Maybe the accept type is already a mime type
-                            mimeType = ext;
-                            ext = Utils.GetMimeExtension(mimeType);
+                            fileType = ext;
+                            ext = Utils.GetFileTypeExtension(fileType);
 
                             if (string.IsNullOrWhiteSpace(ext)) return "";
                         }
 
-                        return $"{mimeType}|*{ext}";
+                        return $"{fileType}|*{ext}";
                     }));
 
                     if (string.IsNullOrWhiteSpace(filter))
@@ -88,40 +90,41 @@ namespace Tokafew420.MDbScriptTool
                         filter = "All Files|*.*";
                     }
 
-                    var dialog = new OpenFileDialog
+                    using (var dialog = new OpenFileDialog
                     {
                         Multiselect = CefFileDialogMode.OpenMultiple == (mode & CefFileDialogMode.OpenMultiple),
                         Title = title,
                         Filter = filter,
                         InitialDirectory = defaultFilePath,
                         FilterIndex = selectedAcceptFilter
-                    };
-
-                    if (dialog.ShowDialog() == DialogResult.OK)
+                    })
                     {
-                        if (dialog.FileNames != null)
+                        if (dialog.ShowDialog() == DialogResult.OK)
                         {
-                            files = dialog.FileNames.Select(f =>
+                            if (dialog.FileNames != null)
                             {
-                                var file = new FileInfo(f);
-
-                                return new FsFile()
+                                files = dialog.FileNames.Select(f =>
                                 {
-                                    Name = file.Name,
-                                    WebkitRelativePath = file.DirectoryName,
-                                    Size = file.Length,
-                                    Type = Utils.GetMimeType(file.Extension),
-                                    LastModified = (long)Utils.ConvertToUnixTimestamp(file.LastWriteTime)
-                                };
-                            }).ToList();
+                                    var file = new FileInfo(f);
+
+                                    return new FsFile()
+                                    {
+                                        Name = file.Name,
+                                        WebkitRelativePath = file.DirectoryName,
+                                        Size = file.Length,
+                                        Type = Utils.GetMimeType(file.Extension),
+                                        LastModified = (long)Utils.ConvertToUnixTimestamp(file.LastWriteTime)
+                                    };
+                                }).ToList();
+                            }
+                            OsEvent.Emit(replyMsgName, null, false, files);
+                            callback.Continue(selectedAcceptFilter, dialog.FileNames.ToList());
                         }
-                        OsEvent.Emit(replyMsgName, null, false, files);
-                        callback.Continue(selectedAcceptFilter, dialog.FileNames.ToList());
-                    }
-                    else
-                    {
-                        OsEvent.Emit(replyMsgName, null, true, files);
-                        callback.Cancel();
+                        else
+                        {
+                            OsEvent.Emit(replyMsgName, null, true, files);
+                            callback.Cancel();
+                        }
                     }
                 }
             }
