@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -22,7 +22,7 @@ namespace Tokafew420.MDbScriptTool
         void On(string name, Action<object[]> handler);
 
         /// <summary>
-        /// Add a listner to the script event of interest that only executes once.
+        /// Add a listener to the script event of interest that only executes once.
         /// </summary>
         /// <param name="name">The event name.</param>
         /// <param name="handler">The event handler.</param>

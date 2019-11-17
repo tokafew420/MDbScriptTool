@@ -2,7 +2,7 @@
     var document = window.document;
     var localStorage = window.localStorage;
 
-    // Initalize app object
+    // Initialize app object
     // Inherit event emitter
     EventEmitter.call(app);
     Object.assign(app, EventEmitter.prototype);
@@ -13,7 +13,7 @@
          *  A function that takes in a wrapper function which will delay the execution
          *  of the original function until a specific amount of time has passed.
          *  Generally used to prevent a function from running multiple times in quick
-         *  sucession.
+         *  succession.
          * https://davidwalsh.name/javascript-debounce-function
          * 
          * @param {function} func The function to run.
@@ -86,7 +86,7 @@
             // Why is it here? To ensure:
             // 1. the element is able to have focus and selection.
             // 2. if element was to flash render it has minimal visual impact.
-            // 3. less flakyness with selection and copying which **might** occur if
+            // 3. less flakiness with selection and copying which **might** occur if
             //    the textarea element is not visible.
             //
             // The likelihood is the element won't even render, not even a
@@ -361,6 +361,69 @@
 
             return obj;
         };
+
+        app.downloadToCsv = function (id) {
+            var excelDataSet = [];
+            var fileName = '';
+            var date = app.date.format(new Date(), 'yyyymmddhhMMss');
+            if (id) {
+                var dbData = app.connection.dbs.find(db => db.id === id);
+                var dbName = dbData.label || dbData.name;
+                fileName = dbName + "-" + date;
+
+                app.instance.results[id].forEach(function (dataSet) {
+                    if (dataSet.result) {
+                        excelDataSet = excelDataSet.concat(dataSet.result);
+                    }
+                });
+            } else {
+                var dbIds = Object.keys(app.instance.results);
+                dbIds.forEach(function (dbId) {
+                    var dbData = app.connection.dbs.find(db => db.id === dbId);
+                    var dbName = dbData.label || dbData.name;
+                    app.instance.results[dbId].forEach(function (dataSet) {
+                        if (dataSet.result) {
+                            var dataSetResults = dataSet.result.map(function (arr) {
+                                return arr.slice();
+                            });
+                            dataSetResults[0].unshift('DataBase');
+                            for (var i = 1; i < Object.keys(dataSetResults).length; i++) {
+                                dataSetResults[i].unshift(dbName);
+                            }
+                            excelDataSet = excelDataSet.concat(dataSetResults);
+                        }
+                    });
+                });
+            }
+            if (excelDataSet.length) {
+                app.exportCsv(excelDataSet, fileName);
+            }
+        };
+
+        /**
+         * Exports a data array as a CSV download.
+         *
+         * @param {array} data An array of objects containing the data to export.
+         * @param {string} filename Optional The name of the downloaded file. Defaults to the current date time as 'yyyymmddhhMMss.csv'
+         * @returns {boolean} true if the download is successful, otherwise false.
+         */
+        app.exportCsv = function (data, filename) {
+            if (!Array.isArray(data)) throw new Error('InvalidArgument: Expecting [data] to be an array.');
+
+            if (!filename) filename = app.date.format(new Date(), 'yyyymmddhhMMss') + '.csv';
+
+            var csv = data.map(function (row) {
+                return row.map(function (col, idx) {
+                    var cell = row[idx];
+                    if (cell) cell = String(cell).replace(/"/g, '""');
+                    return '"' + cell + '"';
+                }).join(',');
+            }).join('\r\n');
+
+            app.downloadText(csv, encodeURIComponent(filename), 'text/csv;charset=utf-8');
+            return true;
+        };
+
     }());
 
     /* UI Utilities */
@@ -930,7 +993,7 @@
 
 
                     if (app.instance) {
-                        // Reapply checked databaases
+                        // Reapply checked databases
                         var instanceConn = app.findBy(app.instance.connections, 'id', connection.id) || {};
                         (instanceConn.dbs || []).forEach(function (db) {
                             (app.findBy(connection.dbs, 'name', db.name) || {}).checked = !!db.checked;
@@ -972,6 +1035,130 @@
                 });
             }
         };
+
+        /** Functions (date) **/
+        var date = app.date = app.date || {};
+
+        /*
+         * Date Format 1.2.3
+         * (c) 2007-2009 Steven Levithan <stevenlevithan.com>
+         * MIT license
+         *
+         * Includes enhancements by Scott Trenda <scott.trenda.net>
+         * and Kris Kowal <cixar.com/~kris.kowal/>
+         *
+         * Accepts a date, a mask, or a date and a mask.
+         * Returns a formatted version of the given date.
+         * The date defaults to the current date/time.
+         * The mask defaults to dateFormat.masks.default.
+         */
+        date.format = (function () {
+            var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
+                timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
+                timezoneClip = /[^-+\dA-Z]/g,
+                pad = function (val, len) {
+                    val = String(val);
+                    len = len || 2;
+                    while (val.length < len) val = "0" + val;
+                    return val;
+                };
+
+            // Regexes and supporting functions are cached through closure
+            return function (date, mask, utc) {
+                var dF = app.date;
+
+                // You can't provide utc if you skip other args (use the "UTC:" mask prefix)
+                if (arguments.length === 1 && Object.prototype.toString.call(date) === "[object String]" && !/\d/.test(date)) {
+                    mask = date;
+                    date = undefined;
+                }
+
+                // Passing date through Date applies Date.parse, if necessary
+                date = date ? new Date(date) : new Date;
+                if (isNaN(date)) throw SyntaxError("invalid date");
+
+                mask = String(dF.masks[mask] || mask || dF.masks["default"]);
+
+                // Allow setting the utc argument via the mask
+                if (mask.slice(0, 4) === "UTC:") {
+                    mask = mask.slice(4);
+                    utc = true;
+                }
+
+                var _ = utc ? "getUTC" : "get",
+                    d = date[_ + "Date"](),
+                    D = date[_ + "Day"](),
+                    m = date[_ + "Month"](),
+                    y = date[_ + "FullYear"](),
+                    H = date[_ + "Hours"](),
+                    M = date[_ + "Minutes"](),
+                    s = date[_ + "Seconds"](),
+                    L = date[_ + "Milliseconds"](),
+                    o = utc ? 0 : date.getTimezoneOffset(),
+                    flags = {
+                        d: d,
+                        dd: pad(d),
+                        ddd: dF.i18n.dayNames[D],
+                        dddd: dF.i18n.dayNames[D + 7],
+                        m: m + 1,
+                        mm: pad(m + 1),
+                        mmm: dF.i18n.monthNames[m],
+                        mmmm: dF.i18n.monthNames[m + 12],
+                        yy: String(y).slice(2),
+                        yyyy: y,
+                        h: H % 12 || 12,
+                        hh: pad(H % 12 || 12),
+                        H: H,
+                        HH: pad(H),
+                        M: M,
+                        MM: pad(M),
+                        s: s,
+                        ss: pad(s),
+                        l: pad(L, 3),
+                        L: pad(L > 99 ? Math.round(L / 10) : L),
+                        t: H < 12 ? "a" : "p",
+                        tt: H < 12 ? "am" : "pm",
+                        T: H < 12 ? "A" : "P",
+                        TT: H < 12 ? "AM" : "PM",
+                        Z: utc ? "UTC" : (String(date).match(timezone) || [""]).pop().replace(timezoneClip, ""),
+                        o: (o > 0 ? "-" : "+") + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4),
+                        S: ["th", "st", "nd", "rd"][d % 10 > 3 ? 0 : (d % 100 - d % 10 !== 10) * d % 10]
+                    };
+
+                return mask.replace(token, function ($0) {
+                    return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
+                });
+            };
+        }());
+
+        // Some common format strings
+        date.masks = {
+            "default": "ddd mmm dd yyyy HH:MM:ss",
+            shortDate: "m/d/yy",
+            mediumDate: "mmm d, yyyy",
+            longDate: "mmmm d, yyyy",
+            fullDate: "dddd, mmmm d, yyyy",
+            shortTime: "h:MM TT",
+            mediumTime: "h:MM:ss TT",
+            longTime: "h:MM:ss TT Z",
+            isoDate: "yyyy-mm-dd",
+            isoTime: "HH:MM:ss",
+            isoDateTime: "yyyy-mm-dd'T'HH:MM:ss",
+            isoUtcDateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
+        };
+
+        // Internationalization strings
+        date.i18n = {
+            dayNames: [
+                "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat",
+                "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
+            ],
+            monthNames: [
+                "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+                "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+            ]
+        };
+
 
         /**
          * Force the app to redraw (re-render).
@@ -1171,7 +1358,7 @@
 
         // Inits
 
-        // Mirgation from v0.3.12
+        // Migration from v0.3.12
         // TODO: Remove after 4.x
         app.savedStates.forEach(function (key) {
             savedState = localStorage.getItem(`app-state-${key}`);

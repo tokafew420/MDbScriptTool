@@ -61,11 +61,13 @@
         if (instance && instance.$result && db && db.id) {
             var $dbTable = $('#r' + db.id, instance.$result);
             if ($dbTable.length === 0) {
-                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}<span class="result-sets-meta"></span></div></div>`);
+                var excelBtn = `<i onclick="app.downloadToCsv('${db.id}')" data-toggle="tooltip" db="${db.id}" title="Download results to csv" class="fa fa-download float-right text-white excel-btn" style="cursor: pointer; margin-top: 2px;"></i>`;
+                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}<span class="result-sets-meta"></span>${excelBtn}</div></div>`);
                 $dbTable = $('#r' + db.id, instance.$result);
             }
 
             if (err) {
+                $(`.excel-btn[db="${db.id}"]`).hide();
                 if (err.Errors && err.Errors.length) {
                     $dbTable.append(`<div class="result-text" tabindex="0"><pre class="text-danger">${formatSqlError(err.Errors).join('\n\n')}</pre></div>`);
                 } else {
@@ -89,6 +91,7 @@
                     $table.data('virtual-table', vTable);
                 }
             } else {
+                $(`.excel-btn[db="${db.id}"]`).hide();
                 $dbTable.append('<div class="result-text" tabindex="0">Command(s) completed successfully</div>');
             }
 
@@ -106,6 +109,7 @@
             $('.result-sets-meta', $dbTable).html(metas.join(' - '));
 
             app.updateStatusBarForInstance(instance);
+            $('[data-toggle="tooltip"]').tooltip();
         }
     }).on('execute-sql-db-complete', function (instance, err, db) {
         if (err) {

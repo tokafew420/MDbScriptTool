@@ -15,7 +15,7 @@ namespace Tokafew420.MDbScriptTool
         public OsEvent OsEvent { get; set; }
 
         /// <summary>
-        /// Initalizes a new instance of DownloadHandler
+        /// Initializes a new instance of DownloadHandler
         /// </summary>
         internal DownloadHandler(Form form, ChromiumWebBrowser browser)
         {
@@ -62,7 +62,7 @@ namespace Tokafew420.MDbScriptTool
                         {
                             InitialDirectory = string.IsNullOrWhiteSpace(path) ? "" : Path.GetDirectoryName(path),
                             FileName = filename,
-                            Filter = $"SQL Script | *.sql|All Files | *.*",
+                            Filter = $"{downloadItem.MimeType} | *.{Utils.GetFileExtenstion(filename)}|All Files | *.*",
                             Title = saveas ? "Save As" : "Save"
                         };
 

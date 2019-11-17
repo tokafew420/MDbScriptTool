@@ -28,7 +28,7 @@ namespace Tokafew420.MDbScriptTool
         public UiEvent UiEvent { get; set; }
 
         /// <summary>
-        /// Initalizes a new instance of App
+        /// Initializes a new instance of App
         /// </summary>
         /// <param name="form"></param>
         /// <param name="browser"></param>
@@ -124,7 +124,7 @@ namespace Tokafew420.MDbScriptTool
         /// [0] The password to encrypt.
         /// </param>
         /// <remarks>
-        /// Emits event: password-ecrypted
+        /// Emits event: password-encrypted
         /// Event params:
         /// [0] <see cref="Exception"/> if any.
         /// [1] The encrypted password.
@@ -790,7 +790,7 @@ namespace Tokafew420.MDbScriptTool
         /// Decrypts the cipher text.
         /// </summary>
         /// <param name="cipher">The cipher text to decrypt.</param>
-        /// <returns>The descrypted clear text.</returns>
+        /// <returns>The decrypted clear text.</returns>
         internal static string Decrypt(string cipher)
         {
             cipher = cipher

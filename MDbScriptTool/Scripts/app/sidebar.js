@@ -107,7 +107,7 @@
     }
 
     /**
-     * Refesh the database list labels.
+     * Refresh the database list labels.
      **/
     app.refreshDbLabels = function () {
         if (app.connection && app.connection.dbs) {

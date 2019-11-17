@@ -7,11 +7,11 @@
     var $sidebar = $('.sidebar');
     var $toolbar = $('.sidebar-toolbar', $sidebar);
     var $connectionSelect = $('.select-connection', $sidebar);
-    // Connection btns
+    // Connection buttons
     var $newConnectionBtn = $('.new-connection-btn', $toolbar);
     var $editConnectionBtn = $('.edit-connection-btn', $toolbar);
     var $refreshDbsBtn = $('.refresh-databases-btn', $toolbar);
-    // Db list btns
+    // Db list buttons
     var $toggleAllDbBtn = $('.toggle-all-db-btn', $toolbar);
 
     $newConnectionBtn.on('click', function () {
