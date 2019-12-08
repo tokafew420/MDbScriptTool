@@ -556,9 +556,9 @@
 
         // Setup alert dialog
         app.dialog = (function () {
-            var $alertDlg = $('#alert-modal');
+            var $dlg = $('#alert-modal');
 
-            var bsAlert = function (type, msg, title, opts, callback) {
+            var bsModal = function (type, msg, title, opts, callback) {
                 if (typeof title === 'object' || typeof title === 'function') {
                     callback = opts;
                     opts = title;
@@ -569,7 +569,7 @@
                     opts = {};
                 }
                 opts = opts || {};
-                callback = callback || function () { };
+                callback = callback || app.noop;
 
                 if (type === 'alert') {
                     opts = Object.assign({
@@ -583,53 +583,60 @@
                         cancel: 'Cancel',
                         no: false,
                         yes: 'Ok',
-                        backdrop: 'static',
-                        keyboard: false
+                        backdrop: 'static'
                     }, opts);
                 }
 
+                var handled = false;
                 var fn = opts.html ? 'html' : 'text';
 
                 if (title) {
-                    app.show($('.modal-header', $alertDlg).empty())[fn](title);
+                    app.show($('.modal-header', $dlg).empty())[fn](title);
                 } else {
-                    app.hide('.modal-header', $alertDlg).empty();
+                    app.hide('.modal-header', $dlg).empty();
                 }
 
-                $('.modal-body', $alertDlg).empty()[fn](msg);
+                $('.modal-body', $dlg).empty()[fn](msg);
 
                 if (opts.cancel === false) {
-                    app.hide('.cancel-btn', $alertDlg);
+                    app.hide('.cancel-btn', $dlg);
                 } else {
-                    $('.cancel-btn', $alertDlg).empty().removeClass('hidden').text(opts.cancel || 'Cancel').off('click').one('click', function () {
-                        $alertDlg.modal('hide');
+                    $('.cancel-btn', $dlg).empty().removeClass('hidden').text(opts.cancel || 'Cancel').off('click').one('click', function () {
+                        handled = true;
+                        $dlg.modal('hide');
                         callback();
                     });
                 }
                 if (opts.no === false) {
-                    app.hide('.no-btn', $alertDlg);
+                    app.hide('.no-btn', $dlg);
                 } else {
-                    $('.no-btn', $alertDlg).empty().removeClass('hidden').text(opts.no || 'No').off('click').one('click', function () {
-                        $alertDlg.modal('hide');
+                    $('.no-btn', $dlg).empty().removeClass('hidden').text(opts.no || 'No').off('click').one('click', function () {
+                        handled = true;
+                        $dlg.modal('hide');
                         callback(false);
                     });
                 }
                 if (opts.yes === false) {
-                    app.hide('.yes-btn', $alertDlg);
+                    app.hide('.yes-btn', $dlg);
                 } else {
-                    $('.yes-btn', $alertDlg).empty().removeClass('hidden').text(opts.yes || 'Ok').off('click').one('click', function () {
-                        $alertDlg.modal('hide');
+                    $('.yes-btn', $dlg).empty().removeClass('hidden').text(opts.yes || 'Ok').off('click').one('click', function () {
+                        handled = true;
+                        $dlg.modal('hide');
                         callback(true);
                     });
                 }
 
-                $alertDlg.modal({
+                $dlg.modal({
                     backdrop: opts.backdrop === false ? false : opts.backdrop || true,
                     keyboard: typeof opts.keyboard === 'boolean' ? opts.keyboard : true
+                }).one('hide.bs.modal', function () {
+                    !handled && callback();
+                }).one('hidden.bs.modal', function () {
+                    $(this).modal('dispose');
                 }).modal('show');
             };
 
-            return bsAlert;
+            return bsModal;
         })();
 
         // Shortcut for dialog of type alert
@@ -718,7 +725,10 @@
             $('.modal-content', this).draggable({
                 addClasses: false,
                 containment: 'body',
-                handle: '.modal-header'
+                handle: '.modal-header',
+                stop: function (event, ui) {
+                    $(this).closest('.modal').focus();
+                }
             });
             // Auto-focus on the specified element when a modal is open
             $('.auto-focus', this).focus();
@@ -1181,6 +1191,8 @@
                                 yes: 'Execute',
                                 html: true
                             }, function (confirmed) {
+                                app.instance.editor.focus();
+
                                 if (!app.connection.confirmSql || confirmed) {
                                     app.emit('execute-sql', app.instance, app.connection, dbs, sql);
 
@@ -1475,8 +1487,8 @@
             function alertError(err) {
                 app.alert('<p>Failed to load custom script: </p>' +
                     '<p class="text-danger">' + err.message + '</p>', {
-                        html: true
-                    });
+                    html: true
+                });
             }
             function alertGlobalError(message, source, lineno, colno, err) {
                 app.alert('<p>Failed to load custom script: </p>' +
@@ -1484,8 +1496,8 @@
                     '<div><strong>Source: </strong>' + source + '</div>' +
                     '<div><strong>Line: </strong>' + lineno + '</div>' +
                     '<div><strong>Column: </strong>' + colno + '</div>', {
-                        html: true
-                    });
+                    html: true
+                });
             }
 
             // Initialize addons
