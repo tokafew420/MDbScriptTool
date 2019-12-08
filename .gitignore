@@ -305,6 +305,3 @@ __pycache__/
 /MDbScriptTool/Scripts/cm-tsql-mode.min.js
 /MDbScriptTool/Scripts/app/cm-tsql-mode.es5.min.js
 /MDbScriptTool/Scripts/app/cm-tsql-mode.es5.js
-
-# Nuget Dependencies
-SqlServerTypes
