@@ -300,15 +300,7 @@
 
             if (!filename) filename = app.date.format(new Date(), 'yyyymmddhhMMss') + '.csv';
 
-            var csv = data.map(function (row) {
-                return row.map(function (val) {
-                    if (val === null) val = '';                         // NULL values should be empty
-                    else if (typeof val === 'boolean') val = val ? 1 : 0;    // bit (boolean) values
-                    else if (val) val = String(val).replace(/"/g, '""');     // Replace double quotes in value
-
-                    return '"' + val + '"';
-                }).join(',');
-            }).join('\r\n');
+            var csv = app.resultToText(data, true, ',');
 
             app.downloadText(csv, encodeURIComponent(filename), 'text/csv;charset=utf-8');
         };
@@ -507,6 +499,30 @@
             if (obj) arr.splice(idx, 1);
 
             return obj;
+        };
+
+        /**
+         * Transform a resultset to text.
+         * 
+         * @param {Array} resultset The result set
+         * @param {boolean} escapeQuote Whether to escape double quotes in the value.
+         * @param {string} delimiter The value delimiter. Defaults to tab (\t).
+         * @param {string} lineDelimiter The line delimiter. Defaults to CRLF (\r\n).
+         * @returns {string} The result set text.
+         */
+        app.resultToText = function (resultset, escapeQuote, delimiter, lineDelimiter) {
+            delimiter = delimiter || '\t';
+            lineDelimiter = lineDelimiter || '\r\n';
+
+            return (resultset || []).map(function (row) {
+                return row.map(function (val) {
+                    if (val === null) val = '';                             // NULL values should be empty
+                    else if (typeof val === 'boolean') val = val ? 1 : 0;   // bit (boolean) values
+                    else if (escapeQuote && val) val = String(val).replace(/"/g, '""');    // Replace double quotes in value
+
+                    return escapeQuote ? '"' + val + '"' : val;
+                }).join(delimiter);
+            }).join(lineDelimiter);
         };
     }());
 
@@ -1212,7 +1228,8 @@
                     error: err,
                     result: result,
                     affectedRows: affectedRows,
-                    time: time
+                    time: time,
+                    dbname: db.label || db.name || dbanme
                 });
 
                 time = time || 0;
@@ -1349,33 +1366,31 @@
                 let ids = dbId && [dbId] || Object.keys(app.instance.results);
                 let connection = app.findBy(app.connections, 'id', instance.connection.id) || {};
 
-                // TODO: Need to somehow find connection used for the result set. Cannot assume connection
-                // wasn't switched prior to clicking export.
-                if (dbId) {
-                    let db = app.findBy(connection.dbs, 'id', dbId) || {};
-                    if (db.label || db.name) {
-                        fileName = (db.label || db.name) + '-' + fileName;
-                    }
+                if (dbId && instance.results[dbId] && instance.results[dbId][0] && instance.results[dbId][0].dbname) {
+                    fileName = instance.results[dbId][0].dbname + '-' + fileName;
                 }
 
                 ids.forEach(function (id) {
-                    let db = app.findBy(connection.dbs, 'id', id) || {};
-                    let dbName = db.label || db.name || 'Unresolved Database';
+                    let dbResults = instance.results[id];
 
-                    instance.results[id].forEach(function (rs) {
-                        if (rs.result) {
-                            // Clone resultset
-                            let result = rs.result.map(function (row) {
-                                return row.slice();
-                            });
-                            // Add Database name column
-                            result[0].unshift('DataBase');
-                            for (var i = 1; i < result.length; i++) {
-                                result[i].unshift(dbName);
+                    if (dbResults && dbResults.length) {
+                        let dbName = dbResults[0].dbname || 'Unresolved';
+
+                        dbResults.forEach(function (rs) {
+                            if (rs.result) {
+                                // Clone resultset
+                                let result = rs.result.map(function (row) {
+                                    return row.slice();
+                                });
+                                // Add Database name column
+                                result[0].unshift('DataBase');
+                                for (var i = 1; i < result.length; i++) {
+                                    result[i].unshift(dbName);
+                                }
+                                exportData.push(result);
                             }
-                            exportData.push(result);
-                        }
-                    });
+                        });
+                    }
                 });
 
                 if (exportData.length) {
@@ -1387,6 +1402,73 @@
             app.alert('<p>No result set found.</p>', {
                 html: true
             });
+        };
+
+        /**
+         * Get a subset of the resultset that is selected.
+         * 
+         * @param {Array} result The result set.
+         * @param {object} selected The selection object.
+         * @param {boolean} includeHeaders Whether to include column headers.
+         * @returns {Array} The selected results.
+         */
+        app.getSelectedResults = function (result, selected, includeHeaders) {
+            if (result && result.length && selected) {
+                if (selected.type === 'table') {
+                    if (includeHeaders) return result;
+                    return result.slice(1, result.length);
+                } else if (selected.type === 'column') {
+                    return result.reduce(function (acc, row, idx) {
+                        if (idx === 0 && !includeHeaders) return acc;
+
+                        acc.push(selected.set.map(function (selectedIdx) {
+                            return result[idx][selectedIdx];
+                        }));
+
+                        return acc;
+                    }, []);
+                } else if (selected.type === 'row') {
+                    let final = [];
+
+                    if (includeHeaders) final.push(result[0]);
+
+                    return selected.set.reduce(function (acc, row) {
+                        acc.push(result[row + 1]);
+
+                        return acc;
+                    }, final);
+                } else if (selected.type === 'cell') {
+                    let cols = [];
+                    let rows = [];
+
+                    selected.set.forEach(function (val) {
+                        let pair = val.split(',');
+                        rows.push(+pair[0] + 1);
+                        cols.push(+pair[1]);
+                    });
+                    if (includeHeaders) rows.unshift(0);
+                    let rowSet = new Set(rows.sort(app.compare));
+                    let colSet = new Set(cols.sort(app.compare));
+                    let final = Array(rowSet.size).fill().map(function () { return Array(colSet.size).fill(); });
+
+                    let cIdx = 0;
+                    let rIdx = 0;
+                    rowSet.forEach(function (rowIdx) {
+                        cIdx = 0;
+                        colSet.forEach(function (colIdx) {
+                            if (rowIdx === 0 || selected.set.indexOf(`${rowIdx - 1},${colIdx}`) !== -1) {
+                                final[rIdx][cIdx] = result[rowIdx][colIdx];
+                            }
+                            cIdx++;
+                        });
+                        rIdx++;
+                    });
+
+                    return final;
+                }
+            }
+
+            return [];
         };
 
         $(function () {

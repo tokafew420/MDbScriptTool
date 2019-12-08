@@ -25,7 +25,10 @@
 
   .result-set {
     border-bottom: 1px solid rgba(255, 255, 255, .2);
+    position: relative;
     overflow: auto;
+    -webkit-touch-callout: none;
+    user-select: none;
 
     table {
       margin-bottom: 0;
@@ -97,6 +100,12 @@
             }
           }
         }
+      }
+
+      tbody.selected td,
+      tbody th.row-number.selected ~ td,
+      tbody td.selected {
+        background-color: @text-hover !important;
       }
     }
   }

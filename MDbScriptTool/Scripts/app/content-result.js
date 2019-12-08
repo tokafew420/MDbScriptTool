@@ -25,11 +25,130 @@
         });
     }
 
-    app.on('parse-sql', function (instance, connection, sql) {
-        if (instance) {
-            if (instance.$result) {
-                instance.$result.empty();
+    var noose = new Noose({
+        classes: {
+            noose: 'noose',
+            selected: false
+        },
+        compute: false,
+        ctrl: false,
+        select: 'th,td',
+        stop: function (e, coors, selected) {
+            if (app.instance) {
+                let $resultset = $(this.currentTarget);
+                let resultset = $resultset.data('result');
+
+                if (resultset) {
+                    this.compute();
+                    selected = this.selected;
+
+                    if (selected && selected.length) {
+                        if (!resultset.selected) {
+                            resultset.selected = {
+                                type: '',
+                                set: []
+                            };
+                        }
+
+                        let $first = $(selected[0]);
+                        let selectMap = resultset.selected;
+
+                        if ($first.is('th.column-header.row-number')) {
+                            selectMap.type = selectMap.type === 'table' ? '' : 'table';
+
+                            $('.selected', $resultset).removeClass('selected');
+                            $('tbody', $resultset).toggleClass('selected', selectMap.type === 'table');
+                        } else {
+                            if (!e.ctrlKey) {
+                                selectMap = resultset.selected = {
+                                    type: '',
+                                    set: []
+                                };
+                            }
+
+                            if ($first.is('th.column-header')) {
+                                if (selectMap.type !== 'column') {
+                                    selectMap.type = 'column';
+                                    selectMap.set = [];
+                                    $('.selected', $resultset).removeClass('selected');
+                                }
+
+                                $(selected).filter('th.column-header').each(function () {
+                                    let $th = $(this);
+                                    let idx = $('thead th', $resultset).index($th) - 1; // Minus 1 to account for row-number column
+                                    let mapIdx = selectMap.set.indexOf(idx);
+
+                                    if (mapIdx === -1) {
+                                        $('tbody td:nth-child(' + (idx + 2) + ')', $resultset).addClass('selected');
+                                        selectMap.set.push(idx);
+                                    } else {
+                                        $('tbody td:nth-child(' + (idx + 2) + ')', $resultset).removeClass('selected');
+                                        selectMap.set.splice(mapIdx, 1);
+                                    }
+                                });
+                            } else if ($first.is('th.row-number')) {
+                                if (selectMap.type !== 'row') {
+                                    selectMap.type = 'row';
+                                    selectMap.set = [];
+                                    $('.selected', $resultset).removeClass('selected');
+                                }
+
+                                $(selected).filter('th.row-number').each(function () {
+                                    let $th = $(this);
+                                    let idx = +$th.text() - 1;
+                                    let mapIdx = selectMap.set.indexOf(idx);
+
+                                    if (mapIdx === -1) {
+                                        $th.addClass('selected');
+                                        selectMap.set.push(idx);
+                                    } else {
+                                        $th.removeClass('selected');
+                                        selectMap.set.splice(mapIdx, 1);
+                                    }
+                                });
+                            } else {
+                                if (selectMap.type !== 'cell') {
+                                    selectMap.type = 'cell';
+                                    selectMap.set = [];
+                                    $('.selected', $resultset).removeClass('selected');
+                                }
+
+                                $(selected).each(function () {
+                                    let $td = $(this);
+                                    let $row = $td.parent();
+                                    let cIdx = $('td', $row).index($td);
+                                    let rIdx = $('tbody tr', $resultset).index($row);
+                                    let id = `${rIdx},${cIdx}`;
+                                    let mapIdx = selectMap.set.indexOf(id);
+
+                                    if (mapIdx === -1) {
+                                        $td.addClass('selected');
+                                        selectMap.set.push(id);
+                                    } else {
+                                        $td.removeClass('selected');
+                                        selectMap.set.splice(mapIdx, 1);
+                                    }
+                                });
+                            }
+
+                            selectMap.set.sort(app.compare);
+                        }
+                    } else {
+                        $('.selected', $resultset).removeClass('selected');
+                    }
+                }
             }
+        }
+    });
+    noose.containers.forEach(function (container) { noose.deregister(container); });
+
+    app.on('parse-sql', function (instance, connection, sql) {
+        if (instance && instance.$result) {
+            $('.result-set', instance.$result).each(function () {
+                noose.deregister(this);
+            });
+
+            instance.$result.empty();
         }
     }).on('sql-parsed', function (instance, err, errors) {
         if (instance && instance.$result) {
@@ -55,6 +174,10 @@
 
     app.on('execute-sql', function (instance, connection, dbs, sql) {
         if (instance && instance.$result) {
+            $('.result-set', instance.$result).each(function () {
+                noose.deregister(this);
+            });
+
             instance.$result.empty();
         }
     }).on('sql-executed-db-batch', function (instance, err, db, result) {
@@ -62,7 +185,7 @@
             var $dbTable = $('#r' + db.id, instance.$result);
             if ($dbTable.length === 0) {
                 var exportBtn = `<a href="#" class="export-btn float-right d-none" data-toggle="tooltip" title="Export Database Results"><i class="fa fa-download"></i></a>`;
-                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}<span class="result-sets-meta"></span>${exportBtn}</div ></div >`);
+                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header"><span class="db-name">${db.label || db.name}</span><span class="result-sets-meta"></span>${exportBtn}</div></div>`);
                 $dbTable = $('#r' + db.id, instance.$result);
 
                 $('.export-btn', instance.$result).tooltip();
@@ -76,13 +199,14 @@
                 }
             } else if (result && result.length && result[0].length) {
                 $('.export-btn', instance.$result).removeClass('d-none');
-                var $table = $('<div class="result-set" tabindex="0"><table class="table table-sm table-striped table-hover table-dark table-bordered"><thead><tr><th class="row-number"></th></tr></thead><tbody></tbody></table></div>');
+                var $table = $('<div class="result-set" tabindex="0"><table class="table table-sm table-striped table-hover table-dark table-bordered"><thead><tr><th class="column-header row-number"></th></tr></thead><tbody></tbody></table></div>');
+                $table.data('result', result);
 
                 $('thead tr', $table).append(result[0].map(function (columnName) {
                     if (columnName) {
-                        return '<th>' + columnName + '</th>';
+                        return '<th class="column-header">' + columnName + '</th>';
                     } else {
-                        return '<th class="unnamed">(No Name)</th>';
+                        return '<th class="column-header unnamed">(No Name)</th>';
                     }
                 }).join(''));
 
@@ -91,7 +215,20 @@
                 if (result.length > 1) {
                     var vTable = new VirtualTable(instance, $table, result);
                     $table.data('virtual-table', vTable);
+
+                    noose.register($table[0]);
                 }
+                // Key maps
+                app.mapKeys($table, 'Ctrl-C', function (e) {
+                    var $this = $(e.target);
+                    var result = $this.data('result');
+
+                    if (result && result.selected) {
+                        var selectedData = app.getSelectedResults(result, result.selected);
+
+                        app.copyToClipboard(app.resultToText(selectedData));
+                    }
+                });
             } else {
                 $dbTable.append('<div class="result-text" tabindex="0">Command(s) completed successfully</div>');
             }
@@ -116,7 +253,7 @@
             if (instance && instance.$result && db && db.id) {
                 var $dbTable = $('#r' + db.id, instance.$result);
                 if ($dbTable.length === 0) {
-                    instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header">${db.label || db.name}</div></div>`);
+                    instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header"><span class="db-name">${db.label || db.name}</span></div></div>`);
                     $dbTable = $('#r' + db.id, instance.$result);
                 }
 
@@ -139,6 +276,14 @@
                 if (vTable) {
                     vTable.resize(instance).update(true);
                 }
+            });
+        }
+    });
+
+    app.on('remove-instance', function (instance) {
+        if (instance && instance.$result) {
+            $('.result-set', instance.$result).each(function () {
+                noose.deregister(this);
             });
         }
     });
@@ -234,8 +379,11 @@
                 start++;
                 end++;
 
+                let selected = this.data.selected || {};
+                let selectedType = selected.type;
+                let selectedSet = selected.set || [];
                 for (var i = start; i < end; i++) {
-                    this.data[i] && rows.push(this.createRow(this.data, i));
+                    this.data[i] && rows.push(this.createRow(this.data, i, selectedType, selectedSet));
                 }
 
                 if (bottomOffset > 0) {
@@ -246,16 +394,107 @@
 
             return this;
         },
-        createRow: function (result, idx) {
-            return `<tr><th class="row-number">${idx}</th>` + result[idx].map(function (data) {
-                if (data === null) {
-                    return '<td class="null">NULL</td>';
-                } else if (typeof data === 'boolean') {
-                    return `<td data-type="bit">${data ? 1 : 0}</td>`;
-                } else {
-                    return `<td>${app.escapeHtml(data)}</td>`;
+        createRow: function (result, rIdx, selectedType, selectedSet) {
+            let rowSelected = selectedType === 'row' && selectedSet.indexOf(rIdx - 1) !== -1 ? 'selected' : '';
+
+            return `<tr><th class="row-number ${rowSelected}">${rIdx}</th>` + result[rIdx].map(function (data, cIdx) {
+                let classes = [];
+                let attrs = [];
+
+                /* eslint-disable no-extra-parens */
+                if ((selectedType === 'column' && selectedSet.indexOf(cIdx) !== -1) ||      // 
+                    (selectedType === 'cell' && selectedSet.indexOf(`${rIdx - 1},${cIdx}`) !== -1)) {
+                    /* eslint-enable no-extra-parens */
+                    classes.push('selected');
                 }
+                if (data === null) {
+                    data = 'NULL';
+                    classes.push('null');
+                } else if (typeof data === 'boolean') {
+                    data = data ? 1 : 0;
+                    attrs.push('data-type="bit"');
+                } else {
+                    data = app.escapeHtml(data);
+                }
+
+                return `<td class="${classes.join(' ')}" ${attrs.join(' ')}>${data}</td>`;
             }).join('') + '</tr>';
         }
     };
+
+    $.contextMenu({
+        selector: '.content .result .result-set',
+        zIndex: function ($trigger, opt) {
+            return 500;
+        },
+        callback: function (key, opts, e) {
+            var $this = $(this);
+            var result = $this.data('result');
+            var selectedData = app.getSelectedResults(result, result.selected, key === 'copyHeader');
+
+            app.copyToClipboard(app.resultToText(selectedData));
+        },
+        selectableSubMenu: true,
+        items: {
+            copy: {
+                name: 'Copy',
+                icon: 'fa-clone',
+                accesskey: 'c',
+                disabled: function (key, opts) {
+                    var $this = $(this);
+                    var result = $this.data('result');
+
+                    return !(result && result.selected && result.selected.type !== '');
+                }
+            },
+            copyHeader: {
+                name: 'Copy include Headers',
+                icon: 'fa-copy',
+                accesskey: 'h',
+                disabled: function (key, opts) {
+                    var $this = $(this);
+                    var result = $this.data('result');
+
+                    return !(result && result.selected && result.selected.type !== '');
+                }
+            },
+            sep1: '---------',
+            export: {
+                name: 'Export',
+                icon: 'fa-download',
+                accesskey: 'x',
+                items: {
+                    'export-table': {
+                        name: 'Table Result',
+                        icon: 'fa-th',
+                        accesskey: 't',
+                        callback: function () {
+                            var $this = $(this);
+                            var result = $this.data('result');
+
+                            app.exportCsv(result);
+                        }
+                    },
+                    'export-database': {
+                        name: 'Databse Results',
+                        icon: 'fa-database',
+                        accesskey: 'd',
+                        callback: function () {
+                            $('.export-btn', $(this).closest('.result-sets-container')).click();
+                        }
+                    },
+                    'export-all': {
+                        name: 'All Results',
+                        icon: 'fa-cubes',
+                        accesskey: 'a',
+                        callback: function () {
+                            if (app.instance) {
+                                app.downloadToCsv(app.instance);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    });
 }(window, window.app = window.app || {}, window.os, jQuery));
