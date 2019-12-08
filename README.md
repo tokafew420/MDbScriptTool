@@ -23,9 +23,24 @@ is a pretty good tool,
 
 Download the latest release from [here](https://github.com/tokafew420/MDbScriptTool/releases). Then just unzip and run the `MDbScriptTool.exe`.
 
+**Important!** Windows block content downloaded from the internet. Prior to extracting the zip file, *unblock* it by viewing the zip file properties and *unblock*ing it.
+
 ## Running Solution ##
 
-The [Web Essentials 2017](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebExtensionPack2017) extension is used to compile `css` and `js` files for releases. Install the extension from the VS market place.
+#### Extensions ####
+- The [Web Essentials 2019](https://marketplace.visualstudio.com/items?itemName=MadsKristensen.WebEssentials2019) extension is used to compile `css` and `js` files for releases. Install the extension from the VS market place.
+
+- The [AutoRunCustomTool](https://github.com/thomaslevesque/AutoRunCustomTool) extension is used to re-compile the t4 template automatically whenever the `*.tt.html` file changes.
+
+#### Building Solution ####
+
+If building  from a fresh download/clone:
+1) Right-click on solution and choose **Restore NuGet Packages**
+2) Right-click on project and choose **Web Compiler** > **Re-compile all files**
+3) Right-click on project and choose **Bundler & Minifier** > **Update Bundles**
+4) Rebuild Solution
+
+**Important!** Windows block content downloaded from the internet. Prior to extracting the zip file, *unblock* it by viewing the zip file properties and *unblock*ing it.
 
 ## Alternatives ##
 
