@@ -11,13 +11,13 @@ namespace Tokafew420.MDbScriptTool
     {
         static AppSettings()
         {
-            Path = System.IO.Path.Combine(Program.DataDirectory, "settings");
+            Path = System.IO.Path.Combine(Application.DataDirectory, "settings");
 
-            if (!Directory.Exists(Program.DataDirectory))
+            if (!Directory.Exists(Application.DataDirectory))
             {
                 try
                 {
-                    Directory.CreateDirectory(Program.DataDirectory);
+                    Directory.CreateDirectory(Application.DataDirectory);
                     Logger.Debug("Created Data/ Directory");
                 }
                 catch (Exception e)
@@ -111,9 +111,9 @@ namespace Tokafew420.MDbScriptTool
         {
             try
             {
-                if (!Directory.Exists(Program.DataDirectory))
+                if (!Directory.Exists(Application.DataDirectory))
                 {
-                    Directory.CreateDirectory(Program.DataDirectory);
+                    Directory.CreateDirectory(Application.DataDirectory);
                     Logger.Debug("Created Data/ Directory");
                 }
 

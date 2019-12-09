@@ -10,7 +10,7 @@ namespace Tokafew420.MDbScriptTool
 {
     internal class FileDialogHandler : IDialogHandler
     {
-        private readonly Form _form;
+        private readonly Application _app;
         private readonly ChromiumWebBrowser _browser;
         private readonly string replyMsgName = "file-dialog-closed";
 
@@ -19,11 +19,11 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Initalizes a new instance of App
         /// </summary>
-        /// <param name="form"></param>
+        /// <param name="application"></param>
         /// <param name="browser"></param>
-        internal FileDialogHandler(Form form, ChromiumWebBrowser browser)
+        internal FileDialogHandler(Application application, ChromiumWebBrowser browser)
         {
-            _form = form ?? throw new ArgumentNullException(nameof(form));
+            _app = application ?? throw new ArgumentNullException(nameof(application));
             _browser = browser ?? throw new ArgumentNullException(nameof(browser));
             OsEvent = new OsEvent(browser);
         }
@@ -37,7 +37,7 @@ namespace Tokafew420.MDbScriptTool
                 {
                     using (var dialog = new FolderBrowserDialog()
                     {
-                        SelectedPath = defaultFilePath
+                        SelectedPath = defaultFilePath.DefaultIfNullOrWhiteSpace(_app.LastFileDialogDirectory)
                     })
                     {
                         if (!string.IsNullOrWhiteSpace(title))
@@ -48,6 +48,9 @@ namespace Tokafew420.MDbScriptTool
                         if (dialog.ShowDialog() == DialogResult.OK)
                         {
                             var dir = new DirectoryInfo(dialog.SelectedPath);
+
+                            _app.LastFileDialogDirectory = dir.FullName;
+
                             files.Add(new FsFile()
                             {
                                 Name = dir.Name,
@@ -95,7 +98,7 @@ namespace Tokafew420.MDbScriptTool
                         Multiselect = CefFileDialogMode.OpenMultiple == (mode & CefFileDialogMode.OpenMultiple),
                         Title = title,
                         Filter = filter,
-                        InitialDirectory = defaultFilePath,
+                        InitialDirectory = defaultFilePath.DefaultIfNullOrWhiteSpace(_app.LastFileDialogDirectory),
                         FilterIndex = selectedAcceptFilter
                     })
                     {
@@ -116,6 +119,7 @@ namespace Tokafew420.MDbScriptTool
                                         LastModified = (long)Utils.ConvertToUnixTimestamp(file.LastWriteTime)
                                     };
                                 }).ToList();
+                                _app.LastFileDialogDirectory = files.Last()?.WebkitRelativePath;
                             }
                             OsEvent.Emit(replyMsgName, null, false, files);
                             callback.Continue(selectedAcceptFilter, dialog.FileNames.ToList());

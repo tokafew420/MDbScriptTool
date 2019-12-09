@@ -8,7 +8,7 @@ namespace Tokafew420.MDbScriptTool
 {
     internal class DownloadHandler : IDownloadHandler
     {
-        private readonly Form _form;
+        private readonly Application _app;
         private readonly ChromiumWebBrowser _browser;
         private readonly string replyMsgName = "download-completed";
 
@@ -17,9 +17,9 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Initializes a new instance of DownloadHandler
         /// </summary>
-        internal DownloadHandler(Form form, ChromiumWebBrowser browser)
+        internal DownloadHandler(Application application, ChromiumWebBrowser browser)
         {
-            _form = form ?? throw new ArgumentNullException(nameof(form));
+            _app = application ?? throw new ArgumentNullException(nameof(application));
             _browser = browser ?? throw new ArgumentNullException(nameof(browser));
             OsEvent = new OsEvent(browser);
         }
@@ -46,6 +46,11 @@ namespace Tokafew420.MDbScriptTool
                     saveas = suggestedFileName.StartsWith("saveas:");
                     suggestedFileName = suggestedFileName.Substring(suggestedFileName.IndexOf(':') + 1);
 
+                    if (!Path.IsPathRooted(suggestedFileName))
+                    {
+                        suggestedFileName = Path.Combine(_app.LastFileDialogDirectory ?? "", suggestedFileName);
+                    }
+
                     if (!string.IsNullOrWhiteSpace(suggestedFileName))
                     {
                         path = Path.GetFullPath(suggestedFileName);
@@ -62,7 +67,7 @@ namespace Tokafew420.MDbScriptTool
                         var ext = Path.GetExtension(filename);
                         var fileType = Utils.GetFileType(ext);
 
-                        if(!string.IsNullOrWhiteSpace(fileType))
+                        if (!string.IsNullOrWhiteSpace(fileType))
                         {
                             filter = $"{fileType} | *{ext}|" + filter;
                         }
@@ -77,6 +82,7 @@ namespace Tokafew420.MDbScriptTool
                         {
                             if (saveFileDialog.ShowDialog() == DialogResult.OK && saveFileDialog.FileName != "")
                             {
+                                _app.LastFileDialogDirectory = Path.GetDirectoryName(saveFileDialog.FileName);
                                 callback.Continue(saveFileDialog.FileName, showDialog: false);
                             }
                             else

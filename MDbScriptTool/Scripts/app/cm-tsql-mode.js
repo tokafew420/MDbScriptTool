@@ -102,8 +102,10 @@
                 }
                 return null;
             } else if (operatorChars.test(ch)) {
-                // operators
-                stream.eatWhile(operatorChars);
+                if (ch !== ')') {   // Don't eat consecutive ')' to keep dedent check valid
+                    // operators
+                    stream.eatWhile(operatorChars);
+                }
                 return 'operator';
             } else {
                 stream.eatWhile(/^[_\w\d]/);
@@ -220,7 +222,6 @@
                     }
                 };
             },
-
             token: function (stream, state) {
                 if (stream.sol()) {
                     if (state.context && state.context.align === null)

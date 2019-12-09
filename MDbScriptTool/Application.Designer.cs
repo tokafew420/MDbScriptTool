@@ -1,6 +1,6 @@
 namespace Tokafew420.MDbScriptTool
 {
-    partial class Program
+    partial class Application
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Program));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Application));
             this.MainPanel = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 

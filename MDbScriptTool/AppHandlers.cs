@@ -10,15 +10,14 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using CefSharp.WinForms;
 using Microsoft.SqlServer.Types;
 
 namespace Tokafew420.MDbScriptTool
 {
-    internal class App
+    internal class AppHandlers
     {
-        private readonly Form _form;
+        private readonly Application _app;
         private readonly ChromiumWebBrowser _browser;
         private readonly Regex _goRegex = new Regex(@"^\s*go\s*(--.*)*$", RegexOptions.IgnoreCase);
         private static readonly Random _rnd = new Random();
@@ -30,11 +29,11 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Initializes a new instance of App
         /// </summary>
-        /// <param name="form"></param>
+        /// <param name="application"></param>
         /// <param name="browser"></param>
-        internal App(Form form, ChromiumWebBrowser browser)
+        internal AppHandlers(Application application, ChromiumWebBrowser browser)
         {
-            _form = form ?? throw new ArgumentNullException(nameof(form));
+            _app = application ?? throw new ArgumentNullException(nameof(application));
             _browser = browser ?? throw new ArgumentNullException(nameof(browser));
             OsEvent = new OsEvent(browser);
             UiEvent = new UiEvent(browser);

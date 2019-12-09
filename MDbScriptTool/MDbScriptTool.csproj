@@ -83,7 +83,7 @@
     <ApplicationIcon>laughing-man.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Tokafew420.MDbScriptTool.Program</StartupObject>
+    <StartupObject>Tokafew420.MDbScriptTool.Application</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
@@ -111,22 +111,23 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="SqlLogger.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
+    <Compile Include="StringExtensions.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="FileSystemSchemeHandlerFactory.cs" />
     <Compile Include="KeyboardHandler.cs" />
-    <Compile Include="App.cs" />
+    <Compile Include="AppHandlers.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="IEvent.cs" />
     <Compile Include="SettingsJsonConverter.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="OsEvent.cs" />
-    <Compile Include="Program.cs">
+    <Compile Include="Application.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Program.Designer.cs">
-      <DependentUpon>Program.cs</DependentUpon>
+    <Compile Include="Application.Designer.cs">
+      <DependentUpon>Application.cs</DependentUpon>
     </Compile>
     <Compile Include="UiEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -224,8 +225,8 @@
     <Content Include="Scripts\jquery-3.4.1\jquery-3.4.1.min.js" />
     <Content Include="Scripts\js-spark-md5\spark-md5.js" />
     <Content Include="Scripts\js-spark-md5\spark-md5.min.js" />
-    <EmbeddedResource Include="Program.resx">
-      <DependentUpon>Program.cs</DependentUpon>
+    <EmbeddedResource Include="Application.resx">
+      <DependentUpon>Application.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

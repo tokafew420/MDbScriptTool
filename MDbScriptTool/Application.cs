@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Tokafew420.MDbScriptTool
 {
-    public partial class Program : Form
+    public partial class Application : Form
     {
         private ChromiumWebBrowser _browser;
         private static bool _runningInVs = false;
@@ -59,10 +59,10 @@ namespace Tokafew420.MDbScriptTool
             // Load SqlServer types
             SqlServerTypes.Utilities.LoadNativeAssemblies(AppDomain.CurrentDomain.BaseDirectory);
 
-            Application.Run(new Program());
+            System.Windows.Forms.Application.Run(new Application());
         }
 
-        public Program() => InitializeComponent();
+        public Application() => InitializeComponent();
 
         private void AppForm_Load(object sender, EventArgs e)
         {
@@ -74,7 +74,7 @@ namespace Tokafew420.MDbScriptTool
             Logger.Level = Logger.LogLevel.All;
 
             // Initialize the app
-            var app = new App(this, _browser);
+            var app = new AppHandlers(this, _browser);
 
             // Register handlers.
             _browser.RequestHandler = new BrowserRequestHandler();
@@ -109,7 +109,10 @@ namespace Tokafew420.MDbScriptTool
                 {
                     WindowState = FormWindowState.Maximized;
                 }
-
+                if (AppSettings.Exists("LastFileDialogDirectory"))
+                {
+                    LastFileDialogDirectory = AppSettings.Get<string>("LastFileDialogDirectory");
+                }
                 if (AppSettings.Exists("LogToBrowser") && !AppSettings.Get<bool>("LogToBrowser"))
                 {
                     Logger.Browser = null;
@@ -176,6 +179,7 @@ namespace Tokafew420.MDbScriptTool
                 AppSettings.Set("WindowSize", new System.Drawing.Size?(RestoreBounds.Size));
             }
             AppSettings.Set("WindowIsMaximized", WindowState == FormWindowState.Maximized);
+            AppSettings.Set("LastFileDialogDirectory", LastFileDialogDirectory);
             AppSettings.Set("LogToBrowser", Logger.Browser != null);
             AppSettings.Set("LogLevel", Logger.Level);
             AppSettings.Set("SqlLoggingEnabled", SqlLogger.Enabled);
@@ -244,6 +248,10 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         public static string CacheDirectory => _CacheDirectory.Value;
 
+        /// <summary>
+        /// Get or set the last directory path used from a file dialog.
+        /// </summary>
+        public string LastFileDialogDirectory { get; set; }
         #endregion Properties
     }
 }
