@@ -75,9 +75,10 @@
 
                                 $(selected).filter('th.column-header').each(function () {
                                     let $th = $(this);
-                                    let idx = $('thead th', $resultset).index($th) - 1; // Minus 1 to account for row-number column
+                                    let idx = +$th.attr('data-idx');
                                     let mapIdx = selectMap.set.indexOf(idx);
 
+                                    // +2 to account for row number column
                                     if (mapIdx === -1) {
                                         $('tbody td:nth-child(' + (idx + 2) + ')', $resultset).addClass('selected');
                                         selectMap.set.push(idx);
@@ -95,7 +96,7 @@
 
                                 $(selected).filter('th.row-number').each(function () {
                                     let $th = $(this);
-                                    let idx = +$th.text() - 1;
+                                    let idx = +$th.parent().attr('data-idx');
                                     let mapIdx = selectMap.set.indexOf(idx);
 
                                     if (mapIdx === -1) {
@@ -117,7 +118,7 @@
                                     let $td = $(this);
                                     let $row = $td.parent();
                                     let cIdx = $('td', $row).index($td);
-                                    let rIdx = $('tbody tr', $resultset).index($row);
+                                    let rIdx = +$row.attr('data-idx');
                                     let id = `${rIdx},${cIdx}`;
                                     let mapIdx = selectMap.set.indexOf(id);
 
@@ -199,14 +200,14 @@
                 }
             } else if (result && result.length && result[0].length) {
                 $('.export-btn', instance.$result).removeClass('d-none');
-                var $table = $('<div class="result-set" tabindex="0"><table class="table table-sm table-striped table-hover table-dark table-bordered"><thead><tr><th class="column-header row-number"></th></tr></thead><tbody></tbody></table></div>');
+                var $table = $('<div class="result-set" tabindex="0"><table class="table table-sm table-striped table-hover table-dark table-bordered"><thead><tr><th class="column-header row-number" data-idx="-1"></th></tr></thead><tbody></tbody></table></div>');
                 $table.data('result', result);
 
-                $('thead tr', $table).append(result[0].map(function (columnName) {
+                $('thead tr', $table).append(result[0].map(function (columnName, idx) {
                     if (columnName) {
-                        return '<th class="column-header">' + columnName + '</th>';
+                        return '<th class="column-header" data-idx="' + idx + '">' + columnName + '</th>';
                     } else {
-                        return '<th class="column-header unnamed">(No Name)</th>';
+                        return '<th class="column-header unnamed" data-idx="' + idx + '">(No Name)</th>';
                     }
                 }).join(''));
 
@@ -395,15 +396,15 @@
             return this;
         },
         createRow: function (result, rIdx, selectedType, selectedSet) {
-            let rowSelected = selectedType === 'row' && selectedSet.indexOf(rIdx - 1) !== -1 ? 'selected' : '';
+            let rowSelected = selectedType === 'row' && selectedSet.indexOf(rIdx) !== -1 ? 'selected' : '';
 
-            return `<tr><th class="row-number ${rowSelected}">${rIdx}</th>` + result[rIdx].map(function (data, cIdx) {
+            return `<tr data-idx="${rIdx}"><th class="row-number ${rowSelected}">${rIdx}</th>` + result[rIdx].map(function (data, cIdx) {
                 let classes = [];
                 let attrs = [];
 
                 /* eslint-disable no-extra-parens */
-                if ((selectedType === 'column' && selectedSet.indexOf(cIdx) !== -1) ||      // 
-                    (selectedType === 'cell' && selectedSet.indexOf(`${rIdx - 1},${cIdx}`) !== -1)) {
+                if ((selectedType === 'column' && selectedSet.indexOf(cIdx) !== -1) ||
+                    (selectedType === 'cell' && selectedSet.indexOf(`${rIdx},${cIdx}`) !== -1)) {
                     /* eslint-enable no-extra-parens */
                     classes.push('selected');
                 }

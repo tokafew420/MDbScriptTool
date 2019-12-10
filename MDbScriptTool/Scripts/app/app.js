@@ -1444,8 +1444,8 @@
 
                     if (includeHeaders) final.push(result[0]);
 
-                    return selected.set.reduce(function (acc, row) {
-                        acc.push(result[row + 1]);
+                    return selected.set.reduce(function (acc, idx) {
+                        acc.push(result[idx]);
 
                         return acc;
                     }, final);
@@ -1455,7 +1455,7 @@
 
                     selected.set.forEach(function (val) {
                         let pair = val.split(',');
-                        rows.push(+pair[0] + 1);
+                        rows.push(+pair[0]);
                         cols.push(+pair[1]);
                     });
                     if (includeHeaders) rows.unshift(0);
@@ -1468,7 +1468,7 @@
                     rowSet.forEach(function (rowIdx) {
                         cIdx = 0;
                         colSet.forEach(function (colIdx) {
-                            if (rowIdx === 0 || selected.set.indexOf(`${rowIdx - 1},${colIdx}`) !== -1) {
+                            if (rowIdx === 0 || selected.set.indexOf(`${rowIdx},${colIdx}`) !== -1) {
                                 final[rIdx][cIdx] = result[rowIdx][colIdx];
                             }
                             cIdx++;
