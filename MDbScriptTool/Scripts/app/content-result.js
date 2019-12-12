@@ -194,9 +194,9 @@
 
             if (err) {
                 if (err.Errors && err.Errors.length) {
-                    $dbTable.append(`<div class="result-text" tabindex="0"><pre class="text-danger">${formatSqlError(err.Errors).join('\n\n')}</pre></div>`);
+                    $dbTable.append(`<div class="result-text error" tabindex="0"><pre class="text-danger">${formatSqlError(err.Errors).join('\n\n')}</pre></div>`);
                 } else {
-                    $dbTable.append(`<div class="result-text text-danger" tabindex="0">${err.Message}</div>`);
+                    $dbTable.append(`<div class="result-text error text-danger" tabindex="0">${err.Message}</div>`);
                 }
             } else if (result && result.length && result[0].length) {
                 $('.export-btn', instance.$result).removeClass('d-none');
@@ -231,7 +231,14 @@
                     }
                 });
             } else {
-                $dbTable.append('<div class="result-text" tabindex="0">Command(s) completed successfully</div>');
+                let $successText = $('.result-text.success', $dbTable);
+                if ($successText.length) {
+                    let successCt = +$successText.attr('data-count');
+                    $successText.attr('data-count', ++successCt);
+                    $successText.html(`<strong>${successCt}</strong> Commands completed successfully`);
+                } else {
+                    $dbTable.append('<div class="result-text success" tabindex="0" data-count="1"><strong>1</strong> Command completed successfully</div>');
+                }
             }
 
             var meta = instance.results[db.id] || {};
