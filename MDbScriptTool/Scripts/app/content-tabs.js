@@ -73,7 +73,7 @@
     app.on('create-instance', function (instance) {
         if (instance) {
             var $tab = instance.$tab = $(`<li class="nav-item instance-tab">
-                <a class="nav-link" id="${instance.id}-tab" data-toggle="tab" href="#${instance.id}" role="tab" aria-controls="${instance.id}" aria-selected="false"><span class="filename">${instance.name}</span><span class="star"> *</span> <i class="spinner fa fa-circle-o-notch spin text-accent-0" aria-hidden="true">&nbsp;</i><i class="close-instance fa fa-times" aria-hidden="true"></i></a>
+                <a class="nav-link" id="${instance.id}-tab" data-toggle="tab" href="#${instance.id}" role="tab" aria-controls="${instance.id}" aria-selected="false"><span class="filename">${instance.name}</span><span class="star"> *</span> <i class="spinner fa fa-circle-o-notch spin text-accent-0" aria-hidden="true"></i><i class="close-instance fa fa-times" aria-hidden="true"></i></a>
             </li>`).data('instance', instance);
 
             $tab.insertBefore($('.nav-item:last', $tabs));
