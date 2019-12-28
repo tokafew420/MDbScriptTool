@@ -741,6 +741,12 @@
                     left: ''
                 });
         });
+
+        // Clear input on clearable button click
+        $('body').on('click', '.clearable button', function () {
+            var $this = $(this);
+            $this.closest('.clearable').find('input').val('').change().focus();
+        });
     }());
 
     /* App */

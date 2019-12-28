@@ -200,6 +200,31 @@ a.focus {
   }
 }
 
+// Clearable input
+.input-group.clearable {
+  input:placeholder-shown {
+    border-radius: .2rem;
+
+    & ~ .input-group-append {
+      display: none;
+    }
+  }
+
+  button {
+    background-color: @dark-0;
+    border-color: #f8f9fa;
+    color: @accent-0;
+
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled).active,
+    &:not(:disabled):not(.disabled):focus,
+    &:not(:disabled):not(.disabled):hover {
+      background-color: @dark-2;
+      border-color: #dae0e5;
+      color: @accent-0;
+    }
+  }
+}
 
 // Remove validation icons
 .was-validated .form-control:valid,

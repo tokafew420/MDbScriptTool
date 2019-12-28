@@ -9,7 +9,6 @@
     var $additionalCtrls = $('#additional-ctrls', $sidebar);
     var $filterInputGrp = $('#db-list-filter', $additionalCtrls);
     var $filterInput = $('#db-list-filter-input', $filterInputGrp);
-    var $filterClear = $('#db-list-filter-clear', $filterInputGrp);
     var $showToggles = $('.link-btn', $additionalCtrls);
     var $statusbar = $('#sidebar-statusbar', $sidebar);
     var $statusText = $('.status-text', $statusbar);
@@ -173,7 +172,6 @@
         var searchTxt = $filterInput.val().trim().toLowerCase();
 
         if (searchTxt) {
-            $filterInputGrp.addClass('has-search-term');
             $('.db-lst-item', $dbLst).each(function () {
                 var $item = $(this);
 
@@ -184,7 +182,6 @@
                 }
             });
         } else {
-            $filterInputGrp.removeClass('has-search-term');
             app.show('.db-lst-item', $dbLst);
         }
         if (app.instance && app.instance.connection) {
@@ -192,10 +189,6 @@
         }
         updateStatusText();
     }, 200));
-
-    $filterClear.on('click', function () {
-        $filterInput.val('').change();
-    });
 
     app.on('update-sidebar-status', function (html) {
         $statusText.html(html);
