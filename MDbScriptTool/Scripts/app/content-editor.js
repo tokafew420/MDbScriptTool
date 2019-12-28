@@ -24,6 +24,7 @@
 
             if (instance.code) {
                 editor.setValue(instance.code);
+                editor.clearHistory();
             }
 
             editor.on('change', app.debounce(function() {
