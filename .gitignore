@@ -305,3 +305,7 @@ __pycache__/
 /MDbScriptTool/Scripts/cm-tsql-mode.min.js
 /MDbScriptTool/Scripts/app/cm-tsql-mode.es5.min.js
 /MDbScriptTool/Scripts/app/cm-tsql-mode.es5.js
+/MDbScriptTool/Content/cm-search.css
+/MDbScriptTool/Content/cm-search.min.css
+/MDbScriptTool/Scripts/cm-search.min.js
+/MDbScriptTool/Scripts/cm-search.min.js.map

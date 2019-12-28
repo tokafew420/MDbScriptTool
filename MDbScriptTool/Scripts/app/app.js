@@ -1618,6 +1618,10 @@
             'Ctrl-P': 'parseSql',
             'Ctrl-K Ctrl-C': 'comment',
             'Ctrl-K Ctrl-U': 'uncomment',
+            'Ctrl-F': 'find',
+            'Shift-Ctrl-F': 'replace',
+            'F3': 'findNext',
+            'Shift-F3': 'findPrev',
             fallthrough: 'default'
         };
 

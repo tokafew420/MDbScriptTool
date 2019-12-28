@@ -49,5 +49,17 @@
       "renameLocals": true
     },
     "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/cm-search.min.js",
+    "includeInProject": false,
+    "inputFiles": [
+      "Scripts/app/cm-search.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": true
   }
 ]

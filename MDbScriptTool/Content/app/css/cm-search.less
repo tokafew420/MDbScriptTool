@@ -1,0 +1,126 @@
+/// <reference path="variables.less" />
+
+.CodeMirror.cm-search-opened .cm-search-dialog {
+  display: block;
+}
+
+.cm-search-dialog {
+  background-color: #141414;
+  border: 1px solid #ffffff;
+  border-top: none;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  display: none;
+  overflow: hidden;
+  padding: 0.4em 0.8em;
+  position: absolute;
+  right: 8px;
+  top: 0;
+  width: 310px;
+  min-width: 200px;
+  max-width: calc(100% - 38px);
+  z-index: 15;
+
+  .btn-group {
+    .btn {
+      background-color: #000000;
+      border-color: #242424;
+      color: #ffffff;
+
+      i {
+        font-size: .9em;
+      }
+
+      &.disabled,
+      &:disabled {
+        background-color: #545454;
+      }
+
+      &:not(:disabled):not(.disabled):active,
+      &:not(:disabled):not(.disabled).active,
+      &:not(:disabled):not(.disabled):focus,
+      &:not(:disabled):not(.disabled):hover {
+        background-color: #242424;
+      }
+
+      &.active {
+        color: #f7611e;
+      }
+    }
+  }
+
+  .find-row,
+  .replace-row,
+  .options-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: .25em;
+  }
+
+  .find-row,
+  .replace-row {
+    .input-wrapper {
+      flex-grow: 1;
+    }
+
+    .btn-group {
+      margin-left: .5em;
+      margin-right: 1.5em;
+    }
+  }
+
+  .replace-row {
+    display: none;
+  }
+
+  &.cm-search-replace .replace-row {
+    display: flex;
+  }
+
+  .options-row {
+    .search-message {
+      text-align: right;
+      flex-grow: 1;
+
+      &.no-match {
+        color: #d41111;
+      }
+    }
+  }
+
+  .close-btn {
+    position: absolute;
+    color: #ffffff;
+    right: 0;
+    top: 0;
+  }
+
+  .resize-handle {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 10px;
+    width: 10px;
+    cursor: e-resize;
+
+    &:before {
+      content: '';
+      position: absolute;
+      height: 135%;
+      width: 100%;
+      border-right: solid 2px #f7611e;
+      transform: rotate(-45deg);
+      margin: -1px;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      height: 70%;
+      width: 32%;
+      border-right: solid 2px #f7611e;
+      transform: rotate(-45deg);
+      margin: 2px;
+    }
+  }
+}

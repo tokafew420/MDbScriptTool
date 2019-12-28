@@ -28,5 +28,15 @@
     "options": {
       "sourceMap": true
     }
+  },
+  {
+    "outputFile": "Content/cm-search.css",
+    "inputFile": "Content/app/css/cm-search.less",
+    "minify": {
+      "enabled": true
+    },
+    "options": {
+      "sourceMap": true
+    }
   }
 ]

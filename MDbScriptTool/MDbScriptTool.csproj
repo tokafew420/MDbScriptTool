@@ -141,6 +141,13 @@
     <Content Include="Content\app.min.css">
       <DependentUpon>app.css</DependentUpon>
     </Content>
+    <Content Include="Content\cm-search.css" />
+    <Content Include="Content\cm-search.min.css">
+      <DependentUpon>cm-search.css</DependentUpon>
+    </Content>
+    <Content Include="Scripts\app\cm-search.js" />
+    <Content Include="Scripts\cm-search.min.js" />
+    <Content Include="Scripts\CodeMirror\addon\search\searchcursor.js" />
     <Content Include="Scripts\noose\noose.js" />
     <Content Include="Scripts\noose\noose.min.js" />
     <Content Include="SqlServerTypes\readme.htm" />
@@ -167,6 +174,7 @@
     <None Include="compilerconfig.json.bindings">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
+    <None Include="Content\app\css\cm-search.less" />
     <None Include="Content\app\css\variables.less" />
     <None Include="Content\app\css\content-result.less" />
     <None Include="Content\app\css\settings-modal.less" />
@@ -367,6 +375,9 @@
     </None>
     <None Include="Scripts\app.min.js.map">
       <DependentUpon>app.min.js</DependentUpon>
+    </None>
+    <None Include="Scripts\cm-search.min.js.map">
+      <DependentUpon>cm-search.min.js</DependentUpon>
     </None>
     <None Include="Scripts\cm-tsql-mode.min.js.map">
       <DependentUpon>cm-tsql-mode.min.js</DependentUpon>
