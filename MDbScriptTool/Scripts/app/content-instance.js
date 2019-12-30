@@ -155,6 +155,53 @@
         $('#content-statusbar .status-text', $content).html(text);
     });
 
+    let $notification = $('#content-statusbar .status-notification', $content);
+    let $notificationMsg = $('.notification-message', $notification);
+    let clearStatus;
+    function statusNotification(text, options) {
+        options = options || {};
+
+        $notification.hide();
+        $notificationMsg.empty();
+
+        if (typeof text === 'string') {
+            $notificationMsg.html(text);
+        } else {
+            $notificationMsg.append(text);
+        }
+        $notification.show('slide', { direction: 'right' }, 250);
+
+        clearTimeout(clearStatus);
+        if (options.delay !== 0) {
+            setTimeout(function () {
+                $notification.fadeOut();
+            }, options.delay || 10000);
+        }
+    }
+    app.on('status-notification', statusNotification);
+    $('.notification-close-btn', $notification).on('click', function () {
+        $notification.hide();
+    });
+
+    app.on('file-downloaded', function (file) {
+        var $msg = $('<span><strong>Saved</strong> <a href="#">' + file.name + '</a></span>');
+        $('a', $msg).on('click', function (e) {
+            e.preventDefault();
+            os.emit('open-explorer', file.path);
+        });
+        statusNotification($msg, { delay: 0 });
+    });
+    app.on('instance-file-saved', function (instance, complete) {
+        if (complete) {
+            var $msg = $('<span><strong>Saved</strong> <a href="#">' + instance.name + '</a></span>');
+            $('a', $msg).on('click', function (e) {
+                e.preventDefault();
+                os.emit('open-explorer', instance.path);
+            });
+            statusNotification($msg, { delay: 5000 });
+        }
+    });
+
     // Key maps
     app.mapKeys($content, 'Ctrl-N', function () {
         $('.content-toolbar .new-file-btn', $content).click();

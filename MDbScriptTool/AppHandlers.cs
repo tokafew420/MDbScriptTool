@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Dynamic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -47,6 +48,7 @@ namespace Tokafew420.MDbScriptTool
             UiEvent.On("get-versions", GetVersions);
             UiEvent.On("get-settings", GetSettings);
             UiEvent.On("set-settings", SetSettings);
+            UiEvent.On("open-explorer", OpenExplorer);
         }
 
         /// <summary>
@@ -529,6 +531,48 @@ namespace Tokafew420.MDbScriptTool
                 }
 
                 OsEvent.Emit(replyMsgName);
+            }
+        }
+
+        private void OpenExplorer(object[] args)
+        {
+            var replyMsgName = "explorer-opened";
+            var path = "";
+            var explorerArgs = "";
+            try
+            {
+                if (args != null && args.Length > 0)
+                {
+                    if (!string.IsNullOrWhiteSpace(path = args[0] as string))
+                    {
+                        path = Path.GetFullPath(path);
+                        // If file, then select the file within the directory
+                        if (File.Exists(path))
+                        {
+                            explorerArgs = "/select,\"{0}\"";
+                        }
+                        else if (Directory.Exists(path))
+                        {
+                            explorerArgs = "\"{0}\"";
+                        }
+                        // Maybe it's a file that's been deleted, in that case just try to open the directory
+                        else if (!string.IsNullOrWhiteSpace(Path.GetExtension(path)))
+                        {
+                            path = Path.GetDirectoryName(path);
+                            if (Directory.Exists(path))
+                            {
+                                explorerArgs = "\"{0}\"";
+                            }
+                        }
+                    }
+                }
+
+                Process.Start("explorer.exe", string.Format(explorerArgs, path));
+                OsEvent.Emit(replyMsgName);
+            }
+            catch (Exception e)
+            {
+                OsEvent.Emit(replyMsgName, e, path);
             }
         }
 

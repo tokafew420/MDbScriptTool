@@ -7,6 +7,7 @@
   flex-flow: column;
   left: 0;
   margin-left: 306px;
+  overflow: hidden;
   position: absolute;
   right: 0;
   top: 56px;
@@ -80,6 +81,7 @@
     flex: 1 1 auto;
 
     .instance {
+      overflow: hidden;
       position: relative;
       // Editor
       .editor {
@@ -91,10 +93,33 @@
   // Statusbar
   #content-statusbar {
     background-color: @dark-0;
+    display: flex;
     height: 30px;
+    overflow: hidden;
 
     .status-text {
-      display: block;
+      display: inline-block;
+      flex-grow: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .status-notification {
+      background-color: @dark-1;
+      border-radius: .25rem;
+      direction: rtl;
+      display: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      button {
+        padding: 0;
+        line-height: 1;
+        margin-top: -4px;
+        color: @light-0;
+      }
     }
   }
 }

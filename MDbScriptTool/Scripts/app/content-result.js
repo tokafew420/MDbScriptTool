@@ -185,8 +185,8 @@
         if (instance && instance.$result && db && db.id) {
             var $dbTable = $('#r' + db.id, instance.$result);
             if ($dbTable.length === 0) {
-                var exportBtn = `<a href="#" class="export-btn float-right d-none" data-toggle="tooltip" title="Export Database Results"><i class="fa fa-download"></i></a>`;
-                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header"><span class="db-name">${db.label || db.name}</span><span class="result-sets-meta"></span>${exportBtn}</div></div>`);
+                var exportBtn = `<a href="#" class="export-btn d-none" data-toggle="tooltip" title="Export Database Results"><i class="fa fa-download"></i></a>`;
+                instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header"><div class="header-text mr-2"><span class="db-name">${db.label || db.name}</span><span class="result-sets-meta"></span></div>${exportBtn}</div></div>`);
                 $dbTable = $('#r' + db.id, instance.$result);
 
                 $('.export-btn', instance.$result).tooltip();

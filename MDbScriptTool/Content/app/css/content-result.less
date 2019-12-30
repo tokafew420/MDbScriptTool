@@ -4,7 +4,8 @@
 .content .result {
   color: @dark-0;
   font-size: 0.85em;
-  overflow: auto;
+  overflow: hidden;
+  overflow-y: auto;
 
   table {
     // Table result set
@@ -12,9 +13,17 @@
   }
 
   .result-sets-header {
+    display: flex;
     padding: 2px 8px;
     background-color: @dark-0;
     color: @light-0;
+
+    .header-text {
+      flex-grow: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
   .result-text {

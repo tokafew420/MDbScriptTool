@@ -303,6 +303,16 @@
             var csv = app.resultToText(data, true, ',');
 
             app.downloadText(csv, encodeURIComponent(filename), 'text/csv;charset=utf-8');
+
+            os.once('download-completed', function (complete, download) {
+                if (complete) {
+                    var file = {
+                        path: download.FullPath.replace(/\\/g, '/')
+                    };
+                    file.name = file.path.split('/').pop();
+                }
+                app.emit('file-downloaded', file);
+            });
         };
 
         /**
