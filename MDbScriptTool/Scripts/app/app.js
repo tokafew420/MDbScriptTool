@@ -1661,5 +1661,13 @@
                 app.copyToClipboard(val, this);
             }
         });
+
+        $(window.document).on('click', '.input-open-explorer-lnk', function (e) {
+            var val = $('input', $(this).closest('.input-group')).val();
+
+            if (val && val.indexOf('://') === -1) {
+                os.emit('open-explorer', val);
+            }
+        });
     });
 }(window, window.app = window.app || {}, window.os, jQuery));
