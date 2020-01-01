@@ -657,31 +657,36 @@
 
         // Setup loading div
         app.loading = (function () {
-            var $container = $('.loader-container');
-            var $spinner = $('.loader', $container);
-            var $msg = $('.msg', $container);
+            var $loader = $('<div class="loader"><div class="loader-wrapper"><div class="loader-spinner"></div><div class="loader-text"></div></div></div>');
 
-            return {
-                show: function (opts) {
-                    if (typeof opts === 'string') {
-                        opts = {
-                            msg: opts
-                        };
-                    }
+            var mod = function (text, opts) {
+                if (typeof text === 'object') {
+                    opts = text;
+                } else {
                     opts = opts || {};
+                    opts.text = text;
+                }
 
-                    if (opts.msg) {
-                        $msg.text(opts.msg);
+                $(opts.parent || 'body').each(function () {
+                    var $inst = $('> .loader', this);
+                    if ($inst.length) {
+                        $inst = $inst.eq(0);
                     } else {
-                        $msg.empty();
+                        $inst = $loader.clone();
                     }
 
-                    $container.show();
-                },
-                hide: function (opts) {
-                    $container.hide();
-                }
+                    $('.loader-text', $inst)[opts.html ? 'html' : 'text'](opts.text);
+                    $(this).append($inst);
+                });
             };
+
+            mod.show = mod;
+            mod.hide = function (parent) {
+                if (parent === true) $('.loader').remove();
+                else $('> .loader', $(parent || 'body')).remove();
+            };
+
+            return mod;
         })();
 
         var keyMap = new WeakMap();

@@ -4,6 +4,7 @@
 html, body {
   background-color: @dark-1;
   height: 100%;
+  user-select: none;
 }
 
 body {
@@ -109,7 +110,7 @@ a.focus {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 /* Bootstrap overrides */
@@ -321,18 +322,25 @@ a.focus {
 }
 
 /** Loader **/
-.loader-container {
+.loader {
+  background-color: @dark-tran-9;
+  display: flex;
+  justify-content: center;
+  position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
-  display: none;
-  position: absolute;
-  padding: 200px;
-  background-color: @dark-tran-9;
+  overflow: hidden;
+  padding: 20px 0;
   z-index: 2000;
 
-  .loader {
+  .loader-wrapper {
+    text-align: center;
+    align-self: center;
+  }
+
+  .loader-spinner {
     animation: spin .75s linear infinite;
     border: 16px solid @light-1;
     border-radius: 50%;
@@ -342,9 +350,10 @@ a.focus {
     width: 120px;
   }
 
-  .msg {
+  .loader-text {
+    color: @light-0;
     font-size: 24px;
-    text-align: center;
+    white-space: normal;
   }
 }
 

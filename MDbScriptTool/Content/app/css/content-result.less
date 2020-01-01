@@ -6,10 +6,15 @@
   font-size: 0.85em;
   overflow: hidden;
   overflow-y: auto;
+  position: relative;
 
   table {
     // Table result set
     white-space: nowrap;
+  }
+
+  .result-sets-container {
+      margin-right: 2px;
   }
 
   .result-sets-header {
@@ -43,15 +48,19 @@
       margin-bottom: 0;
       width: initial;
       // Make result set column header and row number always stay in place when scrolling
-      tr th:first-child {
-        // When we scroll the table show overlapping effect to remove this effect and retains border we need to remove border and add outline instead of border
-        // https://stackoverflow.com/a/50155060
-        border: none;
-        cursor: pointer;
-        left: 0;
-        outline: 2px solid #32383e;
-        outline-offset: -1px;
-        position: sticky;
+      tr {
+        height: 22px;
+
+        th:first-child {
+          // When we scroll the table show overlapping effect to remove this effect and retains border we need to remove border and add outline instead of border
+          // https://stackoverflow.com/a/50155060
+          border: none;
+          cursor: pointer;
+          left: 0;
+          outline: 2px solid #32383e;
+          outline-offset: -1px;
+          position: sticky;
+        }
       }
 
       thead th {

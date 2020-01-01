@@ -180,11 +180,16 @@
             });
 
             instance.$result.empty();
+            app.loading({
+                text: 'Waiting for Result',
+                parent: instance.$result
+            });
         }
     }).on('sql-executed-db-batch', function (instance, err, db, result) {
         if (instance && instance.$result && db && db.id) {
             var $dbTable = $('#r' + db.id, instance.$result);
             if ($dbTable.length === 0) {
+                app.loading.hide(instance.$result);
                 var exportBtn = `<a href="#" class="export-btn d-none" data-toggle="tooltip" title="Export Database Results"><i class="fa fa-download"></i></a>`;
                 instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header"><div class="header-text mr-2"><span class="db-name">${db.label || db.name}</span><span class="result-sets-meta"></span></div>${exportBtn}</div></div>`);
                 $dbTable = $('#r' + db.id, instance.$result);
