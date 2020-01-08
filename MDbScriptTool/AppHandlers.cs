@@ -49,6 +49,7 @@ namespace Tokafew420.MDbScriptTool
             UiEvent.On("get-settings", GetSettings);
             UiEvent.On("set-settings", SetSettings);
             UiEvent.On("open-explorer", OpenExplorer);
+            UiEvent.On("list-directory", ListDirectory);
         }
 
         /// <summary>
@@ -477,6 +478,10 @@ namespace Tokafew420.MDbScriptTool
                     enabled = SqlLogger.Enabled,
                     directory = SqlLogger.Directory,
                     retention = SqlLogger.Retention
+                },
+                scriptLibrary = new
+                {
+                    directory = _app.ScriptLibraryDirectory
                 }
             });
         }
@@ -517,10 +522,10 @@ namespace Tokafew420.MDbScriptTool
                     }
 
                     Logger.Level = Logger.LogLevel.None;
-                    if (settings.logging.debug) Logger.Level = Logger.Level | Logger.LogLevel.Debug;
-                    if (settings.logging.info) Logger.Level = Logger.Level | Logger.LogLevel.Info;
-                    if (settings.logging.warn) Logger.Level = Logger.Level | Logger.LogLevel.Warn;
-                    if (settings.logging.error) Logger.Level = Logger.Level | Logger.LogLevel.Error;
+                    if (settings.logging.debug) Logger.Level |= Logger.LogLevel.Debug;
+                    if (settings.logging.info) Logger.Level |= Logger.LogLevel.Info;
+                    if (settings.logging.warn) Logger.Level |= Logger.LogLevel.Warn;
+                    if (settings.logging.error) Logger.Level |= Logger.LogLevel.Error;
                 }
 
                 if (settings.sqlLogging != null)
@@ -530,10 +535,27 @@ namespace Tokafew420.MDbScriptTool
                     SqlLogger.Retention = settings.sqlLogging.retention;
                 }
 
+                if (settings.scriptLibrary != null)
+                {
+                    _app.ScriptLibraryDirectory = settings.scriptLibrary.directory;
+                }
+
                 OsEvent.Emit(replyMsgName);
             }
         }
 
+        /// <summary>
+        /// Get the windows file Explorer window.
+        /// </summary>
+        /// <param name="args">Expects:
+        /// [0] The path to the directory or file to start in.
+        /// </param>
+        /// <remarks>
+        /// Emits event: explorer-opened
+        /// Event params:
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] The parsed path.
+        /// </remarks>
         private void OpenExplorer(object[] args)
         {
             var replyMsgName = "explorer-opened";
@@ -568,11 +590,75 @@ namespace Tokafew420.MDbScriptTool
                 }
 
                 Process.Start("explorer.exe", string.Format(explorerArgs, path));
-                OsEvent.Emit(replyMsgName);
+                OsEvent.Emit(replyMsgName, null, path);
             }
             catch (Exception e)
             {
                 OsEvent.Emit(replyMsgName, e, path);
+            }
+        }
+
+        /// <summary>
+        /// List files and directories within a given path.
+        /// </summary>
+        /// <param name="args">Expects:
+        /// [0] The path to the directory to list.
+        /// </param>
+        /// <remarks>
+        /// Emits event: directory listed
+        /// Event params:
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] An array of file objects.
+        /// </remarks>
+        private void ListDirectory(object[] args)
+        {
+            var replyMsgName = "directory-listed";
+            var entries = new List<FsFile>();
+            try
+            {
+                if (args != null && args.Length > 0)
+                {
+                    string path;
+                    if (!string.IsNullOrWhiteSpace(path = args[0] as string))
+                    {
+                        path = Path.GetFullPath(path);
+                        if (!Directory.Exists(path))
+                        {
+                            throw new DirectoryNotFoundException();
+                        }
+
+                        foreach (var dir in Directory.EnumerateDirectories(path, "*", SearchOption.AllDirectories))
+                        {
+                            entries.Add(new FsFile
+                            {
+                                Name = Path.GetFileName(dir),
+                                Path = dir,
+                                Type = "directory"
+                            });
+                        }
+
+                        foreach (var file in Directory.EnumerateFiles(path, "*.sql", SearchOption.AllDirectories))
+                        {
+                            var info = new FileInfo(file);
+                            entries.Add(new FsFile
+                            {
+                                Name = info.Name,
+                                Path = info.FullName,
+                                Type = Utils.GetMimeType(info.Extension),
+                                Size = info.Length,
+                                LastModified = (long)Utils.ConvertToUnixTimestamp(info.LastWriteTime)
+                            });
+                        }
+
+                        OsEvent.Emit(replyMsgName, null, entries);
+                        return;
+                    }
+                }
+                OsEvent.Emit(replyMsgName, new ArgumentNullException("path"));
+            }
+            catch (Exception e)
+            {
+                OsEvent.Emit(replyMsgName, e);
             }
         }
 

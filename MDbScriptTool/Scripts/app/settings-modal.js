@@ -6,13 +6,15 @@
 (function (window, app, os, $) {
     app.settings.logging = app.settings.logging || {};
     app.settings.sqlLogging = app.settings.sqlLogging || {};
+    app.settings.scriptLibrary = app.settings.scriptLibrary || {};
 
     $(function () {
         // On fresh startup, the app may need time to build out the data/settings directory.
         // Sync logging settings
         os.once('settings', function (err, settings) {
-            app.settings.logging = settings.logging || {};
-            app.settings.sqlLogging = settings.sqlLogging || {};
+            if (settings.logging) app.settings.logging = settings.logging;
+            if (settings.sqlLogging) app.settings.sqlLogging = settings.sqlLogging;
+            if (settings.scriptLibrary) Object.assign(app.settings.scriptLibrary, settings.scriptLibrary);
         }).emit('get-settings');
     });
 
@@ -27,6 +29,7 @@
     var $sqlLogRetention = $('#sql-log-retention', $dlg);
     var $addonJs = $('#addon-js', $dlg);
     var $addonCss = $('#addon-css', $dlg);
+    var $scriptLibDir = $('#script-library-dir', $dlg);
 
     var $saveBtn = $('.save-btn', $dlg);
 
@@ -60,23 +63,24 @@
             app.settings.logging.warn = $loggingWarn.is(':checked');
             app.settings.logging.error = $loggingError.is(':checked');
 
-
             var retention = $sqlLogRetention.val();
             app.settings.sqlLogging.enabled = $sqlLogging.is(':checked');
             app.settings.sqlLogging.directory = $sqlLoggingDir.val();
             app.settings.sqlLogging.retention = retention ? +retention : null;
 
+            app.settings.scriptLibrary.directory = $scriptLibDir.val().trim();
+
             os.emit('set-settings', app.settings);
 
             // If check add-on values change
             var addonChanged = false;
-            var addonJs = $addonJs.val().trim().toLowerCase();
-            if (addonJs !== app.settings.addonJs) {
+            var addonJs = $addonJs.val().trim();
+            if (app.compare(addonJs, app.settings.addonJs)) {
                 app.settings.addonJs = addonJs;
                 addonChanged = true;
             }
-            var addonCss = $addonCss.val().trim().toLowerCase();
-            if (addonCss !== app.settings.addonCss) {
+            var addonCss = $addonCss.val().trim();
+            if (app.compare(addonCss, app.settings.addonCss)) {
                 app.settings.addonCss = addonCss;
                 addonChanged = true;
             }
@@ -85,7 +89,7 @@
 
             if (addonChanged) {
                 app.saveState('settings');
-                app.alert('AddOn Script and CSS file will be apply on next reload.', {
+                app.alert('AddOn Script and CSS file will be apply on next reload. Reload Now?', 'Hey!!', {
                     cancel: 'Later',
                     ok: 'Reload'
                 }, function (reload) {
@@ -98,9 +102,10 @@
     });
 
     var osFiles;
-    $('#sql-log-dir-file, #addon-js-file, #addon-css-file', $dlg).on('click', function () {
+    $('#sql-log-dir-file, #addon-js-file, #addon-css-file, #script-library-dir-file', $dlg).on('click', function () {
         var $this = $(this);
         osFiles = null;
+
         os.once('file-dialog-closed', function (err, cancelled, files) {
             if (!cancelled) {
                 osFiles = files;
@@ -117,14 +122,14 @@
         if (osFiles && osFiles.length) {
             if (this.files && this.files.length) {
                 osFile = app.findBy(osFiles, 'Name', this.files[0].name);
-            } else if (osFiles[0].Type === 'directory' && osFiles[0].WebkitRelativePath) {
+            } else if (osFiles[0].Type === 'directory' && osFiles[0].Path) {
                 osFile = osFiles[0];
             }
 
             if (osFile) {
                 let id = '#' + $this.attr('id').replace('-file', '');
 
-                $(id, $dlg).val((osFile.WebkitRelativePath + '/' + osFile.Name).replace(/\\/g, '/'));
+                $(id, $dlg).val(osFile.Path.replace(/\\/g, '/'));
             }
         }
         osFiles = null;
@@ -141,5 +146,6 @@
         $sqlLogRetention.val(app.settings.sqlLogging.retention);
         $addonJs.val(app.settings.addonJs);
         $addonCss.val(app.settings.addonCss);
+        $scriptLibDir.val(app.settings.scriptLibrary.directory);
     });
 }(window, window.app = window.app || {}, window.os, jQuery));

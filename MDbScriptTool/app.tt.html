@@ -123,6 +123,11 @@
       <div class="btn-group mr-2" role="group" aria-label="Result Button Group">
         <button type="button" class="btn btn-sm export-btn" data-toggle="tooltip" title="Export Results"><i class="fa fa-download" aria-hidden="true"></i></button>
       </div>
+      <div class="btn-group mr-2" role="group" aria-label="Features Button Group">
+        <span data-toggle="modal" data-target="#script-library-modal">
+          <button type="button" class="btn btn-sm library-btn" data-toggle="tooltip" title="Script Library"><i class="fa fa-book" aria-hidden="true"></i></button>
+        </span>
+      </div>
     </div>
     <ul class="nav nav-tabs instance-tabs scrollable-x pl-2" role="tablist">
       <li class="nav-item">
@@ -460,6 +465,38 @@
               </div>
             </div>
           </section>
+          <section id="script-library-setting" class="mb-2">
+            <label for="script-library-seting">Script Library <i class="fa fa-info-circle" data-toggle="tooltip" title="Location for scripts" aria-hidden="true"></i></label>
+            <div class="container-fluid settings">
+              <div class="row my-2">
+                <div class="col">
+                  <div class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text" id="sql-log-dir-lbl" for="sql-log-dir">
+                        Scripts Directory
+                      </span>
+                    </div>
+                    <input type="text" id="script-library-dir" class="form-control" placeholder="Scripts Directory" aria-label="Scripts Directory" aria-describedby="script-library-lbl" spellcheck="false" />
+                    <div class="input-group-append">
+                      <button type="button" class="btn icon-btn input-group-copy-btn" data-toggle="tooltip" title="Copy"><i class="fa fa-copy" aria-hidden="true"></i></button>
+                      <button type="button" class="btn last-child icon-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-caret-down" aria-hidden="true"></i>
+                      </button>
+                      <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#" onclick="$('#script-library-dir-file').val(null).click(); return false;">
+                          Browse Local
+                        </a>
+                        <input type="file" id="script-library-dir-file" webkitdirectory class="hidden" />
+                        <a class="dropdown-item input-open-explorer-lnk" href="#">
+                          Open in Explorer
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-sm btn-outline-primary save-btn">Save</button>
@@ -523,6 +560,57 @@
         </div>
         <div class="modal-footer justify-content-center">
           <button type="button" class="btn btn-sm btn-outline-primary ok-btn auto-focus" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Script library dialog -->
+  <div class="modal fade" id="script-library-modal" tabindex="-1" role="dialog" aria-labelledby="script-library-modal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="script-library-modal-title">Script Library</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="btn-toolbar mb-2" role="toolbar" aria-label="Script Library Toolbar">
+            <div class="btn-group mr-2" role="group" aria-label="View Options Button Group">
+              <button type="button" class="btn btn-sm list-view-btn" data-toggle="tooltip" title="List View"><i class="fa fa-list" aria-hidden="true"></i></button>
+              <button type="button" class="btn btn-sm directory-view-btn" data-toggle="tooltip" title="Directory View"><i class="fa fa-align-right fa-flip-vertical" aria-hidden="true"></i></button>
+            </div>
+              <div class="btn-group mr-2" role="group" aria-label="Display Options Button Group">
+              <button type="button" class="btn btn-sm collapse-all-btn" data-toggle="tooltip" title="Collapse All"><i class="fa fa-minus-square-o" aria-hidden="true"></i></button>
+              <button type="button" class="btn btn-sm refresh-files-btn" data-toggle="tooltip" title="Refresh"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+            </div>
+            <div class="input-group input-group-sm search clearable">
+              <input type="search" class="form-control" placeholder="Search" spellcheck="false" />
+              <div class="input-group-append">
+                <button class="btn btn-secondary" type="button">
+                  <i class="fa fa-remove"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="err-msg text-danger mb-2"></div>
+          <div class="entries-wrapper">
+            <table class="table table-sm table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th data-sort="name" data-asc="true">Name</th>
+                  <th data-sort="files">Files</th>
+                  <th data-sort="date">Last Modified</th>
+                  <th data-sort="size">Size</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-sm btn-outline-primary auto-focus" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -601,6 +689,7 @@
   <script src="./Scripts/app/connections-modal.js"></script>
   <script src="./Scripts/app/settings-modal.js"></script>
   <script src="./Scripts/app/about-modal.js"></script>
+  <script src="./Scripts/app/script-library-modal.js"></script>
   <!--<# } else { #>-->
   <script src="./Scripts/app.min.js"></script>
   <!--<# } #>-->

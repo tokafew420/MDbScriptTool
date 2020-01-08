@@ -15,7 +15,7 @@
          *  Generally used to prevent a function from running multiple times in quick
          *  succession.
          * https://davidwalsh.name/javascript-debounce-function
-         * 
+         *
          * @param {function} func The function to run.
          * @param {number} wait The time in milliseconds to wait before running.
          * @param {boolean} immediate Whether to run immediately.
@@ -38,7 +38,7 @@
 
         /**
          * Download the specified text as a file.
-         * 
+         *
          * @param {string} text The text to download.
          * @param {string} filename The file name or full path include.
          * @param {string} mime The file mime type.
@@ -58,7 +58,7 @@
 
         /**
          * A case insensitive and numeric aware compare. (using 'en' Collator)
-         * 
+         *
          * @param {string} x The first string to compare.
          * @param {string} y The second string to compare.
          * @returns {number} -1 if the first string is less than the second string; 1 if
@@ -72,7 +72,7 @@
         /**
          * Copy the specified text to the clipboard.
          * https://stackoverflow.com/a/30810322
-         * 
+         *
          * @param {string} text The text to copy.
          * @param {Element} container Optional, The DOM element to append the textarea to.
          * @returns {boolean} true if the copy operation was successful, otherwise false.
@@ -116,7 +116,6 @@
 
             // Avoid flash of white box if rendered for any reason.
             textArea.style.background = 'transparent';
-
 
             textArea.value = text;
 
@@ -260,7 +259,7 @@
 
         /**
          * Escapes the HTML string by replace the '<' and '>' characters.
-         * 
+         *
          * @param {string} html The HTML string to escape.
          * @returns {string} The escaped HTML string.
          */
@@ -273,7 +272,7 @@
 
         /**
          * Exclude the specified properties of an object.
-         * 
+         *
          * @param {object} obj The source object.
          * @param {Array|string} props The property (or list or properties) to exclude.
          * @returns {object} A new object with only the wanted properties.
@@ -316,8 +315,22 @@
         };
 
         /**
+         * Get the file size string.
+         *
+         * @param {number} size The number of bytes.
+         * @returns {string} The size in kilobytes or megabytes if over 1000 kilobytes.
+         */
+        app.fileSize = function (size) {
+            size = size / 1024;
+            if (size < 1000) return size.toFixed(1).replace('.0', '') + ' KB';
+            size = size / 1024;
+
+            return size.toFixed(1).replace('.0', '') + ' MB';
+        };
+
+        /**
          * Finds the element/property in an array or object by a property key and value.
-         * 
+         *
          * @param {Array|Object} arr The array or object to search.
          * @param {string} key The lookup property key name.
          * @param {any} val The lookup property value.
@@ -337,7 +350,7 @@
         }
         /**
         * Generates a random guid.
-        * 
+        *
         * @returns {string} A guid. Format: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
         */
         app.guid = function () {
@@ -366,7 +379,7 @@
 
         /**
          * Finds the index of an element in an array or object by a property key and value.
-         * 
+         *
          * @param {Array|Object} arr The array or object to search.
          * @param {string} key The lookup property key name.
          * @param {any} val The lookup property value.
@@ -396,7 +409,7 @@
 
         /**
          * Get the last item in the array.
-         * 
+         *
          * @param {Array} arr The array to pick from
          * @returns {any} The last array element or null if the array is empty.
          */
@@ -406,7 +419,7 @@
 
         /**
          * Get the formatted time (hh:mm:ss.fff) from the number of milliseconds
-         * 
+         *
          * @param {number} ms The number of milliseconds
          * @returns {string} The formatted time.
          */
@@ -435,7 +448,7 @@
          * A function that executes the first function parameter and return its result.
          * If a function is not found then return the 1st arguments.
          *
-         *@returns {any} The result of the 1st function or the 1st argument. 
+         *@returns {any} The result of the 1st function or the 1st argument.
          **/
         app.op = function () {
             var args = [].slice.call(arguments);
@@ -451,7 +464,7 @@
 
         /**
          * Open a file a the specified path.
-         * 
+         *
          * @param {string} path The path to the file.
          * @param {Function} callback The callback function which will receive text in the file.
          */
@@ -480,7 +493,7 @@
 
         /**
          * Pick out the specified properties of an object.
-         * 
+         *
          * @param {object} obj The source object.
          * @param {Array|string} props The property (or list or properties) to pick out.
          * @returns {object} A new object with only the wanted properties.
@@ -495,7 +508,7 @@
 
         /**
          * Finds the element/property in an array or object by a property key and value.
-         * 
+         *
          * @param {Array|Object} arr The array or object to search.
          * @param {string} key The lookup property key name.
          * @param {any} val The lookup property value.
@@ -513,7 +526,7 @@
 
         /**
          * Transform a resultset to text.
-         * 
+         *
          * @param {Array} resultset The result set
          * @param {boolean} escapeQuote Whether to escape double quotes in the value.
          * @param {string} delimiter The value delimiter. Defaults to tab (\t).
@@ -540,7 +553,7 @@
     (function () {
         /*
          * Shows the element hidden by hide() by removing the .hidden class.
-         * 
+         *
          * @param {any} selectors List of any valid jQuery selector.
          * @returns {any} The jQuery wrapped selector.
          */
@@ -553,7 +566,7 @@
 
         /**
          * Hides the element by adding the .hidden class.
-         * 
+         *
          * @param {any} selectors List of any valid jQuery selector.
          * @returns {any} The jQuery wrapped selector.
          */
@@ -692,7 +705,7 @@
         var keyMap = new WeakMap();
         /**
          * Map key events to a function.
-         * 
+         *
          * @param {any} el The element where key events are mapped to.
          * @param {string} key The key combination.
          * @param {function} fn The callback function when the key combination is encountered.
@@ -817,7 +830,7 @@
 
         /**
          * Creates a new instance.
-         * 
+         *
          * @param {any} instance Optional. The initial instance properties.
          * @returns {object} The newly created instance.
          * @event create-instance|instance-created
@@ -849,7 +862,7 @@
 
         /**
          * Remove an instance.
-         * 
+         *
          * @param {any} instance This instance to remove or the instance id.
          * @returns {object} The removed instance or null if nothing was removed.
          * @event remove-instance|instance-removed
@@ -890,7 +903,7 @@
 
         /**
          * Switch to a different instance.
-         * 
+         *
          * @param {object} instance The instance to switch to.
          * @returns {object} The instance that was switched to or null if no switch happened.
          * @event switch-instance|instance-switched
@@ -939,7 +952,7 @@
 
         /**
          * Saves the application state.
-         * 
+         *
          * @param {string} key Optional If provided, only save the particular state property.
          * @event save-state|state-saved
          * @type {Array} An array of states saved
@@ -966,7 +979,7 @@
 
         /**
          * Saves the connection object.
-         * 
+         *
          * @param {object} conn The connection object.
          * @event update-connection|connection-updated
          * @type {object} The updated connection
@@ -1008,7 +1021,7 @@
 
         /**
          * Removes a connection.
-         * 
+         *
          * @param {object|string} conn The connection object to remove or the connection id of the connection to remove.
          * @event remove-connection|connection-removed
          * @type {object} The connection object being removed.
@@ -1045,7 +1058,7 @@
 
         /**
          * Switch to a different connection.
-         * 
+         *
          * @param {object} conn The connection to switch to.
          * @returns {object} The connection that was switched to.
          * @event switch-connection|connection-switched
@@ -1122,7 +1135,6 @@
                         return app.compare(a.name, b.name);
                     });
 
-
                     if (app.instance) {
                         // Reapply checked databases
                         var instanceConn = app.findBy(app.instance.connections, 'id', connection.id) || {};
@@ -1177,7 +1189,7 @@
 
         /**
          * Executes the given sql. If no arguments are provided, then the sql from the current instance is executed.
-         * 
+         *
          * @param {string} connectionString The target server connection string.
          * @param {Array} dbs A list of databases on the target server to execute the sql.
          * @param {string} sql The sql to execute.
@@ -1321,7 +1333,7 @@
 
         /**
          * Parses the given sql. If not arguments are provided, then the sql from the current instance is parsed.
-         * 
+         *
          * @param {string} connectionString The target server connection string.
          * @param {string} sql The sql to parse.
          * @param {string} id The id of the execution.
@@ -1432,14 +1444,14 @@
                 }
             }
 
-            app.alert('<p>No result set found.</p>', {
+            app.alert('<p>No result set found.</p>', 'Oops!', {
                 html: true
             });
         };
 
         /**
          * Get a subset of the resultset that is selected.
-         * 
+         *
          * @param {Array} result The result set.
          * @param {object} selected The selection object.
          * @param {boolean} includeHeaders Whether to include column headers.
@@ -1507,7 +1519,7 @@
         $(function () {
             function alertError(err) {
                 app.alert('<p>Failed to load custom script: </p>' +
-                    '<p class="text-danger">' + err.message + '</p>', {
+                    '<p class="text-danger">' + err.message + '</p>', 'Error', {
                     html: true
                 });
             }
@@ -1516,7 +1528,7 @@
                     '<p class="text-danger">' + message + '</p>' +
                     '<div><strong>Source: </strong>' + source + '</div>' +
                     '<div><strong>Line: </strong>' + lineno + '</div>' +
-                    '<div><strong>Column: </strong>' + colno + '</div>', {
+                    '<div><strong>Column: </strong>' + colno + '</div>', 'Error', {
                     html: true
                 });
             }
@@ -1540,7 +1552,7 @@
                         $onerror.remove();
                         $cleanup.remove();
                     } else {
-                        app.alert(`Failed to load custom script: [${app.settings.addonJs}]`);
+                        app.alert(`Failed to load custom script: [${app.settings.addonJs}]`, 'Error');
                     }
                 });
             }

@@ -54,7 +54,7 @@ namespace Tokafew420.MDbScriptTool
                             files.Add(new FsFile()
                             {
                                 Name = dir.Name,
-                                WebkitRelativePath = dir.Parent.FullName,
+                                Path = dir.FullName,
                                 Type = "directory",
                                 LastModified = (long)Utils.ConvertToUnixTimestamp(dir.LastWriteTime)
                             });
@@ -113,13 +113,17 @@ namespace Tokafew420.MDbScriptTool
                                     return new FsFile()
                                     {
                                         Name = file.Name,
-                                        WebkitRelativePath = file.DirectoryName,
+                                        Path = file.FullName,
                                         Size = file.Length,
                                         Type = Utils.GetMimeType(file.Extension),
                                         LastModified = (long)Utils.ConvertToUnixTimestamp(file.LastWriteTime)
                                     };
                                 }).ToList();
-                                _app.LastFileDialogDirectory = files.Last()?.WebkitRelativePath;
+
+                                if (files.Count > 0)
+                                {
+                                    _app.LastFileDialogDirectory = Path.GetDirectoryName(files.Last().Path);
+                                }
                             }
                             OsEvent.Emit(replyMsgName, null, false, files);
                             callback.Continue(selectedAcceptFilter, dialog.FileNames.ToList());
@@ -139,33 +143,5 @@ namespace Tokafew420.MDbScriptTool
 
             return true;
         }
-    }
-
-    internal class FsFile
-    {
-        /// <summary>
-        /// Returns the last modified time of the file, in millisecond since the UNIX epoch(January 1st, 1970 at Midnight).
-        /// </summary>
-        public long LastModified { get; set; }
-
-        /// <summary>
-        /// Returns the name of the file referenced by the File object.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Returns the path the URL of the File is relative to.
-        /// </summary>
-        public string WebkitRelativePath { get; set; }
-
-        /// <summary>
-        /// Returns the size of the file in bytes.
-        /// </summary>
-        public long Size { get; set; }
-
-        /// <summary>
-        /// Returns the MIME type of the file.
-        /// </summary>
-        public string Type { get; set; }
     }
 }

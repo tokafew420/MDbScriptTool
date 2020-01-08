@@ -88,12 +88,12 @@
             var name = this.files[0].name;
             var osFile = app.findBy(osFiles, 'Name', name);
             if (osFile) {
-                var path = (osFile.WebkitRelativePath + '/' + osFile.Name).replace(/\\/g, '/');
+                var path = osFile.Path.replace(/\\/g, '/');
 
                 app.openFile(path, function (err, res) {
                     if (err) {
-                        return app.alert.error(err);
-                    } 
+                        return app.alert(`<span class="text-danger">${err || 'Failed to load file'}</span >`, 'Error', { html: true });
+                    }
 
                     var instance = app.createInstance({
                         path: path,

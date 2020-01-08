@@ -30,7 +30,8 @@
       "Scripts/app/execute-options-modal.js",
       "Scripts/app/connections-modal.js",
       "Scripts/app/settings-modal.js",
-      "Scripts/app/about-modal.js"
+      "Scripts/app/about-modal.js",
+      "Scripts/app/script-library-modal.js"
     ],
     "minify": {
       "enabled": true,

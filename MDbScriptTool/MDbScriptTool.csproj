@@ -107,6 +107,7 @@
   <ItemGroup>
     <Compile Include="BrowserRequestHandler.cs" />
     <Compile Include="DownloadHandler.cs" />
+    <Compile Include="FsFile.cs" />
     <Compile Include="FileDialogHandler.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="SqlLogger.cs" />
@@ -145,6 +146,7 @@
     <Content Include="Content\cm-search.min.css">
       <DependentUpon>cm-search.css</DependentUpon>
     </Content>
+    <Content Include="Scripts\app\script-library-modal.js" />
     <Content Include="Scripts\app\cm-search.js" />
     <Content Include="Scripts\cm-search.min.js" />
     <Content Include="Scripts\CodeMirror\addon\search\searchcursor.js" />
@@ -174,6 +176,7 @@
     <None Include="compilerconfig.json.bindings">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
+    <None Include="Content\app\css\script-library-modal.less" />
     <None Include="Content\app\css\cm-search.less" />
     <None Include="Content\app\css\variables.less" />
     <None Include="Content\app\css\content-result.less" />

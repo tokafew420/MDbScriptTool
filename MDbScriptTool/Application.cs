@@ -139,6 +139,15 @@ namespace Tokafew420.MDbScriptTool
                 }
 
                 SqlLogger.InitialilzeAsync();
+
+                if (AppSettings.Exists("ScriptLibraryDirectory"))
+                {
+                    ScriptLibraryDirectory = AppSettings.Get<string>("ScriptLibraryDirectory");
+                }
+                else
+                {
+                    ScriptLibraryDirectory = Path.GetFullPath(Path.Combine(DataDirectory, "Scripts"));
+                }
             }
             catch (Exception err)
             {
@@ -185,6 +194,7 @@ namespace Tokafew420.MDbScriptTool
             AppSettings.Set("SqlLoggingEnabled", SqlLogger.Enabled);
             AppSettings.Set("SqlLoggingDir", SqlLogger.Directory);
             AppSettings.Set("SqlLoggingRetention", SqlLogger.Retention);
+            AppSettings.Set("ScriptLibraryDirectory", ScriptLibraryDirectory);
 
             AppSettings.Save();
         }
@@ -252,6 +262,12 @@ namespace Tokafew420.MDbScriptTool
         /// Get or set the last directory path used from a file dialog.
         /// </summary>
         public string LastFileDialogDirectory { get; set; }
+
+        /// <summary>
+        /// Get or set the path to the script library directory.
+        /// </summary>
+        public string ScriptLibraryDirectory { get; set; }
+
         #endregion Properties
     }
 }
