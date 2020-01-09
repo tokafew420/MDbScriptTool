@@ -11,6 +11,7 @@
     var $refreshFilesBtn = $('.refresh-files-btn', $dlg);
     var $search = $('.search input', $dlg);
     var $entriesWrapper = $('.entries-wrapper', $dlg);
+    var $tbody = $('tbody', $entriesWrapper);
     var $errMsg = $('.err-msg', $dlg);
     var _entries, _rootEntries;
     var scriptDirectory = app.settings.scriptLibrary.directory;
@@ -19,11 +20,12 @@
     os.on('directory-listed', function (err, entries) {
         _rootEntries = [];
         if (err) {
-            $entriesWrapper.empty().hide();
-            $errMsg.html('<span>' + err.Message + '<span>').show();
+            $tbody.empty();
+            $entriesWrapper.hide();
+            $errMsg.text(err.Message).show();
             _entries = [];
         } else {
-            var basePath = app.settings.scriptLibrary.directory.replace(/\\/g, '/').trimEnd('/');
+            var basePath = app.settings.scriptLibrary.directory.replace(/\\/g, '/').replace(/[\/\s]+$/, '');
             var basePathLen = basePath.length;
 
             _entries = entries
@@ -102,8 +104,9 @@
             });
             os.emit('list-directory', app.settings.scriptLibrary.directory);
         } else {
-            $entriesWrapper.empty().hide();
-            $errMsg.html('<span>Scripts directory is not set. Go to <strong>Settings</strong> to specify the directory.<span>').show();
+            $tbody.empty();
+            $entriesWrapper.hide();
+            $errMsg.html('<span>Scripts directory is not set. Go to <a href="#" class="go-to-settings text-danger"><strong>Settings</strong></a> to specify the directory.<span>').show();
         }
     }
 
@@ -152,7 +155,8 @@
     function render() {
         let view = app.settings.scriptLibrary.view || 'list';
 
-        $('tbody', $entriesWrapper).html(_render(view === 'list' ? _entries : _rootEntries)).show();
+        $entriesWrapper.show();
+        $tbody.html(_render(view === 'list' ? _entries : _rootEntries));
 
         $('[data-toggle="tooltip"]', $entriesWrapper).tooltip({
             boundary: 'window',
@@ -192,9 +196,9 @@
             }).map(function (e) {
                 if (!e.html) {
                     if (e.Type === 'directory') {
-                        e.html = `<tr><td><a href="${e.parsedPath}" data-toggle="tooltip" title="${e.Path}" style="margin-left: ${e.level * 12}px;">/${e.Name}</a></td><td><span class="badge badge-pill badge-light">${e.files}</span></td><td></td><td></td>`;
+                        e.html = `<tr><td><div class="entry-wrapper"><a href="${e.parsedPath}" data-toggle="tooltip" title="${e.Path}" class="accent-link" style="margin-left: ${e.level * 12}px;"><strong>/${e.Name}</strong></a><i class="fa fa-folder-open-o ml-2" data-toggle="tooltip" title="Open in Explorer" aria-hidden="true"></i></div></td><td><span class="badge badge-pill badge-light">${e.files}</span></td><td></td><td></td>`;
                     } else {
-                        e.html = `<tr><td><a href="${e.parsedPath}" data-toggle="tooltip" title="${e.Path}" style="margin-left: ${e.level * 12}px;">${e.Name.substring(0, e.Name.lastIndexOf('.sql'))}</a></td><td></td><td><span class="badge badge-pill badge-light">${app.date.format(new Date(e.LastModified), 'mm/dd/yyyy hh:MM:ss TT')}</span></td><td><span class="badge badge-pill badge-light">${app.fileSize(e.Size)}</span></td>`;
+                        e.html = `<tr><td><div class="entry-wrapper"><a href="${e.parsedPath}" data-toggle="tooltip" title="${e.Path}" class="accent-link" style="margin-left: ${e.level * 12}px;">${e.Name.substring(0, e.Name.lastIndexOf('.sql'))}</a><i class="fa fa-folder-open-o ml-2" data-toggle="tooltip" title="Open in Explorer" aria-hidden="true"></i></div></td><td></td><td><span class="badge badge-pill badge-light">${app.date.format(new Date(e.LastModified), 'mm/dd/yyyy hh:MM:ss TT')}</span></td><td><span class="badge badge-pill badge-light">${app.fileSize(e.Size)}</span></td>`;
                     }
                 }
 
@@ -207,7 +211,22 @@
         return '';
     }
 
-    $entriesWrapper.on('click', 'a', function (e) {
+    $entriesWrapper.on('click', 'thead th', function () {
+        let $this = $(this);
+        let sort = $this.attr('data-sort');
+        let asc = $this.attr('data-asc');
+
+        $('thead th', $entriesWrapper).removeAttr('data-asc');
+
+        app.settings.scriptLibrary.sort = sort;
+        app.settings.scriptLibrary.asc = asc === 'true' ? false : true;
+
+        $this.attr('data-asc', app.settings.scriptLibrary.asc);
+
+        app.saveState('settings');
+
+        render();
+    }).on('click', 'a', function (e) {
         e.preventDefault();
         var $this = $(this);
 
@@ -237,20 +256,20 @@
                 });
             });
         }
-    }).on('click', 'thead th', function () {
-        let $this = $(this);
-        let sort = $this.attr('data-sort');
-        let asc = $this.attr('data-asc');
+    }).on('click', 'i', function () {
+        var $this = $(this);
 
-        $('thead th', $entriesWrapper).removeAttr('data-asc');
+        var $a = $('a', $this.parent());
+        var path = $a.attr('href');
 
-        app.settings.scriptLibrary.sort = sort;
-        app.settings.scriptLibrary.asc = asc === 'true' ? false : true;
+        if (path) {
+            os.emit('open-explorer', path);
+        }
+    });
 
-        $this.attr('data-asc', app.settings.scriptLibrary.asc);
-
-        app.saveState('settings');
-
-        render();
+    $errMsg.on('click', '.go-to-settings', function (e) {
+        e.preventDefault();
+        $dlg.modal('hide');
+        $('#settings-modal').modal('show');
     });
 }(window, window.app = window.app || {}, window.os, jQuery));

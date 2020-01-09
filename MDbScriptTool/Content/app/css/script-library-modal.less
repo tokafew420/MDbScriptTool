@@ -23,58 +23,76 @@
     &.list-view a {
       margin-left: 0 !important;
     }
-  }
 
-  table {
-    background-color: @dark-1;
-    border: 0;
-    color: @light-0;
-    margin-bottom: 0;
-    white-space: nowrap;
-  }
+    table {
+      background-color: @dark-1;
+      border: 0;
+      color: @light-0;
+      margin-bottom: 0;
+      white-space: nowrap;
 
-  thead th {
-    background-color: #212529;
-    border: none;
-    cursor: pointer;
-    outline: 2px solid #32383e;
-    outline-offset: -1px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+      th {
+        background-color: #212529;
+        border: none;
+        cursor: pointer;
+        outline: 2px solid #32383e;
+        outline-offset: -1px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
 
-    &[data-asc]::before {
-      position: absolute;
-      top: 50%;
-      right: 0;
-      width: 2em;
-      font-family: FontAwesome;
-      font-size: 1em;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 1;
-      color: @accent-0;
-      text-align: center;
-      transform: translateY(-50%);
-      -webkit-font-smoothing: antialiased;
-    }
+        &[data-asc]::before {
+          position: absolute;
+          top: 50%;
+          right: 0;
+          width: 2em;
+          font-family: FontAwesome;
+          font-size: 1em;
+          font-style: normal;
+          font-weight: 400;
+          line-height: 1;
+          color: @accent-0;
+          text-align: center;
+          transform: translateY(-50%);
+          -webkit-font-smoothing: antialiased;
+        }
 
-    &[data-asc="true"]::before {
-      content: "\f0de"
-    }
+        &[data-asc="true"]::before {
+          content: "\f0de"
+        }
 
-    &[data-asc="false"]::before {
-      content: "\f0dd"
-    }
-  }
+        &[data-asc="false"]::before {
+          content: "\f0dd"
+        }
+      }
 
-  tbody {
-    td {
-      border-color: @dark-4;
-    }
+      tr:hover i {
+        color: @light-0;
+      }
 
-    td:last-child {
-      text-align: right;
+      td {
+        border-color: @dark-4;
+
+        &:nth-child(2),
+        &:last-child {
+          text-align: right;
+        }
+
+        .entry-wrapper {
+          align-items: center;
+          display: flex;
+          flex-wrap: nowrap;
+          justify-content: space-between;
+
+          i {
+            cursor: pointer;
+
+            &:hover {
+              color: @accent2-0;
+            }
+          }
+        }
+      }
     }
   }
 }
