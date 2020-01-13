@@ -525,6 +525,51 @@
         };
 
         /**
+         * Transform a resultset to text that can be used in Sql.
+         *
+         * @param {Array} resultset The result set
+         * @param {boolean} includeHeaders Whether the resultset include column headers.
+         * @returns {string} The result set text.
+         */
+        app.resultToScriptText = function (resultset, includeHeaders) {
+            let lineDelimiter = '\r\n';
+            let headers = '';
+
+            resultset = resultset || [];
+
+            if (resultset.length && resultset[0].length === 1) {
+                // If there's only one column of data then keep everything on the same line
+                lineDelimiter = ', ';
+            }
+
+            if (includeHeaders && resultset.length) {
+                headers = '(' + resultset.shift().map(function (name) {
+                    return '[' + name + ']';
+                }).join(', ') + ')\r\n';
+            }
+
+            var rows = resultset.map(function (row) {
+                var rowText = row.map(function (val) {
+                    if (val === undefined || val === null) val = 'NULL';                             // NULL values should be empty
+                    else if (typeof val === 'boolean') val = val ? 1 : 0;   // bit (boolean) values
+                    else if (typeof val !== 'number') val = "'" + String(val).replace(/'/g, "''") + "'";    // Replace single quotes in value
+
+                    return val;
+                }).join(', ');
+
+                // Wrap in paren if on its own line
+                if (lineDelimiter === '\r\n') rowText = '(' + rowText + ')';
+
+                return rowText;
+            }).join(lineDelimiter);
+
+            // Wrap in paren if single row
+            if (lineDelimiter === ', ') rows = '(' + rows + ')';
+
+            return headers + rows;
+        };
+
+        /**
          * Transform a resultset to text.
          *
          * @param {Array} resultset The result set

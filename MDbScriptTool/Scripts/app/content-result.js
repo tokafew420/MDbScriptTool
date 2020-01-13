@@ -443,9 +443,16 @@
         callback: function (key, opts, e) {
             var $this = $(this);
             var result = $this.data('result');
-            var selectedData = app.getSelectedResults(result, result.selected, key === 'copyHeader');
+            var asScript = key.indexOf('as-script') !== -1;
+            var includeHeaders = key.indexOf('include-headers') !== -1;
 
-            app.copyToClipboard(app.resultToText(selectedData));
+            var selectedData = app.getSelectedResults(result, result.selected, includeHeaders);
+
+            if (asScript) {
+                app.copyToClipboard(app.resultToScriptText(selectedData, includeHeaders));
+            } else {
+                app.copyToClipboard(app.resultToText(selectedData));
+            }
         },
         selectableSubMenu: true,
         items: {
@@ -458,17 +465,27 @@
                     var result = $this.data('result');
 
                     return !(result && result.selected && result.selected.type !== '');
-                }
-            },
-            copyHeader: {
-                name: 'Copy include Headers',
-                icon: 'fa-copy',
-                accesskey: 'h',
-                disabled: function (key, opts) {
-                    var $this = $(this);
-                    var result = $this.data('result');
-
-                    return !(result && result.selected && result.selected.type !== '');
+                },
+                items: {
+                    copy: { name: 'Copy', visible: false }, // Hack to make parent selectable: https://github.com/swisnl/jQuery-contextMenu/issues/687
+                    'copy-include-headers': {
+                        name: 'Include Headers',
+                        icon: 'fa-header',
+                        accesskey: 'h'
+                    },
+                    'copy-as-script': {
+                        name: 'As Script',
+                        icon: 'fa-code',
+                        accesskey: 's',
+                        items: {
+                            'copy-as-script': { name: 'As Script', visible: false },
+                            'copy-as-script-include-headers': {
+                                name: 'Include Headers',
+                                icon: 'fa-header',
+                                accesskey: 'h'
+                            }
+                        }
+                    }
                 }
             },
             sep1: '---------',
