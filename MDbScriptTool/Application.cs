@@ -1,4 +1,5 @@
 using System;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using CefSharp;
@@ -92,13 +93,13 @@ namespace Tokafew420.MDbScriptTool
             // Load saved state
             try
             {
-                var windowLocation = AppSettings.Get<System.Drawing.Point?>("WindowLocation");
+                var windowLocation = AppSettings.Get<Point?>("WindowLocation");
                 if (windowLocation != null)
                 {
                     Location = windowLocation.Value;
                 }
 
-                var windowSize = AppSettings.Get<System.Drawing.Size?>("WindowSize");
+                var windowSize = AppSettings.Get<Size?>("WindowSize");
                 if (windowSize != null)
                 {
                     Size = windowSize.Value;
@@ -148,6 +149,8 @@ namespace Tokafew420.MDbScriptTool
                 {
                     ScriptLibraryDirectory = Path.GetFullPath(Path.Combine(DataDirectory, "Scripts"));
                 }
+
+                RestoreWindowLocation();
             }
             catch (Exception err)
             {
@@ -167,6 +170,34 @@ namespace Tokafew420.MDbScriptTool
             }
         }
 
+        /// <summary>
+        /// Restore the window location. If the window's title bar is off screen then reset to the primary screen.
+        /// </summary>
+        private void RestoreWindowLocation()
+        {
+            var screens = Screen.AllScreens;
+            var isOnScreen = false;
+            var border = (Width - ClientSize.Width) / 2;    // Account for border which is off screen
+            var topLeft = new Point(Left + border, Top + border);
+            var topRight = new Point(Right - border, Top + border);
+
+            foreach (var screen in screens)
+            {
+                // As long as the titlebar is on screen so that it can be moved, we'll leave it alone
+                if (screen.WorkingArea.Contains(topLeft) || screen.WorkingArea.Contains(topRight))
+                {
+                    isOnScreen = true;
+                    break;
+                }
+            }
+
+            if (!isOnScreen)
+            {
+                Location = new Point(Screen.PrimaryScreen.WorkingArea.Left - border, Screen.PrimaryScreen.WorkingArea.Top - border);
+                WindowState = FormWindowState.Normal;
+            }
+        }
+
         private void AppForm_Closing(object sender, FormClosingEventArgs e)
         {
             //Comment out Cef.Shutdown() call - it will be automatically called when exiting the application.
@@ -176,16 +207,16 @@ namespace Tokafew420.MDbScriptTool
             //Cef.Shutdown();
 
             // Save window state
-            AppSettings.Set("WindowLocation", new System.Drawing.Point?(Location));
+            AppSettings.Set("WindowLocation", new Point?(Location));
 
             // Copy window size to app settings
             if (WindowState == FormWindowState.Normal)
             {
-                AppSettings.Set("WindowSize", new System.Drawing.Size?(Size));
+                AppSettings.Set("WindowSize", new Size?(Size));
             }
             else
             {
-                AppSettings.Set("WindowSize", new System.Drawing.Size?(RestoreBounds.Size));
+                AppSettings.Set("WindowSize", new Size?(RestoreBounds.Size));
             }
             AppSettings.Set("WindowIsMaximized", WindowState == FormWindowState.Maximized);
             AppSettings.Set("LastFileDialogDirectory", LastFileDialogDirectory);
