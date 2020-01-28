@@ -107,6 +107,7 @@
   <ItemGroup>
     <Compile Include="BrowserRequestHandler.cs" />
     <Compile Include="DownloadHandler.cs" />
+    <Compile Include="DragDropHandler.cs" />
     <Compile Include="FsFile.cs" />
     <Compile Include="FileDialogHandler.cs" />
     <Compile Include="GlobalSuppressions.cs" />

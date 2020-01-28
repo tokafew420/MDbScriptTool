@@ -10,6 +10,21 @@
     /* Common/Generic Utilities */
     (function () {
         /**
+         * Determine if the array contains any elements that satisfies the test.
+         * @param {Array} arr The array to search.
+         * @param {function} fn The test function.
+         * @returns {boolean} True is any elements meets the criteria.
+         */
+        app.any = function (arr, fn) {
+            if (arr) {
+                for (let i = 0, ii = arr.length; i < ii; i++) {
+                    if (fn.call(null, arr[i], i, arr)) return true;
+                }
+            }
+            return false;
+        };
+
+        /**
          *  A function that takes in a wrapper function which will delay the execution
          *  of the original function until a specific amount of time has passed.
          *  Generally used to prevent a function from running multiple times in quick
@@ -833,7 +848,8 @@
             ui: {               // Settings object related to the ui
                 sidebarCollapsed: false
             },
-            savedStates: ['connections', 'instances', 'settings', 'ui'] // States to save
+            savedStates: ['connections', 'instances', 'settings', 'ui'], // States to save
+            draggedItems: []    // Items from the dragItems event
         });
 
         // Creates a connection object with only properties relevant for the instance.
@@ -1561,6 +1577,17 @@
             return [];
         };
 
+        // Set the externally dragged items so that the client can leverage it
+        os.on('drag-items-enter', function (err, items) {
+            if (err) {
+                console.error(err);
+                app.draggedItems = [];
+                return;
+            }
+
+            app.draggedItems = items;
+        });
+
         $(function () {
             function alertError(err) {
                 app.alert('<p>Failed to load custom script: </p>' +
@@ -1714,22 +1741,31 @@
         // Prevent right-click context menu
         $(window.document).on('contextmenu', '.no-context-menu', function () {
             return false;
-        });
+        })
+            // Prevent loading drag-n-drop files (except where enabled)
+            // Both dragover and drop handlers are needed to prevent the browser from loading the dropped file.
+            .on('dragenter dragover drop', function (e) {
+                e.preventDefault();
+                if (!$(e.target).hasClass('drag-n-drop-enabled')) {
+                    e.originalEvent.dataTransfer.dropEffect = 'none';
+                    e.originalEvent.dataTransfer.effectAllowed = 'none';
+                }
+            })
+            // Copy input value to clipboard
+            .on('click', '.input-group-copy-btn', function (e) {
+                var val = $('input', $(this).closest('.input-group')).val();
 
-        $(window.document).on('click', '.input-group-copy-btn', function (e) {
-            var val = $('input', $(this).closest('.input-group')).val();
+                if (val) {
+                    app.copyToClipboard(val, this);
+                }
+            })
+            // Open path in file explorer
+            .on('click', '.input-open-explorer-lnk', function (e) {
+                var val = $('input', $(this).closest('.input-group')).val();
 
-            if (val) {
-                app.copyToClipboard(val, this);
-            }
-        });
-
-        $(window.document).on('click', '.input-open-explorer-lnk', function (e) {
-            var val = $('input', $(this).closest('.input-group')).val();
-
-            if (val && val.indexOf('://') === -1) {
-                os.emit('open-explorer', val);
-            }
-        });
+                if (val && val.indexOf('://') === -1) {
+                    os.emit('open-explorer', val);
+                }
+            });
     });
 }(window, window.app = window.app || {}, window.os, jQuery));

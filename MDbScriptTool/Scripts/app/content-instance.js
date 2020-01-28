@@ -130,7 +130,51 @@
 
         resizeInstance(instance);
         app.emit('instance-slider-moved', instance);
-    });
+    })
+        .on('dragenter', function (e) {
+            if (app.any(app.draggedItems, function (file) {
+                return file && file.Type && file.Type !== 'directory';
+            })) {
+                $instanceContainer.addClass('is-dragover');
+            }
+        })
+        .on('dragleave', '.drag-n-drop-overlay', function (e) {
+            $instanceContainer.removeClass('is-dragover');
+        })
+        .on('drop', function (e) {
+            e.preventDefault();
+            $instanceContainer.removeClass('is-dragover');
+
+            if (app.draggedItems && app.draggedItems.length) {
+                var lastIdx = app.draggedItems.length - 1;
+
+                app.draggedItems.forEach(function (file, idx) {
+                    if (file.Type === 'directory') return;
+
+                    var path = file.Path.replace(/\\/g, '/');
+
+                    app.openFile(path, function (err, res) {
+                        if (err) {
+                            return app.alert(`<span class="text-danger">${err || 'Failed to load file'}</span >`, 'Error', { html: true });
+                        }
+
+                        var instance = app.createInstance({
+                            path: path,
+                            name: file.Name,
+                            code: res,
+                            dirty: false
+                        });
+
+                        if (idx === lastIdx) {
+                            // Let the editor instance create itself first.
+                            setTimeout(function () {
+                                app.switchInstance(instance);
+                            }, 0);
+                        }
+                    });
+                });
+            }
+        });
 
     // Toggle collapse on navbar's sidebar toggle click
     var removeAnimateTimer;

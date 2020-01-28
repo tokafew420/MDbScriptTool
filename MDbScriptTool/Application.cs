@@ -85,6 +85,7 @@ namespace Tokafew420.MDbScriptTool
 
             _browser.DialogHandler = new FileDialogHandler(this, _browser);
             _browser.DownloadHandler = new DownloadHandler(this, _browser);
+            _browser.DragHandler = new DragDropHandler(this, _browser);
 
             MainPanel.Controls.Add(_browser);
 

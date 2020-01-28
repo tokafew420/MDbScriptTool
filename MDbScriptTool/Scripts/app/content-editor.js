@@ -18,6 +18,8 @@
                 lineNumbers: true,
                 matchBrackets: true,
                 autofocus: true,
+                // Disable drag and drop so we can do our custom handling
+                dragDrop: true,
                 theme: theme,
                 keyMap: 'app'
             });
