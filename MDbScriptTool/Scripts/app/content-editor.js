@@ -18,8 +18,6 @@
                 lineNumbers: true,
                 matchBrackets: true,
                 autofocus: true,
-                // Disable drag and drop so we can do our custom handling
-                dragDrop: true,
                 theme: theme,
                 keyMap: 'app'
             });
@@ -29,7 +27,7 @@
                 editor.clearHistory();
             }
 
-            editor.on('change', app.debounce(function() {
+            editor.on('change', app.debounce(function () {
                 instance.dirty = instance.original !== SparkMD5.hash(editor.getValue());
                 instance.$tab.toggleClass('is-dirty', instance.dirty);
             }, 500));
@@ -38,6 +36,20 @@
                 instance.code = editor.getValue();
                 app.saveState('instances');
             }, 5000));
+
+            // Ignore when a file is dragged to allow for custom handling
+            editor.on('dragstart', function (cm, e) {
+                e.codemirrorIgnore = e.dataTransfer.items.length && e.dataTransfer.items[0].kind === 'file';
+            });
+            editor.on('dragenter', function (cm, e) {
+                e.codemirrorIgnore = e.dataTransfer.items.length && e.dataTransfer.items[0].kind === 'file';
+            });
+            editor.on('dragover', function (cm, e) {
+                e.codemirrorIgnore = e.dataTransfer.items.length && e.dataTransfer.items[0].kind === 'file';
+            });
+            editor.on('drop', function (cm, e) {
+                e.codemirrorIgnore = e.dataTransfer.items.length && e.dataTransfer.items[0].kind === 'file';
+            });
         }
     });
 }(window, window.app = window.app || {}, window.os, jQuery));
