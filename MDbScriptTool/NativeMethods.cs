@@ -42,7 +42,7 @@ namespace Tokafew420.MDbScriptTool
             AppendMenu(hSysMenu, MenuFlags.MF_SEPARATOR, new IntPtr(0), string.Empty);
 
             // Add the About menu item
-            AppendMenu(hSysMenu, MenuFlags.MF_STRING, SYSMENU_CHROME_DEV_TOOLS, "&Chrome Dev Tools");
+            AppendMenu(hSysMenu, MenuFlags.MF_STRING, SYSMENU_CHROME_DEV_TOOLS, "&Chrome Dev Tools\tF12");
         }
     }
 }
