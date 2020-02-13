@@ -4,6 +4,8 @@
  * Sidebar toolbar
  */
 (function (window, app, os, $) {
+    var sidebarToolbar = app.sidebarToolbar = app.sidebarToolbar || {};
+
     var $sidebar = $('.sidebar');
     var $toolbar = $('.sidebar-toolbar', $sidebar);
     var $connectionSelect = $('.select-connection', $sidebar);
@@ -13,6 +15,8 @@
     var $refreshDbsBtn = $('.refresh-databases-btn', $toolbar);
     // Db list buttons
     var $toggleAllDbBtn = $('.toggle-all-db-btn', $toolbar);
+    var totalDbs = 0;
+    var selectedDbs = 0;
 
     $newConnectionBtn.on('click', function () {
         app.emit('open-connections-modal');
@@ -51,21 +55,20 @@
         if (evt.which === 1) {
             // Left click
             if ($i.hasClass('fa-check-square-o')) {
-                app.emit('toggle-all-databases', true);
+                app.emit('toggle-databases', 'all', true);
                 _setToggleAllDbBtnState(true);
             } else {
-                app.emit('toggle-all-databases', false);
+                app.emit('toggle-databases', 'all', false);
                 _setToggleAllDbBtnState(false);
             }
-        } else if (evt.which === 3) {
-            // Right click always uncheck all
-            app.emit('toggle-all-databases', false);
-            _setToggleAllDbBtnState(false);
         }
     });
 
     // Reset select all icon. Only "unselect all" when all dbs are selected.
     app.on('db-list-selection-changed', function (total, selected, visible) {
+        totalDbs = total;
+        selectedDbs = selected;
+
         _setToggleAllDbBtnState(total === selected);
     });
 
@@ -146,6 +149,36 @@
         renderConnectionSelect();
     }).on('connection-switched', function (current, previous) {
         $connectionSelect.val((current || {}).id).change();
+    });
+
+    // Expose 
+    sidebarToolbar.toggleDatabase = {
+        contextMenu: {
+            callback: function (key, opts, e) {
+                if (key === 'selectAll') {
+                    app.emit('toggle-databases', 'all', true);
+                } else if (key === 'selectNone') {
+                    app.emit('toggle-databases', 'all', false);
+                } else if (key === 'selectInverse') {
+                    app.emit('toggle-databases', 'inverse');
+                }
+            },
+            zIndex: function ($trigger, opt) {
+                return 500;
+            },
+            items: {
+                selectAll: { name: 'Select All', icon: 'fa-check-square-o', accesskey: 'a', disabled: function (key, opts) { return totalDbs === selectedDbs; } },
+                selectNone: { name: 'De-select All', icon: 'fa-square-o', accesskey: 'd', disabled: function (key, opts) { return selectedDbs === 0; } },
+                selectInverse: { name: 'Inverse Selection', icon: 'fa-exchange', accesskey: 'i' }
+            }
+        }
+    };
+
+    $.contextMenu({
+        selector: '.sidebar .sidebar-toolbar .toggle-all-db-btn',
+        build: function ($trigger, e) {
+            return sidebarToolbar.toggleDatabase.contextMenu;
+        }
     });
 
     // Initialization

@@ -116,10 +116,29 @@
         }
     };
 
-    app.on('toggle-all-databases', function (checked) {
+    app.on('toggle-databases', function (mode, checked) {
         checked = !!checked;
+        if (mode === 'all') {
+            // [Un]Toggle all databases
+            $('.db-lst-item input[type="checkbox"]', $dbLst).prop('checked', checked).change();
+        } else if (mode === 'inverse') {
+            // Do inverse selection
+            $('.db-lst-item input[type="checkbox"]', $dbLst).each(function () {
+                var $this = $(this);
+                $this.prop('checked', !$this.prop('checked'));
+            }).change();
+        } else if (Array.isArray(mode)) {
+            // Toggle by database name
+            $('.db-lst-item input[type="checkbox"]', $dbLst).each(function () {
+                var $this = $(this);
+                var $item = $this.closest('.db-lst-item');
+                var db = $item.data('db');
 
-        $('.db-lst-item input[type="checkbox"]', $dbLst).prop('checked', checked).change();
+                if (db && mode.indexOf(db.name) !== -1) {
+                    $this.prop('checked', checked);
+                }
+            }).change();
+        }
     });
 
     // Set checked state
@@ -347,9 +366,9 @@
     app.mapKeys($sidebar, 'Ctrl-A', function (e) {
         e.preventDefault(); // Prevent select all
 
-        app.emit('toggle-all-databases', true);
+        app.emit('toggle-databases', true);
     }).mapKeys($sidebar, 'Shift-Ctrl-A', function (e) {
-        app.emit('toggle-all-databases', false);
+        app.emit('toggle-databases', false);
     }).mapKeys($sidebar, 'Ctrl-N', function () {
         $('.sidebar-toolbar .new-connection-btn', $sidebar).click();
     }).mapKeys($sidebar, 'Ctrl-O', function () {
