@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using CefSharp;
 using CefSharp.WinForms;
 using Newtonsoft.Json;
+using Tokafew420.MDbScriptTool.Logging;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -13,16 +14,19 @@ namespace Tokafew420.MDbScriptTool
     /// </summary>
     public class UiEvent : IEvent
     {
+        private readonly App _app;
         private readonly ChromiumWebBrowser _browser = null;
         private readonly IDictionary<string, List<Action<object[]>>> _listeners = null;
 
         /// <summary>
         /// Initializes a new instance of UiEvent.
         /// </summary>
+        /// <param name="app">The current application.</param>
         /// <param name="browser">The browser instance.</param>
-        public UiEvent(ChromiumWebBrowser browser)
+        public UiEvent(App app, ChromiumWebBrowser browser)
         {
-            _browser = browser ?? throw new ArgumentNullException("browser");
+            _app = app ?? throw new ArgumentNullException(nameof(app));
+            _browser = browser ?? throw new ArgumentNullException(nameof(browser));
             _listeners = new Dictionary<string, List<Action<object[]>>>();
         }
 
@@ -39,9 +43,9 @@ namespace Tokafew420.MDbScriptTool
         /// </remarks>
         public void Emit(string name, params object[] args)
         {
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
-            Logger.Debug($"Event: {name}");
+            _app.Logger.Debug($"Event: {name}");
 
             var actionList = _listeners.FirstOrDefault(l => l.Key == name).Value;
 

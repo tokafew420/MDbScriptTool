@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Tokafew420.MDbScriptTool.Logging;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -12,7 +14,7 @@ namespace Tokafew420.MDbScriptTool
     /// </summary>
     public static class SqlLogger
     {
-        public static readonly Regex _passwordRegex = new Regex("Password=[^;]*(;|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        private static readonly Regex _passwordRegex = new Regex("Password=[^;]*(;|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
         /// Get or set whether SQL logging is enabled.
@@ -27,7 +29,7 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Get the log file name.
         /// </summary>
-        public static string Filename => $"execute-history-{DateTime.Now.ToString("yyyyMMdd")}.sql";
+        public static string Filename => $"execute-history-{DateTime.Now.ToString("yyyyMMdd", CultureInfo.CurrentCulture)}.sql";
 
         /// <summary>
         /// Get or set the number of log files to retain.
@@ -50,7 +52,7 @@ namespace Tokafew420.MDbScriptTool
                     file.Directory.Create();
                     File.AppendAllText(file.FullName, $@"
 ---------------------------------------------------------------------------------------
--- DateTime:   {DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss")}
+-- DateTime:   {DateTime.Now.ToString("MM/dd/yyyy hh:mm:ss", CultureInfo.CurrentCulture)}
 -- Connection: {_passwordRegex.Replace(connectionString, "Password=*****;")}
 -- Databases:  {string.Join(", ", dbs)}
 ---------------------------------------------------------------------------------------
@@ -59,7 +61,7 @@ namespace Tokafew420.MDbScriptTool
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(e.ToString());
+                    AppContext.Logger.Error(e.ToString());
                 }
             }
         }
@@ -94,7 +96,7 @@ namespace Tokafew420.MDbScriptTool
                     }
                     catch (Exception e)
                     {
-                        Logger.Error(e.ToString());
+                        AppContext.Logger.Error(e.ToString());
                     }
                 });
             }

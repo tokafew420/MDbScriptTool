@@ -9,7 +9,7 @@ namespace Tokafew420.MDbScriptTool
 {
     internal class DragDropHandler : IDragHandler
     {
-        private readonly Application _app;
+        private readonly App _app;
         private readonly ChromiumWebBrowser _browser;
         private readonly string replyMsgName = "drag-items-enter";
 
@@ -18,11 +18,11 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Initializes a new instance of DragDropHandler.
         /// </summary>
-        /// <param name="application">The application instance.</param>
+        /// <param name="app">The application instance.</param>
         /// <param name="browser">The browser instance.</param>
-        internal DragDropHandler(Application application, ChromiumWebBrowser browser)
+        internal DragDropHandler(App app, ChromiumWebBrowser browser)
         {
-            _app = application ?? throw new ArgumentNullException(nameof(application));
+            _app = app ?? throw new ArgumentNullException(nameof(app));
             _browser = browser ?? throw new ArgumentNullException(nameof(browser));
             OsEvent = new OsEvent(browser);
         }

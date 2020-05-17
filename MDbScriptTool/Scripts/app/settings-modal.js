@@ -4,21 +4,8 @@
  * Settings Modal
  */
 (function (window, app, os, $) {
-    app.settings.logging = app.settings.logging || {};
-    app.settings.sqlLogging = app.settings.sqlLogging || {};
-    app.settings.scriptLibrary = app.settings.scriptLibrary || {};
-
-    $(function () {
-        // On fresh startup, the app may need time to build out the data/settings directory.
-        // Sync logging settings
-        os.once('settings', function (err, settings) {
-            if (settings.logging) app.settings.logging = settings.logging;
-            if (settings.sqlLogging) app.settings.sqlLogging = settings.sqlLogging;
-            if (settings.scriptLibrary) Object.assign(app.settings.scriptLibrary, settings.scriptLibrary);
-        }).emit('get-settings');
-    });
-
     var $dlg = $('#settings-modal');
+    var $singleInstance = $('#single-instance', $dlg);
     var $logging = $('#enable-logs', $dlg);
     var $loggingDebug = $('#enable-logs-debug', $dlg);
     var $loggingInfo = $('#enable-logs-info', $dlg);
@@ -57,6 +44,7 @@
 
     $saveBtn.click(function () {
         if ($('input.is-invalid', $dlg).length === 0) {
+            app.settings.singleInstance = $singleInstance.is(':checked');
             app.settings.logging.enabled = $logging.is(':checked');
             app.settings.logging.debug = $loggingDebug.is(':checked');
             app.settings.logging.info = $loggingInfo.is(':checked');
@@ -136,6 +124,7 @@
     });
 
     $dlg.on('show.bs.modal', function (evt) {
+        $singleInstance.prop('checked', app.settings.singleInstance);
         $logging.prop('checked', app.settings.logging.enabled).change();
         $loggingDebug.prop('checked', app.settings.logging.debug);
         $loggingInfo.prop('checked', app.settings.logging.info);

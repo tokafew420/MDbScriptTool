@@ -315,6 +315,19 @@
           </button>
         </div>
         <div class="modal-body">
+          <section id="application-setting" class="mb-2">
+            <label for="application-seting">Application <i class="fa fa-info-circle" data-toggle="tooltip" title="General settings for the application" aria-hidden="true"></i></label>
+            <div class="container-fluid settings">
+              <div class="row my-2">
+                <div class="col">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="single-instance" />
+                    <label class="custom-control-label" for="single-instance">Single Instance <i class="fa fa-info-circle" data-toggle="tooltip" title="Only allow a single instance of this application to run" aria-hidden="true"></i></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
           <section id="logging-setting" class="mb-2">
             <label for="logging-seting">Logging <i class="fa fa-info-circle" data-toggle="tooltip" title="View logs from native code in browser console" aria-hidden="true"></i></label>
             <div class="container-fluid settings">

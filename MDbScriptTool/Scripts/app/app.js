@@ -1,6 +1,5 @@
 (function (window, app, os, $) {
     var document = window.document;
-    var localStorage = window.localStorage;
 
     // Initialize app object
     // Inherit event emitter
@@ -393,6 +392,16 @@
         };
 
         /**
+         * Determine if a value is an object.
+         * 
+         * @param {any} val The value to test.
+         * @returns {boolean} true if the value is an object, otherwise false.
+         */
+        app.isObject = function (val) {
+            return val && typeof val === 'object' && !Array.isArray(val);
+        };
+
+        /**
          * Finds the index of an element in an array or object by a property key and value.
          *
          * @param {Array|Object} arr The array or object to search.
@@ -430,6 +439,68 @@
          */
         app.last = function (arr) {
             return arr && arr.length ? arr[arr.length - 1] : null;
+        };
+
+        // Wrapper for Storage to do auto value [de]serialization
+        function storageWrapper(type) {
+            var storage = window[type];
+
+            return {
+                get: function (key) {
+                    let val = storage.getItem(key);
+
+                    try {
+                        val = JSON.parse(val);
+                    } catch (e) {
+                        //Do nothing
+                    }
+                    return val;
+                },
+                set: function (key, val) {
+                    storage.setItem(key, JSON.stringify(val));
+                },
+                remove: function (key) {
+                    storage.removeItem(key);
+                },
+                clear: function () {
+                    storage.clear();
+                }
+            };
+
+        }
+
+        /**
+         * Wrapper for localStorage with auto value [de]serialization.
+         */
+        app.localStorage = storageWrapper('localStorage');
+
+        /**
+         * Performs a deep merge of objects and returns target object.
+         *
+         * @param {object} target The target of the merge. A new object is created if target is not valued.
+         * @param {...object} sources The merge source objects.
+         * 
+         * @returns {object} The merged target object.
+         */
+        app.merge = function (target, sources) {
+            target = Object(target);
+            sources = [].slice.call(arguments, 1);
+
+            return sources.reduce(function (t, src) {
+                if (src !== null && src !== undefined) {
+                    Object.keys(src).forEach(function (key) {
+                        const val = src[key];
+
+                        if (app.isObject(val)) {
+                            t[key] = app.merge({}, val);
+                        } else {
+                            t[key] = val;
+                        }
+                    });
+                }
+
+                return t;
+            }, target);
         };
 
         /**
@@ -607,6 +678,11 @@
                 }).join(delimiter);
             }).join(lineDelimiter);
         };
+
+        /**
+         * Wrapper for sessionStorage with auto value [de]serialization.
+         */
+        app.sessionStorage = storageWrapper('sessionStorage');
     }());
 
     /* UI Utilities */
@@ -840,7 +916,7 @@
     /* App */
     (function () {
         Object.assign(app, {
-            connection: null,   // THe current active connection
+            connection: null,   // The current active connection
             connections: [],    // Holds all defined connections
             instance: null,     // The current active instance
             instances: [],      // Holds all instances
@@ -1029,9 +1105,9 @@
                     var instances = app.instances.map(function (instance) {
                         return app.exclude(instance, ['editor', 'pending', 'results', 'totalRows', 'affectedRows', 'time', '$editor', '$instance', '$tab', '$result', '$slider']);
                     });
-                    localStorage.setItem('app-' + key, JSON.stringify(instances));
+                    app.localStorage.set('app-' + key, instances);
                 } else {
-                    localStorage.setItem('app-' + key, JSON.stringify(app[key]));
+                    app.localStorage.set('app-' + key, app[key]);
                 }
             });
 
@@ -1439,26 +1515,6 @@
             app.emit('sql-parsed', instance, err, errors);
         });
 
-        // Inits
-
-        // Get saved state
-        app.savedStates.forEach(function (key) {
-            var savedState = localStorage.getItem(`app-${key}`);
-
-            try {
-                var state = JSON.parse(savedState);
-                if (state) {
-                    if (typeof state === 'object') {
-                        Object.assign(app[key], state);
-                    } else {
-                        app[key] = state;
-                    }
-                }
-            } catch (e) {
-                console.error(`Failed to load saved state. [${key}]`, e);
-            }
-        });
-
         /**
          * Download a result set as a csv file. If the database id is not specified then download all result sets.
          *
@@ -1588,78 +1644,103 @@
             app.draggedItems = items;
         });
 
-        $(function () {
-            function alertError(err) {
-                app.alert('<p>Failed to load custom script: </p>' +
-                    '<p class="text-danger">' + err.message + '</p>', 'Error', {
-                    html: true
-                });
-            }
-            function alertGlobalError(message, source, lineno, colno, err) {
-                app.alert('<p>Failed to load custom script: </p>' +
-                    '<p class="text-danger">' + message + '</p>' +
-                    '<div><strong>Source: </strong>' + source + '</div>' +
-                    '<div><strong>Line: </strong>' + lineno + '</div>' +
-                    '<div><strong>Column: </strong>' + colno + '</div>', 'Error', {
-                    html: true
-                });
-            }
+        // Inits
 
-            // Initialize addons
-            var addonJs = app.settings.addonJs;
-            if (addonJs) {
-                app.openFile(addonJs, function (err, res) {
-                    if (!err) {
-                        res = `(function (window, app, os, $) {
+        // Get saved state
+        app.savedStates.forEach(function (key) {
+            var savedState = app.localStorage.get(`app-${key}`);
+
+            if (savedState) {
+                if (typeof savedState === 'object') {
+                    Object.assign(app[key], savedState);
+                } else {
+                    app[key] = savedState;
+                }
+            }
+        });
+
+        $(function () {
+            // On fresh startup, the app may need time to build out the data/settings directory.
+            os.on('settings', function (err, settings) {
+                // Sync settings
+                app.merge(app.settings, {
+                    logging: {},
+                    sqlLogging: {},
+                    scriptLibrary: {}
+                }, settings);
+            }).once('settings', function (err, settings) {
+                function alertError(err) {
+                    app.alert('<p>Failed to load custom script: </p>' +
+                        '<p class="text-danger">' + err.message + '</p>', 'Error', {
+                        html: true
+                    });
+                }
+                function alertGlobalError(message, source, lineno, colno, err) {
+                    app.alert('<p>Failed to load custom script: </p>' +
+                        '<p class="text-danger">' + message + '</p>' +
+                        '<div><strong>Source: </strong>' + source + '</div>' +
+                        '<div><strong>Line: </strong>' + lineno + '</div>' +
+                        '<div><strong>Column: </strong>' + colno + '</div>', 'Error', {
+                        html: true
+                    });
+                }
+
+                // Initialize addons
+                var addonJs = app.settings.addonJs;
+                if (addonJs) {
+                    app.openFile(addonJs, function (err, res) {
+                        if (!err) {
+                            res = `(function (window, app, os, $) {
                             try { ${res} } catch (err) { (${alertError.toString()}(err)); }
                         }(window, window.app = window.app || {}, window.os, jQuery));`;
 
-                        var $onerror = $(`<script>window.onerror = ${alertGlobalError.toString()};</script>`);
-                        var $cleanup = $(`<script>window.onerror = null;</script>`);
+                            var $onerror = $(`<script>window.onerror = ${alertGlobalError.toString()};</script>`);
+                            var $cleanup = $(`<script>window.onerror = null;</script>`);
 
-                        $('body').append($onerror);
-                        $('body').append(`<script>${res}</script>`);
-                        $('body').append($cleanup);
+                            $('body').append($onerror);
+                            $('body').append(`<script>${res}</script>`);
+                            $('body').append($cleanup);
 
-                        $onerror.remove();
-                        $cleanup.remove();
-                    } else {
-                        app.alert(`Failed to load custom script: [${app.settings.addonJs}]`, 'Error');
-                    }
-                });
-            }
-            var addonCss = app.settings.addonCss;
-            if (addonCss) {
-                if (addonCss.indexOf('http') !== 0) {
-                    // Append filesystem schema
-                    // Add guid to disable chrome caching
-                    addonCss = 'fs://' + addonCss + '?' + app.guid();
+                            $onerror.remove();
+                            $cleanup.remove();
+                        } else {
+                            app.alert(`Failed to load custom script: [${app.settings.addonJs}]`, 'Error');
+                        }
+                    });
                 }
-                $('head').append(`<link rel="stylesheet" href="${addonCss}" />`);
-            }
-
-            // Initialize saved instances
-            if (app.instances.length) {
-                app.instances = app.instances.map(function (instance) {
-                    instance = _createInstance(instance);
-
-                    if (instance.connection) {
-                        // Restore connection/connections reference
-                        instance.connection = app.findBy(instance.connections, 'id', instance.connection.id);
+                var addonCss = app.settings.addonCss;
+                if (addonCss) {
+                    if (addonCss.indexOf('http') !== 0) {
+                        // Append filesystem schema
+                        // Add guid to disable chrome caching
+                        addonCss = 'fs://' + addonCss + '?' + app.guid();
                     }
+                    $('head').append(`<link rel="stylesheet" href="${addonCss}" />`);
+                }
 
-                    app.emit('create-instance', instance);
-                    app.emit('instance-created', instance);
+                // Initialize saved instances
+                if (app.settings.isMainForm && app.instances.length) {
+                    app.instances = app.instances.map(function (instance) {
+                        instance = _createInstance(instance);
 
-                    return instance;
-                });
-            } else {
-                app.createInstance();
-            }
+                        if (instance.connection) {
+                            // Restore connection/connections reference
+                            instance.connection = app.findBy(instance.connections, 'id', instance.connection.id);
+                        }
 
-            // Set active instance
-            var activeInstances = app.instances.filter(function (i) { return i && i.active; });
-            app.switchInstance(app.last(activeInstances.length ? activeInstances : app.instances));
+                        app.emit('create-instance', instance);
+                        app.emit('instance-created', instance);
+
+                        return instance;
+                    });
+                } else {
+                    app.createInstance();
+                }
+
+                // Set active instance
+                var activeInstances = app.instances.filter(function (i) { return i && i.active; });
+                app.switchInstance(app.last(activeInstances.length ? activeInstances : app.instances));
+            }).emit('get-settings');
         });
     }());
 

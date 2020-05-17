@@ -8,7 +8,7 @@ namespace Tokafew420.MDbScriptTool
 {
     internal class DownloadHandler : IDownloadHandler
     {
-        private readonly Application _app;
+        private readonly App _app;
         private readonly ChromiumWebBrowser _browser;
         private readonly string replyMsgName = "download-completed";
 
@@ -17,9 +17,9 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Initializes a new instance of DownloadHandler
         /// </summary>
-        internal DownloadHandler(Application application, ChromiumWebBrowser browser)
+        internal DownloadHandler(App app, ChromiumWebBrowser browser)
         {
-            _app = application ?? throw new ArgumentNullException(nameof(application));
+            _app = app ?? throw new ArgumentNullException(nameof(app));
             _browser = browser ?? throw new ArgumentNullException(nameof(browser));
             OsEvent = new OsEvent(browser);
         }

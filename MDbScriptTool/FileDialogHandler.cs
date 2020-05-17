@@ -10,7 +10,7 @@ namespace Tokafew420.MDbScriptTool
 {
     internal class FileDialogHandler : IDialogHandler
     {
-        private readonly Application _app;
+        private readonly App _app;
         private readonly ChromiumWebBrowser _browser;
         private readonly string replyMsgName = "file-dialog-closed";
 
@@ -19,11 +19,11 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Initalizes a new instance of App
         /// </summary>
-        /// <param name="application"></param>
+        /// <param name="app"></param>
         /// <param name="browser"></param>
-        internal FileDialogHandler(Application application, ChromiumWebBrowser browser)
+        internal FileDialogHandler(App app, ChromiumWebBrowser browser)
         {
-            _app = application ?? throw new ArgumentNullException(nameof(application));
+            _app = app ?? throw new ArgumentNullException(nameof(app));
             _browser = browser ?? throw new ArgumentNullException(nameof(browser));
             OsEvent = new OsEvent(browser);
         }

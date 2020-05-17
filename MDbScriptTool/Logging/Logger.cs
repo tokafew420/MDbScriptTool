@@ -1,25 +1,24 @@
+using System.Globalization;
 using CefSharp;
 using CefSharp.WinForms;
 using Newtonsoft.Json;
 
-namespace Tokafew420.MDbScriptTool
+namespace Tokafew420.MDbScriptTool.Logging
 {
     /// <summary>
     /// A logging class.
     /// </summary>
-    public static class Logger
+    public class Logger : ILogger
     {
         /// <summary>
-        /// The log severity.
+        /// Initialize a new instance of logger.
         /// </summary>
-        public enum LogLevel
+        /// <param name="logLevel">The initial log level.</param>
+        /// <param name="browser">The browser instance to log to.</param>
+        public Logger(LogLevel logLevel, ChromiumWebBrowser browser = null)
         {
-            None = 0,
-            Error = 1,
-            Warn = 2,
-            Info = 4,
-            Debug = 8,
-            All = Error | Warn | Info | Debug
+            Level = logLevel;
+            Browser = browser;
         }
 
         /// <summary>
@@ -28,7 +27,7 @@ namespace Tokafew420.MDbScriptTool
         /// <param name="logLevel">The log message severity level.</param>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Write(LogLevel logLevel, string message, params object[] args)
+        public virtual void Write(LogLevel logLevel, string message, params object[] args)
         {
             if ((logLevel & Level) != LogLevel.None)
             {
@@ -36,7 +35,7 @@ namespace Tokafew420.MDbScriptTool
                 {
                     if (args != null || args.Length > 0)
                     {
-                        message = string.Format(message, args);
+                        message = string.Format(CultureInfo.CurrentCulture, message, args);
                     }
 
                     switch (logLevel)
@@ -89,48 +88,13 @@ namespace Tokafew420.MDbScriptTool
         }
 
         /// <summary>
-        /// Logs an error message.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
-        /// <param name="args">Any message parameters.</param>
-        public static void Error(string message, params object[] args) => Write(LogLevel.Error, message, args);
-
-        /// <summary>
-        /// Logs a warning message.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
-        /// <param name="args">Any message parameters.</param>
-        public static void Warn(string message, params object[] args) => Write(LogLevel.Warn, message, args);
-
-        /// <summary>
-        /// Logs an info message.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
-        /// <param name="args">Any message parameters.</param>
-        public static void Info(string message, params object[] args) => Write(LogLevel.Info, message, args);
-
-        /// <summary>
-        /// Logs an info message. An alias for Logger.Info()
-        /// </summary>
-        /// <param name="message">The message to log.</param>
-        /// <param name="args">Any message parameters.</param>
-        public static void Log(string message, params object[] args) => Write(LogLevel.Info, message, args);
-
-        /// <summary>
-        /// Logs a debug message.
-        /// </summary>
-        /// <param name="message">The message to log.</param>
-        /// <param name="args">Any message parameters.</param>
-        public static void Debug(string message, params object[] args) => Write(LogLevel.Debug, message, args);
-
-        /// <summary>
         /// Get or set the logger's log level.
         /// </summary>
-        public static LogLevel Level { get; set; }
+        public virtual LogLevel Level { get; set; }
 
         /// <summary>
         /// Get or set the Chromium Web Browser. If set, the output may go to browser console.
         /// </summary>
-        public static ChromiumWebBrowser Browser { get; set; }
+        public ChromiumWebBrowser Browser { get; set; }
     }
 }

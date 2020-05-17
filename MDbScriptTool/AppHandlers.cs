@@ -13,12 +13,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CefSharp.WinForms;
 using Microsoft.SqlServer.Types;
+using Tokafew420.MDbScriptTool.Logging;
 
 namespace Tokafew420.MDbScriptTool
 {
     internal class AppHandlers
     {
-        private readonly Application _app;
+        private readonly App _app;
         private readonly ChromiumWebBrowser _browser;
         private readonly Regex _goRegex = new Regex(@"^\s*go\s*(--.*)*$", RegexOptions.IgnoreCase);
         private static readonly Random _rnd = new Random();
@@ -30,14 +31,14 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Initializes a new instance of App
         /// </summary>
-        /// <param name="application"></param>
+        /// <param name="app"></param>
         /// <param name="browser"></param>
-        internal AppHandlers(Application application, ChromiumWebBrowser browser)
+        internal AppHandlers(App app, ChromiumWebBrowser browser)
         {
-            _app = application ?? throw new ArgumentNullException(nameof(application));
+            _app = app ?? throw new ArgumentNullException(nameof(app));
             _browser = browser ?? throw new ArgumentNullException(nameof(browser));
-            OsEvent = new OsEvent(browser);
-            UiEvent = new UiEvent(browser);
+            OsEvent = new OsEvent(_browser);
+            UiEvent = new UiEvent(_app, _browser);
 
             // Register event handlers
             UiEvent.On("parse-connection-string", ParseConnectionString);
@@ -50,6 +51,25 @@ namespace Tokafew420.MDbScriptTool
             UiEvent.On("set-settings", SetSettings);
             UiEvent.On("open-explorer", OpenExplorer);
             UiEvent.On("list-directory", ListDirectory);
+        }
+
+        /// <summary>
+        /// Emit the specified event to the browser application.
+        /// </summary>
+        /// <param name="name">The name of the event.</param>
+        /// <param name="args">The event data</param>
+        public void Emit(string name, params object[] args)
+        {
+            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
+
+            try
+            {
+                OsEvent.Emit(name, args);
+            }
+            catch (Exception e)
+            {
+                _app.Logger.Error(e.ToString());
+            }
         }
 
         /// <summary>
@@ -79,7 +99,7 @@ namespace Tokafew420.MDbScriptTool
             }
             catch (Exception e)
             {
-                Logger.Warn(e.ToString());
+                _app.Logger.Warn(e.ToString());
                 OsEvent.Emit(replyMsgName, e, versions);
             }
         }
@@ -153,7 +173,7 @@ namespace Tokafew420.MDbScriptTool
             catch (Exception e)
             {
                 // Do Nothing
-                Logger.Error(e.ToString());
+                _app.Logger.Error(e.ToString());
             }
 
             try
@@ -165,7 +185,7 @@ namespace Tokafew420.MDbScriptTool
             catch (Exception e)
             {
                 // Do nothing
-                Logger.Error(e.ToString());
+                _app.Logger.Error(e.ToString());
                 OsEvent.Emit(replyMsgName, e);
             }
         }
@@ -409,7 +429,7 @@ namespace Tokafew420.MDbScriptTool
                             conn.InfoMessage += handler;
 
                             OsEvent.Emit("sql-parse-connecting", null, id);
-                            Logger.Debug($"Connecting to {connStr}");
+                            _app.Logger.Debug($"Connecting to {connStr}");
 
                             await conn.OpenAsync();
 
@@ -465,13 +485,15 @@ namespace Tokafew420.MDbScriptTool
 
             OsEvent.Emit(replyMsgName, null, new
             {
+                singleInstance = AppContext.SingleInstance,
+                isMainForm = _app.IsMainForm,
                 logging = new
                 {
-                    enabled = Logger.Browser != null,
-                    debug = (Logger.Level & Logger.LogLevel.Debug) != Logger.LogLevel.None,
-                    info = (Logger.Level & Logger.LogLevel.Info) != Logger.LogLevel.None,
-                    warn = (Logger.Level & Logger.LogLevel.Warn) != Logger.LogLevel.None,
-                    error = (Logger.Level & Logger.LogLevel.Error) != Logger.LogLevel.None
+                    enabled = _app.Logger.Browser != null,
+                    debug = (_app.Logger.Level & LogLevel.Debug) != LogLevel.None,
+                    info = (_app.Logger.Level & LogLevel.Info) != LogLevel.None,
+                    warn = (_app.Logger.Level & LogLevel.Warn) != LogLevel.None,
+                    error = (_app.Logger.Level & LogLevel.Error) != LogLevel.None
                 },
                 sqlLogging = new
                 {
@@ -481,7 +503,7 @@ namespace Tokafew420.MDbScriptTool
                 },
                 scriptLibrary = new
                 {
-                    directory = _app.ScriptLibraryDirectory
+                    directory = AppContext.ScriptLibraryDirectory
                 }
             });
         }
@@ -510,22 +532,24 @@ namespace Tokafew420.MDbScriptTool
 
             if (settings != null)
             {
+                AppContext.SingleInstance = (settings.singleInstance as bool?).GetValueOrDefault(AppContext.SingleInstance);
+
                 if (settings.logging != null)
                 {
                     if (settings.logging.enabled)
                     {
-                        Logger.Browser = _browser;
+                        _app.Logger.Browser = _browser;
                     }
                     else
                     {
-                        Logger.Browser = null;
+                        _app.Logger.Browser = null;
                     }
 
-                    Logger.Level = Logger.LogLevel.None;
-                    if (settings.logging.debug) Logger.Level |= Logger.LogLevel.Debug;
-                    if (settings.logging.info) Logger.Level |= Logger.LogLevel.Info;
-                    if (settings.logging.warn) Logger.Level |= Logger.LogLevel.Warn;
-                    if (settings.logging.error) Logger.Level |= Logger.LogLevel.Error;
+                    _app.Logger.Level = LogLevel.None;
+                    if (settings.logging.debug) _app.Logger.Level |= LogLevel.Debug;
+                    if (settings.logging.info) _app.Logger.Level |= LogLevel.Info;
+                    if (settings.logging.warn) _app.Logger.Level |= LogLevel.Warn;
+                    if (settings.logging.error) _app.Logger.Level |= LogLevel.Error;
                 }
 
                 if (settings.sqlLogging != null)
@@ -537,7 +561,7 @@ namespace Tokafew420.MDbScriptTool
 
                 if (settings.scriptLibrary != null)
                 {
-                    _app.ScriptLibraryDirectory = settings.scriptLibrary.directory;
+                    AppContext.ScriptLibraryDirectory = settings.scriptLibrary.directory;
                 }
 
                 OsEvent.Emit(replyMsgName);
@@ -706,7 +730,7 @@ namespace Tokafew420.MDbScriptTool
         internal async Task ExecuteSqlBatches(string connectionString, string db, IEnumerable<string> batches, string id, dynamic opts = null)
         {
             OsEvent.Emit("sql-exe-db-begin", null, id, db);
-            Logger.Debug($"Begin batches for {db}");
+            _app.Logger.Debug($"Begin batches for {db}");
 
             batches = batches.Where(b => !string.IsNullOrWhiteSpace(b));
 
@@ -721,7 +745,7 @@ namespace Tokafew420.MDbScriptTool
                 using (var conn = new SqlConnection(connectionString))
                 {
                     OsEvent.Emit("sql-exe-db-batch-connecting", null, id, db, batchNum);
-                    Logger.Debug($"Connecting to {connectionString}");
+                    _app.Logger.Debug($"Connecting to {connectionString}");
                     await conn.OpenAsync();
 
                     using (var cmd = conn.CreateCommand())
@@ -740,7 +764,7 @@ namespace Tokafew420.MDbScriptTool
                             cmd.CommandText = batch;
 
                             OsEvent.Emit("sql-exe-db-batch-executing", null, id, db, batchNum);
-                            Logger.Debug($"Executing to {connectionString}");
+                            _app.Logger.Debug($"Executing to {connectionString}");
 
                             try
                             {
@@ -759,11 +783,11 @@ namespace Tokafew420.MDbScriptTool
                             {
                                 stopWatch.Stop();
                                 OsEvent.Emit("sql-exe-db-batch-result", e, id, db, batchNum, null, null, stopWatch.ElapsedMilliseconds);
-                                Logger.Error(e.ToString());
+                                _app.Logger.Error(e.ToString());
                             }
 
                             OsEvent.Emit("sql-exec-db-batch-complete", null, id, db, batchNum);
-                            Logger.Debug($"Completed batch {id} for {db}");
+                            _app.Logger.Debug($"Completed batch {id} for {db}");
 
                             batchNum++;
                         }
@@ -771,12 +795,12 @@ namespace Tokafew420.MDbScriptTool
                 }
 
                 OsEvent.Emit("sql-exe-db-complete", null, id, db, batchCt);
-                Logger.Debug($"Completed batches {id} for {db}");
+                _app.Logger.Debug($"Completed batches {id} for {db}");
             }
             catch (Exception e)
             {
                 OsEvent.Emit("sql-exe-db-complete", e, id, db, batchCt);
-                Logger.Debug($"Completed batches {id} for {db}");
+                _app.Logger.Debug($"Completed batches {id} for {db}");
             }
         }
 
@@ -889,7 +913,7 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         /// <param name="clearText">The clear text to encrypt.</param>
         /// <returns>The cipher text.</returns>
-        internal static string Encrypt(string clearText)
+        internal string Encrypt(string clearText)
         {
             byte[] bytes;
             var salt = new byte[32];
@@ -920,7 +944,7 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         /// <param name="cipher">The cipher text to decrypt.</param>
         /// <returns>The decrypted clear text.</returns>
-        internal static string Decrypt(string cipher)
+        internal string Decrypt(string cipher)
         {
             cipher = cipher
                 .Replace('_', '/').Replace('-', '+');
@@ -949,7 +973,7 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         /// <param name="cipher">The cipher to decrypt.</param>
         /// <returns>The decrypted cipher if decryption is successful, otherwise the original cipher.</returns>
-        internal static string TryDecrypt(string cipher)
+        internal string TryDecrypt(string cipher)
         {
             if (string.IsNullOrWhiteSpace(cipher)) return cipher;
 
@@ -959,7 +983,7 @@ namespace Tokafew420.MDbScriptTool
             }
             catch (Exception e)
             {
-                Logger.Error(e.ToString());
+                _app.Logger.Error(e.ToString());
                 return cipher;
             }
         }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
+using Tokafew420.MDbScriptTool.Logging;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -11,19 +12,19 @@ namespace Tokafew420.MDbScriptTool
     {
         static AppSettings()
         {
-            Path = System.IO.Path.Combine(Application.DataDirectory, "settings");
+            Path = System.IO.Path.Combine(AppContext.DataDirectory, "settings");
 
-            if (!Directory.Exists(Application.DataDirectory))
+            if (!Directory.Exists(AppContext.DataDirectory))
             {
                 try
                 {
-                    Directory.CreateDirectory(Application.DataDirectory);
-                    Logger.Debug("Created Data/ Directory");
+                    Directory.CreateDirectory(AppContext.DataDirectory);
+                    AppContext.Logger.Debug("Created Data/ Directory");
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to create Data/ directory");
-                    Logger.Error(e.ToString());
+                    AppContext.Logger.Error("Failed to create Data/ directory");
+                    AppContext.Logger.Error(e.ToString());
                 }
             }
 
@@ -39,12 +40,12 @@ namespace Tokafew420.MDbScriptTool
                         Settings = new ConcurrentDictionary<string, object>(loadedSettings, StringComparer.OrdinalIgnoreCase);
                     }
 
-                    Logger.Debug("Loaded AppSettings");
+                    AppContext.Logger.Debug("Loaded AppSettings");
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to load AppSettings");
-                    Logger.Error(e.ToString());
+                    AppContext.Logger.Error("Failed to load AppSettings");
+                    AppContext.Logger.Error(e.ToString());
                 }
             }
             else
@@ -52,12 +53,12 @@ namespace Tokafew420.MDbScriptTool
                 try
                 {
                     File.Create(Path);
-                    Logger.Debug("Created AppSettings");
+                    AppContext.Logger.Debug("Created AppSettings");
                 }
                 catch (Exception e)
                 {
-                    Logger.Error("Failed to create AppSettings");
-                    Logger.Error(e.ToString());
+                    AppContext.Logger.Error("Failed to create AppSettings");
+                    AppContext.Logger.Error(e.ToString());
                 }
             }
         }
@@ -82,14 +83,14 @@ namespace Tokafew420.MDbScriptTool
         /// <returns>The settings value.</returns>
         public static T Get<T>(string key)
         {
-            if (string.IsNullOrWhiteSpace(key)) return default(T);
+            if (string.IsNullOrWhiteSpace(key)) return default;
 
             if (Settings.ContainsKey(key))
             {
                 return (T)Settings[key];
             }
 
-            return default(T);
+            return default;
         }
 
         /// <summary>
@@ -111,19 +112,19 @@ namespace Tokafew420.MDbScriptTool
         {
             try
             {
-                if (!Directory.Exists(Application.DataDirectory))
+                if (!Directory.Exists(AppContext.DataDirectory))
                 {
-                    Directory.CreateDirectory(Application.DataDirectory);
-                    Logger.Debug("Created Data/ Directory");
+                    Directory.CreateDirectory(AppContext.DataDirectory);
+                    AppContext.Logger.Debug("Created Data/ Directory");
                 }
 
                 File.WriteAllText(Path, JsonConvert.SerializeObject(Settings, new SettingsJsonConverter()), Encoding.UTF8);
-                Logger.Debug("Saved AppSettings");
+                AppContext.Logger.Debug("Saved AppSettings");
             }
             catch (Exception e)
             {
-                Logger.Error("Failed to save AppSetting");
-                Logger.Error(e.ToString());
+                AppContext.Logger.Error("Failed to save AppSetting");
+                AppContext.Logger.Error(e.ToString());
             }
         }
 
