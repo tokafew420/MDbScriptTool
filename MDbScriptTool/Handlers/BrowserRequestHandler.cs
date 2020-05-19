@@ -1,11 +1,29 @@
+using System;
 using System.Diagnostics;
 using CefSharp;
 using CefSharp.Handler;
+using CefSharp.WinForms;
 
-namespace Tokafew420.MDbScriptTool
+namespace Tokafew420.MDbScriptTool.Handlers
 {
     internal class BrowserRequestHandler : RequestHandler
     {
+#pragma warning disable IDE0052 // Remove unread private members
+        private readonly App _app;
+        private readonly ChromiumWebBrowser _browser;
+#pragma warning restore IDE0052 // Remove unread private members
+
+        /// <summary>
+        /// Initalizes a new instance of BrowserRequestHandler.
+        /// </summary>
+        /// <param name="app">The current application instance.</param>
+        /// <param name="browser">The current Browser instance.</param>
+        public BrowserRequestHandler(App app, ChromiumWebBrowser browser)
+        {
+            _app = app ?? throw new ArgumentNullException(nameof(app));
+            _browser = browser ?? throw new ArgumentNullException(nameof(browser));
+        }
+
         /// <summary>
         /// Called before browser navigation. If the navigation is allowed CefSharp.IWebBrowser.FrameLoadStart
         /// and CefSharp.IWebBrowser.FrameLoadEnd will be called. If the navigation is canceled
@@ -21,7 +39,7 @@ namespace Tokafew420.MDbScriptTool
         /// <returns>Return true to cancel the navigation or false to allow the navigation to proceed.</returns>
         protected override bool OnBeforeBrowse(IWebBrowser browserControl, IBrowser browser, IFrame frame, IRequest request, bool userGesture, bool isRedirect)
         {
-            if (request.Url.StartsWith("http://") || request.Url.StartsWith("https://"))
+            if (request.Url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || request.Url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
             {
                 // Open in Default browser
                 Process.Start(request.Url);

@@ -6,22 +6,24 @@ using System.Windows.Forms;
 using CefSharp;
 using CefSharp.WinForms;
 
-namespace Tokafew420.MDbScriptTool
+namespace Tokafew420.MDbScriptTool.Handlers
 {
     internal class FileDialogHandler : IDialogHandler
     {
         private readonly App _app;
+#pragma warning disable IDE0052 // Remove unread private members
         private readonly ChromiumWebBrowser _browser;
+#pragma warning restore IDE0052 // Remove unread private members
         private readonly string replyMsgName = "file-dialog-closed";
 
         public OsEvent OsEvent { get; set; }
 
         /// <summary>
-        /// Initalizes a new instance of App
+        /// Initalizes a new instance of FileDialogHandler.
         /// </summary>
-        /// <param name="app"></param>
-        /// <param name="browser"></param>
-        internal FileDialogHandler(App app, ChromiumWebBrowser browser)
+        /// <param name="app">The current application instance.</param>
+        /// <param name="browser">The current Browser instance.</param>
+        public FileDialogHandler(App app, ChromiumWebBrowser browser)
         {
             _app = app ?? throw new ArgumentNullException(nameof(app));
             _browser = browser ?? throw new ArgumentNullException(nameof(browser));

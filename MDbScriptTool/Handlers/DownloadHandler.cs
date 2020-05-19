@@ -3,13 +3,16 @@ using System.IO;
 using System.Windows.Forms;
 using CefSharp;
 using CefSharp.WinForms;
+using Tokafew420.MDbScriptTool.Locale;
 
-namespace Tokafew420.MDbScriptTool
+namespace Tokafew420.MDbScriptTool.Handlers
 {
     internal class DownloadHandler : IDownloadHandler
     {
         private readonly App _app;
+#pragma warning disable IDE0052 // Remove unread private members
         private readonly ChromiumWebBrowser _browser;
+#pragma warning restore IDE0052 // Remove unread private members
         private readonly string replyMsgName = "download-completed";
 
         public OsEvent OsEvent { get; set; }
@@ -17,7 +20,9 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Initializes a new instance of DownloadHandler
         /// </summary>
-        internal DownloadHandler(App app, ChromiumWebBrowser browser)
+        /// <param name="app">The current application instance.</param>
+        /// <param name="browser">The current Browser instance.</param>
+        public DownloadHandler(App app, ChromiumWebBrowser browser)
         {
             _app = app ?? throw new ArgumentNullException(nameof(app));
             _browser = browser ?? throw new ArgumentNullException(nameof(browser));
@@ -43,7 +48,7 @@ namespace Tokafew420.MDbScriptTool
 
                     var suggestedFileName = Uri.UnescapeDataString(downloadItem.SuggestedFileName);
 
-                    saveas = suggestedFileName.StartsWith("saveas:");
+                    saveas = suggestedFileName.StartsWith("saveas:", StringComparison.OrdinalIgnoreCase);
                     suggestedFileName = suggestedFileName.Substring(suggestedFileName.IndexOf(':') + 1);
 
                     if (!Path.IsPathRooted(suggestedFileName))
@@ -77,10 +82,10 @@ namespace Tokafew420.MDbScriptTool
                             InitialDirectory = string.IsNullOrWhiteSpace(path) ? "" : Path.GetDirectoryName(path),
                             FileName = filename,
                             Filter = filter,
-                            Title = saveas ? "Save As" : "Save"
+                            Title = saveas ? Strings.Save_As : Strings.Save
                         })
                         {
-                            if (saveFileDialog.ShowDialog() == DialogResult.OK && saveFileDialog.FileName != "")
+                            if (saveFileDialog.ShowDialog() == DialogResult.OK && !string.IsNullOrWhiteSpace(saveFileDialog.FileName))
                             {
                                 _app.LastFileDialogDirectory = Path.GetDirectoryName(saveFileDialog.FileName);
                                 callback.Continue(saveFileDialog.FileName, showDialog: false);

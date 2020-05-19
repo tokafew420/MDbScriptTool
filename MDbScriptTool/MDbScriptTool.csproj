@@ -111,12 +111,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
-    <Compile Include="BrowserRequestHandler.cs" />
-    <Compile Include="DownloadHandler.cs" />
-    <Compile Include="DragDropHandler.cs" />
+    <Compile Include="Handlers\BrowserRequestHandler.cs" />
+    <Compile Include="Handlers\DownloadHandler.cs" />
+    <Compile Include="Handlers\DragDropHandler.cs" />
     <Compile Include="FsFile.cs" />
-    <Compile Include="FileDialogHandler.cs" />
+    <Compile Include="Handlers\FileDialogHandler.cs" />
     <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Locale\Strings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
     <Compile Include="Logging\ILoggerExtensions.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\LogLevel.cs" />
@@ -126,7 +131,7 @@
     <Compile Include="Utils.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="FileSystemSchemeHandlerFactory.cs" />
-    <Compile Include="KeyboardHandler.cs" />
+    <Compile Include="Handlers\KeyboardHandler.cs" />
     <Compile Include="AppHandlers.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="Options.cs" />
@@ -249,16 +254,10 @@
     <EmbeddedResource Include="App.resx">
       <DependentUpon>App.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
+    <EmbeddedResource Include="Locale\Strings.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <None Include="Content\app\css\content.less" />
     <None Include="Content\app\css\slider.less" />
     <None Include="Content\app\css\sidebar.less" />

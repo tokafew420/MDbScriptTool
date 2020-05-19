@@ -5,12 +5,14 @@ using CefSharp;
 using CefSharp.Enums;
 using CefSharp.WinForms;
 
-namespace Tokafew420.MDbScriptTool
+namespace Tokafew420.MDbScriptTool.Handlers
 {
     internal class DragDropHandler : IDragHandler
     {
+#pragma warning disable IDE0052 // Remove unread private members
         private readonly App _app;
         private readonly ChromiumWebBrowser _browser;
+#pragma warning restore IDE0052 // Remove unread private members
         private readonly string replyMsgName = "drag-items-enter";
 
         public OsEvent OsEvent { get; set; }
@@ -20,7 +22,7 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         /// <param name="app">The application instance.</param>
         /// <param name="browser">The browser instance.</param>
-        internal DragDropHandler(App app, ChromiumWebBrowser browser)
+        public DragDropHandler(App app, ChromiumWebBrowser browser)
         {
             _app = app ?? throw new ArgumentNullException(nameof(app));
             _browser = browser ?? throw new ArgumentNullException(nameof(browser));

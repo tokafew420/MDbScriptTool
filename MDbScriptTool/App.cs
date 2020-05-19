@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using CefSharp;
 using CefSharp.WinForms;
+using Tokafew420.MDbScriptTool.Handlers;
 using Tokafew420.MDbScriptTool.Logging;
 
 namespace Tokafew420.MDbScriptTool
@@ -31,15 +32,15 @@ namespace Tokafew420.MDbScriptTool
 
         private void AppForm_Load(object sender, EventArgs e)
         {
-            // Register handlers.
-            _browser.RequestHandler = new BrowserRequestHandler();
-            _browser.KeyboardHandler = new KeyboardHandler();
-            // Register the uiEvent class with JS
-            _browser.JavascriptObjectRepository.Register("uiEvent", _appHandler.UiEvent, true, BindingOptions.DefaultBinder);
-
+            // Register custom handlers.
+            _browser.RequestHandler = new BrowserRequestHandler(this, _browser);
+            _browser.KeyboardHandler = new KeyboardHandler(this, _browser);
             _browser.DialogHandler = new FileDialogHandler(this, _browser);
             _browser.DownloadHandler = new DownloadHandler(this, _browser);
             _browser.DragHandler = new DragDropHandler(this, _browser);
+
+            // Register the uiEvent class with JS
+            _browser.JavascriptObjectRepository.Register("uiEvent", _appHandler.UiEvent, true, BindingOptions.DefaultBinder);
 
             MainPanel.Controls.Add(_browser);
 

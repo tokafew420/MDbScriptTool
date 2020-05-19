@@ -48,7 +48,7 @@ namespace Tokafew420.MDbScriptTool
             this.Controls.Add(this.MainPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(300, 300);
-            this.Name = "Application";
+            this.Name = "App";
             this.Text = "Multi Database Script Tool";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AppForm_Closing);
             this.Load += new System.EventHandler(this.AppForm_Load);

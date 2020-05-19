@@ -1,10 +1,28 @@
+using System;
 using System.Windows.Forms;
 using CefSharp;
+using CefSharp.WinForms;
 
-namespace Tokafew420.MDbScriptTool
+namespace Tokafew420.MDbScriptTool.Handlers
 {
-    public class KeyboardHandler : IKeyboardHandler
+    internal class KeyboardHandler : IKeyboardHandler
     {
+#pragma warning disable IDE0052 // Remove unread private members
+        private readonly App _app;
+        private readonly ChromiumWebBrowser _browser;
+#pragma warning restore IDE0052 // Remove unread private members
+
+        /// <summary>
+        /// Initalizes a new instance of KeyboardHandler.
+        /// </summary>
+        /// <param name="app">The current application instance.</param>
+        /// <param name="browser">The current Browser instance.</param>
+        public KeyboardHandler(App app, ChromiumWebBrowser browser)
+        {
+            _app = app ?? throw new ArgumentNullException(nameof(app));
+            _browser = browser ?? throw new ArgumentNullException(nameof(browser));
+        }
+
         /// <summary>
         /// Called before a keyboard event is sent to the renderer. Return true if the event
         ///  was handled or false otherwise. If the event will be handled in CefSharp.IKeyboardHandler.OnKeyEvent(CefSharp.IWebBrowser,CefSharp.IBrowser,CefSharp.KeyType,System.Int32,System.Int32,CefSharp.CefEventFlags,System.Boolean)
