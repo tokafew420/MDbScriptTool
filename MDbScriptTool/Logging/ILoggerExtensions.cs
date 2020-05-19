@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace Tokafew420.MDbScriptTool.Logging
 {
@@ -13,7 +14,7 @@ namespace Tokafew420.MDbScriptTool.Logging
         /// <param name="logger">The logger instance.</param>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Error(this ILogger logger, string message, params object[] args)
+        public static void Error(this ILogger logger, [Localizable(false)] string message, params object[] args)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
@@ -26,7 +27,7 @@ namespace Tokafew420.MDbScriptTool.Logging
         /// <param name="logger">The logger instance.</param>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Warn(this ILogger logger, string message, params object[] args)
+        public static void Warn(this ILogger logger, [Localizable(false)] string message, params object[] args)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
@@ -39,7 +40,7 @@ namespace Tokafew420.MDbScriptTool.Logging
         /// <param name="logger">The logger instance.</param>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Info(this ILogger logger, string message, params object[] args)
+        public static void Info(this ILogger logger, [Localizable(false)] string message, params object[] args)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
@@ -52,7 +53,7 @@ namespace Tokafew420.MDbScriptTool.Logging
         /// <param name="logger">The logger instance.</param>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Log(this ILogger logger, string message, params object[] args)
+        public static void Log(this ILogger logger, [Localizable(false)] string message, params object[] args)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
@@ -65,7 +66,7 @@ namespace Tokafew420.MDbScriptTool.Logging
         /// <param name="logger">The logger instance.</param>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        public static void Debug(this ILogger logger, string message, params object[] args)
+        public static void Debug(this ILogger logger, [Localizable(false)] string message, params object[] args)
         {
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 

@@ -14,6 +14,7 @@ namespace Tokafew420.MDbScriptTool
     /// </summary>
     public static class SqlLogger
     {
+        private static string _directory = "";
         private static readonly Regex _passwordRegex = new Regex("Password=[^;]*(;|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
@@ -24,7 +25,15 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Get or set the directory where the log files are saved.
         /// </summary>
-        public static string Directory { get; set; }
+        public static string Directory
+        {
+            get => _directory;
+            set
+            {
+                _directory = value ?? "";
+                InitialilzeAsync();
+            }
+        }
 
         /// <summary>
         /// Get the log file name.
@@ -70,16 +79,16 @@ namespace Tokafew420.MDbScriptTool
         /// Initializes the logger
         /// </summary>
         /// <returns></returns>
-        public static Task InitialilzeAsync()
+        private static Task InitialilzeAsync()
         {
             // Run cleanup based on the retention value
-            if (Retention.HasValue)
+            if (Enabled && Retention.HasValue)
             {
                 return Task.Run(() =>
                 {
                     try
                     {
-                        var dir = string.IsNullOrWhiteSpace(Directory) ? Environment.CurrentDirectory : Directory;
+                        var dir = string.IsNullOrWhiteSpace(_directory) ? Environment.CurrentDirectory : _directory;
                         var files = System.IO.Directory.EnumerateFiles(dir, "execute-history-*.sql", SearchOption.TopDirectoryOnly);
 
                         files = files
@@ -92,7 +101,6 @@ namespace Tokafew420.MDbScriptTool
                         {
                             File.Delete(file);
                         }
-
                     }
                     catch (Exception e)
                     {

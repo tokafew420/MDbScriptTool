@@ -27,14 +27,6 @@ body {
   animation: spin .75s infinite linear;
 }
 
-.modal-content {
-  background-color: @dark-1;
-}
-
-.modal-header .close {
-  color: @light-0;
-}
-
 /* Links */
 a,
 a:hover,
@@ -137,6 +129,7 @@ a.focus {
 }
 
 .modal-content {
+  background-color: @dark-1;
   box-shadow: @light-box-shadow;
   max-height: 90vh;
 
@@ -155,9 +148,14 @@ a.focus {
     cursor: move;
 
     .close {
+      color: @light-0;
       padding: .5rem 1rem;
       margin: -.5rem -1rem -1rem auto;
     }
+  }
+
+  .modal-body {
+    overflow-y: auto;
   }
 
   .modal-footer {

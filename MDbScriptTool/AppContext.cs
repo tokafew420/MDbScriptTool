@@ -87,19 +87,22 @@ namespace Tokafew420.MDbScriptTool
         [STAThread]
         private static void Main(string[] args)
         {
+            // First order of business is to parse commandline args
+            // Do this before loading configurations because the data directory
+            // may be passed as an argument.
+            var options = new OptionSet() {
+                    { "a|app=", v => _appDir = v },
+                    { "d|data=", v => _dataDir = v },
+                    { "vs", v => _runningInVs = v != null }
+                };
+            options.Parse(args);
+
+            // Load global configurations
             LoadConfiguration();
 
             // Allow only a single process in this section at a time.
             if (_mutex.WaitOne(-1, true))
             {
-                // Parse commandline args
-                var options = new OptionSet() {
-                    { "a|app=", v => _appDir = v },
-                    { "d|data=", v => _dataDir = v },
-                    { "vs", v => _runningInVs = v != null }
-                };
-                options.Parse(args);
-
                 var instances = GetApplicationInstances();
 
                 if (instances.Any())
@@ -240,37 +243,18 @@ namespace Tokafew420.MDbScriptTool
             // Load saved state
             try
             {
-                SingleInstance = AppSettings.Get<bool>("SingleInstance");
-                SqlLogger.Enabled = AppSettings.Get<bool>("SqlLoggingEnabled");
+                SingleInstance = AppSettings.Get<bool>(Constants.Settings.SingleInstance);
 
-                if (AppSettings.Exists("SqlLoggingDir"))
-                {
-                    SqlLogger.Directory = AppSettings.Get<string>("SqlLoggingDir");
-                }
-                else
-                {
-                    SqlLogger.Directory = Path.GetFullPath(Path.Combine(DataDirectory, "Logs"));
-                }
-                if (AppSettings.Exists("SqlLoggingRetention"))
-                {
-                    SqlLogger.Retention = AppSettings.Get<int?>("SqlLoggingRetention");
-                }
+                SqlLogger.Enabled = AppSettings.Get<bool>(Constants.Settings.SqlLoggingEnabled);
+                SqlLogger.Retention = AppSettings.Get<int?>(Constants.Settings.SqlLoggingRetention);
+                // Set the directory last as that will initialize the directory
+                SqlLogger.Directory = AppSettings.GetOrDefault(Constants.Settings.SqlLoggingDirectory, Path.GetFullPath(Path.Combine(DataDirectory, Constants.Defaults.SqlLoggingDirectory)));
 
-                SqlLogger.InitialilzeAsync();
-
-                if (AppSettings.Exists("ScriptLibraryDirectory"))
-                {
-                    ScriptLibraryDirectory = AppSettings.Get<string>("ScriptLibraryDirectory");
-                }
-                else
-                {
-                    ScriptLibraryDirectory = Path.GetFullPath(Path.Combine(DataDirectory, "Scripts"));
-                }
+                ScriptLibraryDirectory = AppSettings.GetOrDefault(Constants.Settings.ScriptLibraryDirectory, Path.GetFullPath(Path.Combine(DataDirectory, Constants.Defaults.ScriptLibraryDirectory)));
             }
-            catch (Exception err)
+            catch (Exception e)
             {
-                Logger.Warn("Failed to apply AppSettings");
-                Logger.Warn(err.ToString());
+                Logger.Warn($"Failed to apply AppSettings. Error: {e}");
             }
         }
 
@@ -279,12 +263,12 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         private static void SaveConfiguration()
         {
-            // These a global configurations
-            AppSettings.Set("SqlLoggingEnabled", SqlLogger.Enabled);
-            AppSettings.Set("SqlLoggingDir", SqlLogger.Directory);
-            AppSettings.Set("SqlLoggingRetention", SqlLogger.Retention);
-            AppSettings.Set("ScriptLibraryDirectory", ScriptLibraryDirectory);
-            AppSettings.Set("SingleInstance", SingleInstance);
+            // These are global configurations
+            AppSettings.Set(Constants.Settings.SqlLoggingEnabled, SqlLogger.Enabled);
+            AppSettings.Set(Constants.Settings.SqlLoggingDirectory, SqlLogger.Directory);
+            AppSettings.Set(Constants.Settings.SqlLoggingRetention, SqlLogger.Retention);
+            AppSettings.Set(Constants.Settings.ScriptLibraryDirectory, ScriptLibraryDirectory);
+            AppSettings.Set(Constants.Settings.SingleInstance, SingleInstance);
 
             AppSettings.Save();
         }

@@ -49,42 +49,24 @@ namespace Tokafew420.MDbScriptTool
             // Load saved state
             try
             {
-                var windowLocation = AppSettings.Get<Point?>("WindowLocation");
-                if (windowLocation != null)
-                {
-                    Location = windowLocation.Value;
-                }
+                LastFileDialogDirectory = AppSettings.Get<string>(Constants.Settings.LastFileDialogDirectory) ?? "";
 
-                var windowSize = AppSettings.Get<Size?>("WindowSize");
-                if (windowSize != null)
-                {
-                    Size = windowSize.Value;
-                }
-
-                var windowIsMaximized = AppSettings.Get<bool>("WindowIsMaximized");
-                if (windowIsMaximized)
-                {
-                    WindowState = FormWindowState.Maximized;
-                }
-                if (AppSettings.Exists("LastFileDialogDirectory"))
-                {
-                    LastFileDialogDirectory = AppSettings.Get<string>("LastFileDialogDirectory");
-                }
-                if (AppSettings.Exists("LogToBrowser") && !AppSettings.Get<bool>("LogToBrowser"))
+                if (AppSettings.Exists(Constants.Settings.LogToBrowser) && !AppSettings.Get<bool>(Constants.Settings.LogToBrowser))
                 {
                     Logger.Browser = null;
                 }
-                if (AppSettings.Exists("LogLevel"))
-                {
-                    Logger.Level = AppSettings.Get<LogLevel>("LogLevel");
-                }
+
+                Logger.Level = AppSettings.GetOrDefault(Constants.Settings.LogLevel, LogLevel.Info);
+
+                Location = AppSettings.Get<Point?>(Constants.Settings.WindowLocation) ?? Location;
+                Size = AppSettings.Get<Size?>(Constants.Settings.WindowSize) ?? Size;
+                WindowState = AppSettings.Get<bool>(Constants.Settings.WindowIsMaximized) ? FormWindowState.Maximized : WindowState;
 
                 RestoreWindowLocation();
             }
-            catch (Exception err)
+            catch (Exception ex)
             {
-                Logger.Warn("Failed to apply AppSettings");
-                Logger.Warn(err.ToString());
+                Logger.Warn($"Failed to apply AppSettings. Error: {ex}");
             }
         }
 
@@ -159,21 +141,21 @@ namespace Tokafew420.MDbScriptTool
 
             // These are configurations per app instance.
             // Save window state
-            AppSettings.Set("WindowLocation", new Point?(Location));
+            AppSettings.Set(Constants.Settings.WindowLocation, new Point?(Location));
 
             // Copy window size to app settings
             if (WindowState == FormWindowState.Normal)
             {
-                AppSettings.Set("WindowSize", new Size?(Size));
+                AppSettings.Set(Constants.Settings.WindowSize, new Size?(Size));
             }
             else
             {
-                AppSettings.Set("WindowSize", new Size?(RestoreBounds.Size));
+                AppSettings.Set(Constants.Settings.WindowSize, new Size?(RestoreBounds.Size));
             }
-            AppSettings.Set("WindowIsMaximized", WindowState == FormWindowState.Maximized);
-            AppSettings.Set("LastFileDialogDirectory", LastFileDialogDirectory);
-            AppSettings.Set("LogToBrowser", Logger.Browser != null);
-            AppSettings.Set("LogLevel", Logger.Level);
+            AppSettings.Set(Constants.Settings.WindowIsMaximized, WindowState == FormWindowState.Maximized);
+            AppSettings.Set(Constants.Settings.LastFileDialogDirectory, LastFileDialogDirectory);
+            AppSettings.Set(Constants.Settings.LogToBrowser, Logger.Browser != null);
+            AppSettings.Set(Constants.Settings.LogLevel, Logger.Level);
 
             AppSettings.Save();
         }

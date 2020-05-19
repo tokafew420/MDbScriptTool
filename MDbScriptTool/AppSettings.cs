@@ -23,8 +23,7 @@ namespace Tokafew420.MDbScriptTool
                 }
                 catch (Exception e)
                 {
-                    AppContext.Logger.Error("Failed to create Data/ directory");
-                    AppContext.Logger.Error(e.ToString());
+                    AppContext.Logger.Error($"Failed to create Data/ directory. Error: {e}");
                 }
             }
 
@@ -44,21 +43,19 @@ namespace Tokafew420.MDbScriptTool
                 }
                 catch (Exception e)
                 {
-                    AppContext.Logger.Error("Failed to load AppSettings");
-                    AppContext.Logger.Error(e.ToString());
+                    AppContext.Logger.Error($"Failed to load AppSettings. Error: {e}");
                 }
             }
             else
             {
                 try
                 {
-                    File.Create(Path);
+                    using (File.Create(Path)) { };
                     AppContext.Logger.Debug("Created AppSettings");
                 }
                 catch (Exception e)
                 {
-                    AppContext.Logger.Error("Failed to create AppSettings");
-                    AppContext.Logger.Error(e.ToString());
+                    AppContext.Logger.Error($"Failed to create AppSettings. Error: {e}");
                 }
             }
         }
@@ -83,7 +80,7 @@ namespace Tokafew420.MDbScriptTool
         /// <returns>The settings value.</returns>
         public static T Get<T>(string key)
         {
-            if (string.IsNullOrWhiteSpace(key)) return default;
+            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException(nameof(key));
 
             if (Settings.ContainsKey(key))
             {
@@ -94,13 +91,31 @@ namespace Tokafew420.MDbScriptTool
         }
 
         /// <summary>
+        /// Get the app setting specified by the key name.
+        /// </summary>
+        /// <typeparam name="T">The return type</typeparam>
+        /// <param name="name">The settings key.</param>
+        /// <returns>The settings value.</returns>
+        public static T GetOrDefault<T>(string key, T defaultValue)
+        {
+            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException(nameof(key));
+
+            if (Settings.ContainsKey(key))
+            {
+                return (T)Settings[key];
+            }
+
+            return defaultValue;
+        }
+
+        /// <summary>
         /// Set a value into the app settings.
         /// </summary>
         /// <param name="key">The settings key.</param>
         /// <param name="value">The settings value.</param>
         public static void Set(string key, object value)
         {
-            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException("key");
+            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException(nameof(key));
 
             Settings[key] = value;
         }
@@ -123,8 +138,7 @@ namespace Tokafew420.MDbScriptTool
             }
             catch (Exception e)
             {
-                AppContext.Logger.Error("Failed to save AppSetting");
-                AppContext.Logger.Error(e.ToString());
+                AppContext.Logger.Error($"Failed to save AppSetting. Error: {e}");
             }
         }
 

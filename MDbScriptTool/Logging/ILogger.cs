@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace Tokafew420.MDbScriptTool.Logging
 {
     /// <summary>
@@ -11,7 +13,7 @@ namespace Tokafew420.MDbScriptTool.Logging
         /// <param name="logLevel">The log message severity level.</param>
         /// <param name="message">The message to log.</param>
         /// <param name="args">Any message parameters.</param>
-        void Write(LogLevel logLevel, string message, params object[] args);
+        void Write(LogLevel logLevel, [Localizable(false)] string message, params object[] args);
 
         /// <summary>
         /// Get or set the logger's log level.

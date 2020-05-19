@@ -111,6 +111,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppContext.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Handlers\BrowserRequestHandler.cs" />
     <Compile Include="Handlers\DownloadHandler.cs" />
     <Compile Include="Handlers\DragDropHandler.cs" />
