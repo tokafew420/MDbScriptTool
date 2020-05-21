@@ -7,7 +7,7 @@ namespace Tokafew420.MDbScriptTool
     internal static class NativeMethods
     {
         #region P/Invoke constants
-
+        public const int ATTACH_PARENT_PROCESS = -1;
         public const int WM_SYSCOMMAND = 0x112;
         public const int WM_COPYDATA = 0x004A;
 
@@ -228,6 +228,11 @@ namespace Tokafew420.MDbScriptTool
         #endregion P/Invoke constants
 
         #region P/Invoke declarations
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool AttachConsole(int dwProcessId);
+
+        [DllImport("kernel32.dll", SetLastError = true, ExactSpelling = true)]
+        public static extern bool FreeConsole();
 
         [DllImport("user32.dll")]
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref CopyDataStruct lParam);

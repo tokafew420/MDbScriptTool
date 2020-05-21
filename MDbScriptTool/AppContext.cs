@@ -11,6 +11,8 @@ using CefSharp;
 using CefSharp.WinForms;
 using Mono.Options;
 using Newtonsoft.Json;
+using Tokafew420.MDbScriptTool.Handlers;
+using Tokafew420.MDbScriptTool.Locale;
 using Tokafew420.MDbScriptTool.Logging;
 
 namespace Tokafew420.MDbScriptTool
@@ -87,15 +89,36 @@ namespace Tokafew420.MDbScriptTool
         [STAThread]
         private static void Main(string[] args)
         {
-            // First order of business is to parse commandline args
-            // Do this before loading configurations because the data directory
-            // may be passed as an argument.
-            var options = new OptionSet() {
-                    { "a|app=", v => _appDir = v },
-                    { "d|data=", v => _dataDir = v },
-                    { "vs", v => _runningInVs = v != null }
+            try
+            {
+                var showHelp = false;
+
+                // First order of business is to parse commandline args
+                // Do this before loading configurations because the data directory
+                // may be passed as an argument.
+                var options = new OptionSet() {
+                    { "a|app=", "The application's source directory.", v => _appDir = v },
+                    { "d|data=", "The application's data storage directory.", v => _dataDir = v },
+                    { "vs", "Whether this instance is run from Visual Studio.", v => _runningInVs = v != null },
+                    { "h|help", v => showHelp = v != null }
                 };
-            options.Parse(args);
+                options.Parse(args);
+
+                if (showHelp)
+                {
+                    NativeMethods.AttachConsole(NativeMethods.ATTACH_PARENT_PROCESS);
+                    Console.Write(Strings.CmdLineHelpMessage);
+                    NativeMethods.FreeConsole();
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                NativeMethods.AttachConsole(NativeMethods.ATTACH_PARENT_PROCESS);
+                Console.Write(Strings.CmdLineParseError, e.Message);
+                NativeMethods.FreeConsole();
+                return;
+            }
 
             // Load global configurations
             LoadConfiguration();
@@ -190,10 +213,7 @@ namespace Tokafew420.MDbScriptTool
 
         #endregion Main
 
-        public AppContext()
-        {
-            CreateNewApplicationInstance();
-        }
+        public AppContext() => CreateNewApplicationInstance();
 
         /// <summary>
         /// Create a new application instance (form).

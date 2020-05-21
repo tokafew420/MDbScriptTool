@@ -61,6 +61,32 @@ namespace Tokafew420.MDbScriptTool.Locale {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 
+        ///usage: MDbScriptTool [-a|--app=&lt;path&gt;] [-d|--data=&lt;path&gt;] [-h|--help]
+        ///
+        ///  -a|--app     The application&apos;s source directory.
+        ///  -d|--data    The application&apos;s data storage directory.
+        ///  -h|--help    Show this message.
+        ///.
+        /// </summary>
+        internal static string CmdLineHelpMessage {
+            get {
+                return ResourceManager.GetString("CmdLineHelpMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MDbScriptTool:
+        ///    {0}
+        ///Try `MDbScriptTool --help&apos; for more information..
+        /// </summary>
+        internal static string CmdLineParseError {
+            get {
+                return ResourceManager.GetString("CmdLineParseError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Save.
         /// </summary>
         internal static string Save {

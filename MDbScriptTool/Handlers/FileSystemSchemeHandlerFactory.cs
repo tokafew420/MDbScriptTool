@@ -1,10 +1,11 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
 using CefSharp;
 
-namespace Tokafew420.MDbScriptTool
+namespace Tokafew420.MDbScriptTool.Handlers
 {
     internal class FileSystemSchemeHandlerFactory : ISchemeHandlerFactory
     {
@@ -13,14 +14,7 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         public const string SchemeName = "fs";
 
-        private static string[] _volumes;
-
-        /// <summary>
-        /// Initialize the static FileSystemSchemeHandlerFactory instance.
-        /// </summary>
-        static FileSystemSchemeHandlerFactory() =>
-            // Get all the available system drives.
-            _volumes = DriveInfo.GetDrives().Select(v => v.Name.ToLower()).ToArray();
+        private static readonly string[] _volumes = DriveInfo.GetDrives().Select(v => v.Name.ToLower(CultureInfo.InvariantCulture)).ToArray();
 
         /// <summary>
         /// Create an instance of FileSystemResourceHandler.
@@ -33,14 +27,14 @@ namespace Tokafew420.MDbScriptTool
         public IResourceHandler Create(IBrowser browser, IFrame frame, string schemeName, IRequest request)
         {
             // Only handle fs scheme.
-            if (string.Compare(schemeName, SchemeName, true) != 0) return ResourceHandler.ForErrorMessage($"Invalid scheme [{schemeName}].", HttpStatusCode.BadRequest);
+            if (string.Compare(schemeName, SchemeName, true, CultureInfo.InvariantCulture) != 0) return ResourceHandler.ForErrorMessage($"Invalid scheme [{schemeName}].", HttpStatusCode.BadRequest);
 
             var uri = new Uri(request.Url);
             var root = uri.Authority;
 
             // If the root of the path is a system volume then add the volume separator ":"
             // else it will be consider as just another directory.
-            if (_volumes.Any(v => v.StartsWith(root)))
+            if (_volumes.Any(v => v.StartsWith(root, StringComparison.InvariantCultureIgnoreCase)))
             {
                 root = root + Path.VolumeSeparatorChar;
             }
@@ -51,7 +45,11 @@ namespace Tokafew420.MDbScriptTool
                 // Read file and then copy to a separate memory stream so the file isn't locked.
                 using (var stream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
                 {
+#pragma warning disable CA2000 // Dispose objects before losing scope
+                    // Don't dispose the stream here, ResourceHandler.FromStream autoDisposeStream is set to false by default.
+                    // The comment indicates "you will only be able to serve one request" ¯\_(ツ)_/¯
                     var ms = new MemoryStream();
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
                     stream.CopyTo(ms);
                     ms.Seek(0, SeekOrigin.Begin);

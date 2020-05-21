@@ -117,6 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CmdLineHelpMessage" xml:space="preserve">
+    <value>
+usage: MDbScriptTool [-a|--app=&lt;path&gt;] [-d|--data=&lt;path&gt;] [-h|--help]
+
+  -a|--app     The application's source directory.
+  -d|--data    The application's data storage directory.
+  -h|--help    Show this message.
+</value>
+    <comment>The help message on the console when invoked with -h or --help.</comment>
+  </data>
+  <data name="CmdLineParseError" xml:space="preserve">
+    <value>MDbScriptTool:
+    {0}
+Try `MDbScriptTool --help' for more information.</value>
+    <comment>Message displayed in the console when parsing of the command line arguments fails.</comment>
+  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>

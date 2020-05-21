@@ -94,6 +94,9 @@
     <Reference Include="Microsoft.SqlServer.Types, Version=14.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.SqlServer.Types.14.0.1016.290\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Options, Version=6.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Mono.Options.6.6.0.161\lib\net40\Mono.Options.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -131,11 +134,10 @@
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="NativeMethods.cs" />
-    <Compile Include="FileSystemSchemeHandlerFactory.cs" />
+    <Compile Include="Handlers\FileSystemSchemeHandlerFactory.cs" />
     <Compile Include="Handlers\KeyboardHandler.cs" />
     <Compile Include="AppHandlers.cs" />
     <Compile Include="AppSettings.cs" />
-    <Compile Include="Options.cs" />
     <Compile Include="IEvent.cs" />
     <Compile Include="SettingsJsonConverter.cs" />
     <Compile Include="Logging\Logger.cs" />
