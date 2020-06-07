@@ -68,7 +68,7 @@ namespace Tokafew420.MDbScriptTool
                 }
 
                 foreach (var action in actionList)
-                    Task.Factory.StartNew(() => action(args));
+                    _ = Task.Factory.StartNew(() => action(args));
             }
         }
 
@@ -80,8 +80,8 @@ namespace Tokafew420.MDbScriptTool
         [JavascriptIgnore]
         public void On(string name, Action<object[]> handler)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (handler == null) throw new ArgumentNullException("handler");
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
 
             var actionList = _listeners.FirstOrDefault(l => l.Key == name).Value;
 
@@ -102,15 +102,14 @@ namespace Tokafew420.MDbScriptTool
         [JavascriptIgnore]
         public void Once(string name, Action<object[]> handler)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (handler == null) throw new ArgumentNullException("handler");
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
 
             var actionList = _listeners.FirstOrDefault(l => l.Key == name).Value;
 
             if (actionList == null)
             {
-                actionList = new List<Action<object[]>>();
-                _listeners[name] = actionList;
+                _listeners[name] = actionList = new List<Action<object[]>>();
             }
 
             actionList.Add((args) =>
@@ -128,8 +127,8 @@ namespace Tokafew420.MDbScriptTool
         [JavascriptIgnore]
         public void RemoveListener(string name, Action<object[]> handler)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (handler == null) throw new ArgumentNullException("handler");
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
 
             var actionList = _listeners.FirstOrDefault(l => l.Key == name).Value;
 

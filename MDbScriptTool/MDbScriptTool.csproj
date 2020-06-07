@@ -132,6 +132,7 @@
     <Compile Include="SqlLogger.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="StringExtensions.cs" />
+    <Compile Include="Crypto.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="Handlers\FileSystemSchemeHandlerFactory.cs" />

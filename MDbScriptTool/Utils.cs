@@ -1,21 +1,27 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Tokafew420.MDbScriptTool
 {
     /// <summary>
-    /// A logging class.
+    /// A utility class.
     /// </summary>
     public static class Utils
     {
         #region Big freaking list of mime types
 
-        // https://stackoverflow.com/a/3393525
-        // combination of values from Windows 7 Registry and
-        // from C:\Windows\System32\inetsrv\config\applicationHost.config
-        // some added, including .7z and .dat
-        public static IDictionary<string, string> MimeMapping = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        /// <summary>
+        /// A mapping of file extensions and their MIME type.
+        /// </summary>
+        /// <remarks>
+        /// https://stackoverflow.com/a/3393525
+        /// Combination of values from Windows 7 Registry and
+        /// from C:\Windows\System32\inetsrv\config\applicationHost.config
+        /// some added, including .7z and .dat
+        /// </remarks>
+        public readonly static IDictionary<string, string> MimeMapping = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {
             {".323", "text/h323"},
             {".3g2", "video/3gpp2"},
@@ -582,20 +588,30 @@ namespace Tokafew420.MDbScriptTool
 
         #endregion Big freaking list of mime types
 
-        public static IDictionary<string, string> FileType = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
+        /// <summary>
+        /// A mapping on file extensions and their common name.
+        /// </summary>
+        public readonly static IDictionary<string, string> FileType = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase)
         {
+            {"", "Unknown"},
             {".*", "All Files"},
-            {".csv", "CSV"},
             {".css", "CSS"},
+            {".csv", "CSV"},
             {".js", "JavaScript"},
             {".sql", "SQL Script"}
         };
 
+        /// <summary>
+        /// Get the MIME type of the specified file extension.
+        /// </summary>
+        /// <param name="extension">The file extension (with or without the preceding dot).</param>
+        /// <returns>The MIME type.</returns>
         public static string GetMimeType(string extension)
         {
             if (extension == null) throw new ArgumentNullException(nameof(extension));
 
-            if (!extension.StartsWith("."))
+            extension = extension.Trim();
+            if (!extension.StartsWith(".", StringComparison.Ordinal))
             {
                 extension = "." + extension;
             }
@@ -603,20 +619,31 @@ namespace Tokafew420.MDbScriptTool
             return MimeMapping.TryGetValue(extension, out var mime) ? mime : "application/octet-stream";
         }
 
-        public static string GetMimeExtension(string type)
+        /// <summary>
+        /// Get the file extension given the specified MIME type.
+        /// </summary>
+        /// <param name="mime">The mime type.</param>
+        /// <returns>The file type extension (with the dot).</returns>
+        public static string GetMimeExtension(string mime)
         {
-            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (mime == null) throw new ArgumentNullException(nameof(mime));
 
-            type = type.ToLower();
+            mime = mime.Trim().ToLower(CultureInfo.InvariantCulture);
 
-            return MimeMapping.FirstOrDefault(m => m.Value == type).Key;
+            return MimeMapping.FirstOrDefault(m => m.Value == mime).Key;
         }
 
+        /// <summary>
+        /// Get the common name of the file type specified by the extension. If a common name is not found, then search for its MIME type.
+        /// </summary>
+        /// <param name="extension">The file type extension (with or without the preceding dot).</param>
+        /// <returns>The common name of the file type.</returns>
         public static string GetFileType(string extension)
         {
             if (extension == null) throw new ArgumentNullException(nameof(extension));
 
-            if (!extension.StartsWith("."))
+            extension = extension.Trim();
+            if (!extension.StartsWith(".", StringComparison.Ordinal))
             {
                 extension = "." + extension;
             }
@@ -624,15 +651,25 @@ namespace Tokafew420.MDbScriptTool
             return FileType.TryGetValue(extension, out var fileType) ? fileType : GetMimeType(extension);
         }
 
+        /// <summary>
+        /// Get the file extension for the specified file type.
+        /// </summary>
+        /// <param name="type">The file type or its MIME type.</param>
+        /// <returns>The file extension (with the preceding dot).</returns>
         public static string GetFileTypeExtension(string type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
 
-            type = type.ToLower();
+            type = type.Trim().ToLower(CultureInfo.InvariantCulture);
 
-            return FileType.FirstOrDefault(m => m.Value.ToLower() == type).Key ?? GetMimeExtension(type);
+            return FileType.FirstOrDefault(m => m.Value.ToLower(CultureInfo.InvariantCulture) == type).Key ?? GetMimeExtension(type);
         }
 
+        /// <summary>
+        /// Convert a DateTime value to a Unix timestamp (to be used on the browser).
+        /// </summary>
+        /// <param name="date">The DateTime instance.</param>
+        /// <returns>The Unix timestamp.</returns>
         public static double ConvertToUnixTimestamp(DateTime date)
         {
             var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);

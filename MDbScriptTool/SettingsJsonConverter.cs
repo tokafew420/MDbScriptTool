@@ -18,8 +18,9 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var settings = JArray.Load(reader);
+            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
 
+            var settings = JArray.Load(reader);
             var dic = Activator.CreateInstance(objectType) as IDictionary<string, object>;
 
             if (settings.Type == JTokenType.Array)
@@ -56,10 +57,12 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
+            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
+
             if (!(value is IDictionary<string, object> dic)) return;
 
             var stringType = typeof(string);
-            //var typeType = typeof(Type);
 
             writer.WriteStartArray();
             foreach (var kv in dic)

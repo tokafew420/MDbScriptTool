@@ -134,7 +134,7 @@ namespace Tokafew420.MDbScriptTool
                     if (SingleInstance)
                     {
                         // Bring existing instance to foreground
-                        NativeMethods.SetForegroundWindow(firstInstance.MainWindowHandle);
+                        _ = NativeMethods.SetForegroundWindow(firstInstance.MainWindowHandle);
 
                         // If the window is minimized then restore it
                         var windowPlacement = NativeMethods.GetPlacement(firstInstance.MainWindowHandle);

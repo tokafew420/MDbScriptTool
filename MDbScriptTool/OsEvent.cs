@@ -1,8 +1,8 @@
+using System;
+using System.Linq;
 using CefSharp;
 using CefSharp.WinForms;
 using Newtonsoft.Json;
-using System;
-using System.Linq;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -12,6 +12,7 @@ namespace Tokafew420.MDbScriptTool
     public class OsEvent : IEvent
     {
         private readonly ChromiumWebBrowser _browser = null;
+
         private readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
         {
             DateTimeZoneHandling = DateTimeZoneHandling.Unspecified
@@ -21,7 +22,7 @@ namespace Tokafew420.MDbScriptTool
         /// Initializes a new instance of OsEvent.
         /// </summary>
         /// <param name="browser">The browser instance.</param>
-        public OsEvent(ChromiumWebBrowser browser) => _browser = browser ?? throw new ArgumentNullException("browser");
+        public OsEvent(ChromiumWebBrowser browser) => _browser = browser ?? throw new ArgumentNullException(nameof(browser));
 
         /// <summary>
         /// Emits an event in the Javascript environment.
@@ -30,7 +31,7 @@ namespace Tokafew420.MDbScriptTool
         /// <param name="data">The event arguments.</param>
         public void Emit(string name, params object[] args)
         {
-            if (args == null) args = new object[] { };
+            if (args == null) args = Array.Empty<object>();
 
             args = (new object[] { name }).Concat(args).ToArray();
 

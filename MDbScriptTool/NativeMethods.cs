@@ -7,6 +7,7 @@ namespace Tokafew420.MDbScriptTool
     internal static class NativeMethods
     {
         #region P/Invoke constants
+
         public const int ATTACH_PARENT_PROCESS = -1;
         public const int WM_SYSCOMMAND = 0x112;
         public const int WM_COPYDATA = 0x004A;
@@ -203,10 +204,12 @@ namespace Tokafew420.MDbScriptTool
             /// Any value the sender chooses.
             /// </summary>
             public IntPtr dwData;
+
             /// <summary>
             /// The count of bytes in the message.
             /// </summary>
             public UIntPtr cbData;
+
             /// <summary>
             /// The address of the message.
             /// </summary>
@@ -228,6 +231,7 @@ namespace Tokafew420.MDbScriptTool
         #endregion P/Invoke constants
 
         #region P/Invoke declarations
+
         [DllImport("kernel32.dll", SetLastError = true)]
         public static extern bool AttachConsole(int dwProcessId);
 
@@ -279,6 +283,9 @@ namespace Tokafew420.MDbScriptTool
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool GetWindowPlacement(IntPtr hWnd, ref WindowPlacement lpwndpl);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
+        public static extern IntPtr LoadLibrary(string libname);
 
         #endregion P/Invoke declarations
 

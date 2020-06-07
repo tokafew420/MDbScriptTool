@@ -4,11 +4,10 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CefSharp.WinForms;
@@ -22,8 +21,6 @@ namespace Tokafew420.MDbScriptTool
         private readonly App _app;
         private readonly ChromiumWebBrowser _browser;
         private readonly Regex _goRegex = new Regex(@"^\s*go\s*(--.*)*$", RegexOptions.IgnoreCase);
-        private static readonly Random _rnd = new Random();
-        private static readonly char[] _padding = { '=' };
 
         public OsEvent OsEvent { get; set; }
         public UiEvent UiEvent { get; set; }
@@ -130,7 +127,7 @@ namespace Tokafew420.MDbScriptTool
 
             try
             {
-                var builder = new SqlConnectionStringBuilder(args[0] as string);
+                var builder = new SqlConnectionStringBuilder(connStr);
                 OsEvent.Emit(replyMsgName, null, builder.ConnectionString, builder);
             }
             catch (Exception e)
@@ -166,7 +163,7 @@ namespace Tokafew420.MDbScriptTool
             {
                 // If we can decrypt then the arg is already encrypted
                 // Then just return the arg
-                Decrypt(pass);
+                Crypto.Decrypt(pass);
                 OsEvent.Emit(replyMsgName, null, pass);
                 return;
             }
@@ -179,7 +176,7 @@ namespace Tokafew420.MDbScriptTool
             try
             {
                 // Assume not encrypted
-                var cipher = Encrypt(pass);
+                var cipher = Crypto.Encrypt(pass);
                 OsEvent.Emit(replyMsgName, null, cipher);
             }
             catch (Exception e)
@@ -222,9 +219,9 @@ namespace Tokafew420.MDbScriptTool
                 var targetDatabase = builder.InitialCatalog;
                 builder.InitialCatalog = "master";
 
-                if (!string.IsNullOrWhiteSpace(builder.Password))
+                if (!string.IsNullOrWhiteSpace(builder.Password) && Crypto.TryDecrypt(builder.Password, out var pass))
                 {
-                    builder.Password = TryDecrypt(builder.Password);
+                    builder.Password = pass;
                 }
 
                 try
@@ -333,9 +330,9 @@ namespace Tokafew420.MDbScriptTool
 
                     var batches = GetSqlBatches(sql);
                     var builder = new SqlConnectionStringBuilder(connStr);
-                    if (!string.IsNullOrWhiteSpace(builder.Password))
+                    if (!string.IsNullOrWhiteSpace(builder.Password) && Crypto.TryDecrypt(builder.Password, out var pass))
                     {
-                        builder.Password = TryDecrypt(builder.Password);
+                        builder.Password = pass;
                     }
 
                     SqlLogger.Log(builder.ToString(), dbs, sql);
@@ -347,13 +344,11 @@ namespace Tokafew420.MDbScriptTool
                         if (!string.IsNullOrWhiteSpace(db))
                         {
                             builder.InitialCatalog = db;
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                             tasks.Add(ExecuteSqlBatches(builder.ToString(), db, batches, id, opts));
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                         }
                     }
 
-                    await Task.WhenAll(tasks);
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
                 }
                 OsEvent.Emit(replyMsgName, null, id);
             }
@@ -415,9 +410,9 @@ namespace Tokafew420.MDbScriptTool
                     {
                         builder.InitialCatalog = "master";
                     }
-                    if (!string.IsNullOrWhiteSpace(builder.Password))
+                    if (!string.IsNullOrWhiteSpace(builder.Password) && Crypto.TryDecrypt(builder.Password, out var pass))
                     {
-                        builder.Password = TryDecrypt(builder.Password);
+                        builder.Password = pass;
                     }
                     connStr = builder.ToString();
 
@@ -431,26 +426,28 @@ namespace Tokafew420.MDbScriptTool
                             OsEvent.Emit("sql-parse-connecting", null, id);
                             _app.Logger.Debug($"Connecting to {connStr}");
 
-                            await conn.OpenAsync();
+                            await conn.OpenAsync().ConfigureAwait(false);
 
                             using (var cmd = conn.CreateCommand())
                             {
                                 cmd.CommandType = CommandType.Text;
                                 cmd.CommandText = "SET PARSEONLY ON";
-                                await cmd.ExecuteNonQueryAsync();
+                                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
 
                                 OsEvent.Emit("sql-parse-parsing", null, id);
                                 foreach (var batch in batches)
                                 {
                                     if (!string.IsNullOrWhiteSpace(batch))
                                     {
+#pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
                                         cmd.CommandText = batch;
-                                        var result = await cmd.ExecuteNonQueryAsync();
+#pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
+                                        var result = await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                                     }
                                 }
 
                                 cmd.CommandText = "SET PARSEONLY OFF";
-                                await cmd.ExecuteNonQueryAsync();
+                                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                             }
                         }
                         finally
@@ -613,7 +610,7 @@ namespace Tokafew420.MDbScriptTool
                     }
                 }
 
-                Process.Start("explorer.exe", string.Format(explorerArgs, path));
+                _ = Process.Start("explorer.exe", string.Format(CultureInfo.InvariantCulture, explorerArgs, path));
                 OsEvent.Emit(replyMsgName, null, path);
             }
             catch (Exception e)
@@ -746,7 +743,7 @@ namespace Tokafew420.MDbScriptTool
                 {
                     OsEvent.Emit("sql-exe-db-batch-connecting", null, id, db, batchNum);
                     _app.Logger.Debug($"Connecting to {connectionString}");
-                    await conn.OpenAsync();
+                    await conn.OpenAsync().ConfigureAwait(false);
 
                     using (var cmd = conn.CreateCommand())
                     {
@@ -761,7 +758,9 @@ namespace Tokafew420.MDbScriptTool
 
                         foreach (var batch in batches)
                         {
+#pragma warning disable CA2100 // Review SQL queries for security vulnerabilities
                             cmd.CommandText = batch;
+#pragma warning restore CA2100 // Review SQL queries for security vulnerabilities
 
                             OsEvent.Emit("sql-exe-db-batch-executing", null, id, db, batchNum);
                             _app.Logger.Debug($"Executing to {connectionString}");
@@ -770,7 +769,7 @@ namespace Tokafew420.MDbScriptTool
                             {
                                 stopWatch.Reset();
                                 stopWatch.Start();
-                                using (var reader = await cmd.ExecuteReaderAsync())
+                                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
                                 {
                                     stopWatch.Stop();
                                     do
@@ -905,86 +904,6 @@ namespace Tokafew420.MDbScriptTool
             if (count > 0)
             {
                 yield return string.Join("\n", lines, startIdx, count);
-            }
-        }
-
-        /// <summary>
-        /// Encrypts the clearText.
-        /// </summary>
-        /// <param name="clearText">The clear text to encrypt.</param>
-        /// <returns>The cipher text.</returns>
-        internal string Encrypt(string clearText)
-        {
-            byte[] bytes;
-            var salt = new byte[32];
-
-            if (clearText == null)
-            {
-                bytes = new byte[0];
-            }
-            else
-            {
-                bytes = Encoding.UTF8.GetBytes(clearText);
-            }
-
-            _rnd.NextBytes(salt);
-
-            var cipher = ProtectedData.Protect(bytes, salt, DataProtectionScope.CurrentUser);
-            var final = new byte[cipher.Length + 32];
-
-            Buffer.BlockCopy(salt, 0, final, 0, 32);
-            Buffer.BlockCopy(cipher, 0, final, 32, cipher.Length);
-
-            return Convert.ToBase64String(final)
-                .TrimEnd(_padding).Replace('+', '-').Replace('/', '_');
-        }
-
-        /// <summary>
-        /// Decrypts the cipher text.
-        /// </summary>
-        /// <param name="cipher">The cipher text to decrypt.</param>
-        /// <returns>The decrypted clear text.</returns>
-        internal string Decrypt(string cipher)
-        {
-            cipher = cipher
-                .Replace('_', '/').Replace('-', '+');
-            switch (cipher.Length % 4)
-            {
-                case 2:
-                    cipher += "==";
-                    break;
-
-                case 3:
-                    cipher += "=";
-                    break;
-            }
-            var bytes = Convert.FromBase64String(cipher);
-            var salt = new byte[32];
-            var tmpCipher = new byte[bytes.Length - 32];
-
-            Buffer.BlockCopy(bytes, 0, salt, 0, 32);
-            Buffer.BlockCopy(bytes, 32, tmpCipher, 0, tmpCipher.Length);
-
-            return Encoding.UTF8.GetString(ProtectedData.Unprotect(tmpCipher, salt, DataProtectionScope.CurrentUser));
-        }
-
-        /// <summary>
-        /// Tries to decrypt the cipher text. If the decryption fails, then return the original cipher.
-        /// </summary>
-        /// <param name="cipher">The cipher to decrypt.</param>
-        /// <returns>The decrypted cipher if decryption is successful, otherwise the original cipher.</returns>
-        internal string TryDecrypt(string cipher)
-        {
-            if (string.IsNullOrWhiteSpace(cipher)) return cipher;
-
-            try
-            {
-                return Decrypt(cipher);
-            }
-            catch (Exception e)
-            {
-                _app.Logger.Error(e.ToString());
-                return cipher;
             }
         }
     }

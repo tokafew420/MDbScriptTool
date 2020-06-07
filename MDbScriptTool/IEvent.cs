@@ -19,7 +19,9 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         /// <param name="name">The event name.</param>
         /// <param name="handler">The event handler.</param>
+#pragma warning disable CA1716 // Identifiers should not match keywords
         void On(string name, Action<object[]> handler);
+#pragma warning restore CA1716 // Identifiers should not match keywords
 
         /// <summary>
         /// Add a listener to the script event of interest that only executes once.

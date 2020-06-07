@@ -160,6 +160,20 @@ namespace Tokafew420.MDbScriptTool
             AppSettings.Save();
         }
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (components != null) components.Dispose();
+                if (_browser != null) _browser.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
         #region Properties
 
         public AppContext Context { get; }

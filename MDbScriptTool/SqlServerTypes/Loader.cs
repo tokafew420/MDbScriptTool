@@ -1,17 +1,16 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using Tokafew420.MDbScriptTool;
 
 namespace SqlServerTypes
 {
     /// <summary>
-    /// Utility methods related to CLR Types for SQL Server 
+    /// Utility methods related to CLR Types for SQL Server
     /// </summary>
     public static class Utilities
     {
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern IntPtr LoadLibrary(string libname);
-
         /// <summary>
         /// Loads the required native assemblies for the current architecture (x86 or x64)
         /// </summary>
@@ -32,10 +31,10 @@ namespace SqlServerTypes
         private static void LoadNativeAssembly(string nativeBinaryPath, string assemblyName)
         {
             var path = Path.Combine(nativeBinaryPath, assemblyName);
-            var ptr = LoadLibrary(path);
+            var ptr = NativeMethods.LoadLibrary(path);
             if (ptr == IntPtr.Zero)
             {
-                throw new Exception(string.Format(
+                throw new Exception(string.Format(CultureInfo.InvariantCulture,
                     "Error loading {0} (ErrorCode: {1})",
                     assemblyName,
                     Marshal.GetLastWin32Error()));
