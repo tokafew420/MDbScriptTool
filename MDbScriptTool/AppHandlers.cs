@@ -335,7 +335,10 @@ namespace Tokafew420.MDbScriptTool
                         builder.Password = pass;
                     }
 
-                    SqlLogger.Log(builder.ToString(), dbs, sql);
+                    AppContext.SqlLogger.Log(new Dictionary<string, object> {
+                        { SqlLogger.CONN_STR_KEY,  builder.ToString() },
+                        { SqlLogger.DATABASES_KEY, dbs }
+                    }, sql);
 
                     var tasks = new List<Task>();
 
@@ -486,17 +489,14 @@ namespace Tokafew420.MDbScriptTool
                 isMainForm = _app.IsMainForm,
                 logging = new
                 {
-                    enabled = _app.Logger.Browser != null,
-                    debug = (_app.Logger.Level & LogLevel.Debug) != LogLevel.None,
-                    info = (_app.Logger.Level & LogLevel.Info) != LogLevel.None,
-                    warn = (_app.Logger.Level & LogLevel.Warn) != LogLevel.None,
-                    error = (_app.Logger.Level & LogLevel.Error) != LogLevel.None
+                    logToDevConsole = _app.LogToDevConsole,
+                    logLevel = _app.Logger.Level.ToString()
                 },
                 sqlLogging = new
                 {
-                    enabled = SqlLogger.Enabled,
-                    directory = SqlLogger.Directory,
-                    retention = SqlLogger.Retention
+                    enabled = AppContext.SqlLogger.Level != LogLevel.None,
+                    directory = AppContext.SqlLogger.Directory,
+                    retention = AppContext.SqlLogger.Retention
                 },
                 scriptLibrary = new
                 {
@@ -533,27 +533,18 @@ namespace Tokafew420.MDbScriptTool
 
                 if (settings.logging != null)
                 {
-                    if (settings.logging.enabled)
+                    _app.LogToDevConsole = settings.logging.logToDevConsole;
+                    if (Enum.TryParse<LogLevel>(settings.logging.logLevel, true, out LogLevel logLevel))
                     {
-                        _app.Logger.Browser = _browser;
+                        _app.Logger.Level = logLevel;
                     }
-                    else
-                    {
-                        _app.Logger.Browser = null;
-                    }
-
-                    _app.Logger.Level = LogLevel.None;
-                    if (settings.logging.debug) _app.Logger.Level |= LogLevel.Debug;
-                    if (settings.logging.info) _app.Logger.Level |= LogLevel.Info;
-                    if (settings.logging.warn) _app.Logger.Level |= LogLevel.Warn;
-                    if (settings.logging.error) _app.Logger.Level |= LogLevel.Error;
                 }
 
                 if (settings.sqlLogging != null)
                 {
-                    SqlLogger.Enabled = settings.sqlLogging.enabled;
-                    SqlLogger.Directory = settings.sqlLogging.directory;
-                    SqlLogger.Retention = settings.sqlLogging.retention;
+                    AppContext.SqlLogger.Level = settings.sqlLogging.enabled == true ? LogLevel.All : LogLevel.None;
+                    AppContext.SqlLogger.Retention = settings.sqlLogging.retention;
+                    AppContext.SqlLogger.Directory = settings.sqlLogging.directory;
                 }
 
                 if (settings.scriptLibrary != null)

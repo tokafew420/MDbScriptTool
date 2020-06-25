@@ -260,12 +260,15 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         private static void LoadConfiguration()
         {
+            Logger = new TraceListenerLogger();
+            SqlLogger = new SqlLogger();
+
             // Load saved state
             try
             {
                 SingleInstance = AppSettings.Get<bool>(Constants.Settings.SingleInstance);
 
-                SqlLogger.Enabled = AppSettings.Get<bool>(Constants.Settings.SqlLoggingEnabled);
+                SqlLogger.Level = AppSettings.Get<bool>(Constants.Settings.SqlLoggingEnabled) ? LogLevel.All : LogLevel.None;
                 SqlLogger.Retention = AppSettings.Get<int?>(Constants.Settings.SqlLoggingRetention);
                 // Set the directory last as that will initialize the directory
                 SqlLogger.Directory = AppSettings.GetOrDefault(Constants.Settings.SqlLoggingDirectory, Path.GetFullPath(Path.Combine(DataDirectory, Constants.Defaults.SqlLoggingDirectory)));
@@ -284,7 +287,7 @@ namespace Tokafew420.MDbScriptTool
         private static void SaveConfiguration()
         {
             // These are global configurations
-            AppSettings.Set(Constants.Settings.SqlLoggingEnabled, SqlLogger.Enabled);
+            AppSettings.Set(Constants.Settings.SqlLoggingEnabled, SqlLogger.Level != LogLevel.None);
             AppSettings.Set(Constants.Settings.SqlLoggingDirectory, SqlLogger.Directory);
             AppSettings.Set(Constants.Settings.SqlLoggingRetention, SqlLogger.Retention);
             AppSettings.Set(Constants.Settings.ScriptLibraryDirectory, ScriptLibraryDirectory);
@@ -362,7 +365,12 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Globally available logger.
         /// </summary>
-        public static ILogger Logger { get; } = new Logger(LogLevel.All);
+        public static ILogger Logger { get; private set; }
+
+        /// <summary>
+        /// Globally available SQL logger.
+        /// </summary>
+        public static SqlLogger SqlLogger { get; private set; }
 
         /// <summary>
         /// Get or set whether only a single instance of this application is allowed.

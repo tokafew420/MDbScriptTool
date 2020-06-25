@@ -13,6 +13,9 @@ namespace Tokafew420.MDbScriptTool
     {
         private readonly ChromiumWebBrowser _browser;
         private readonly AppHandlers _appHandler;
+        private readonly CompositeLogger _compositeLogger;
+        private readonly BrowserLogger _browserLogger;
+        private bool _logToBrowser;
 
         public App(AppContext context)
         {
@@ -22,7 +25,8 @@ namespace Tokafew420.MDbScriptTool
             var url = new Uri($"fs:///{AppContext.AppDirectory}app.html");
 
             _browser = new ChromiumWebBrowser(url.ToString());
-            Logger = new Logger(LogLevel.All, _browser);
+            _browserLogger = new BrowserLogger(_browser);
+            _compositeLogger = CompositeLogger.Create(AppContext.Logger);
 
             // Initialize the app
             _appHandler = new AppHandlers(this, _browser);
@@ -51,12 +55,11 @@ namespace Tokafew420.MDbScriptTool
             {
                 LastFileDialogDirectory = AppSettings.Get<string>(Constants.Settings.LastFileDialogDirectory) ?? "";
 
-                if (AppSettings.Exists(Constants.Settings.LogToBrowser) && !AppSettings.Get<bool>(Constants.Settings.LogToBrowser))
+                if (AppSettings.GetOrDefault(Constants.Settings.LogToDevConsole, false))
                 {
-                    Logger.Browser = null;
+                    LogToDevConsole = true;
                 }
-
-                Logger.Level = AppSettings.GetOrDefault(Constants.Settings.LogLevel, LogLevel.Info);
+                _compositeLogger.Level = AppSettings.GetOrDefault(Constants.Settings.LogLevel, LogLevel.Warn);
 
                 Location = AppSettings.Get<Point?>(Constants.Settings.WindowLocation) ?? Location;
                 Size = AppSettings.Get<Size?>(Constants.Settings.WindowSize) ?? Size;
@@ -154,7 +157,7 @@ namespace Tokafew420.MDbScriptTool
             }
             AppSettings.Set(Constants.Settings.WindowIsMaximized, WindowState == FormWindowState.Maximized);
             AppSettings.Set(Constants.Settings.LastFileDialogDirectory, LastFileDialogDirectory);
-            AppSettings.Set(Constants.Settings.LogToBrowser, Logger.Browser != null);
+            AppSettings.Set(Constants.Settings.LogToDevConsole, LogToDevConsole);
             AppSettings.Set(Constants.Settings.LogLevel, Logger.Level);
 
             AppSettings.Save();
@@ -189,9 +192,27 @@ namespace Tokafew420.MDbScriptTool
         public string LastFileDialogDirectory { get; set; }
 
         /// <summary>
-        /// Get or set the application's logger.
+        /// Get the application's logger.
         /// </summary>
-        public Logger Logger { get; set; }
+        public ILogger Logger => _compositeLogger;
+
+        /// <summary>
+        /// Get or set whether log message should be written to the browser console.
+        /// </summary>
+        public bool LogToDevConsole
+        {
+            get => _logToBrowser;
+            set
+            {
+                _logToBrowser = value;
+
+                _compositeLogger.RemoveTypeOf<BrowserLogger>();
+                if (_logToBrowser)
+                {
+                    _compositeLogger.Add(_browserLogger);
+                }
+            }
+        }
 
         #endregion Properties
     }

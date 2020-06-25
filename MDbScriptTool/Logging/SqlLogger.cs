@@ -5,58 +5,42 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Tokafew420.MDbScriptTool.Logging;
 
-namespace Tokafew420.MDbScriptTool
+namespace Tokafew420.MDbScriptTool.Logging
 {
     /// <summary>
     /// A SQL logging class.
     /// </summary>
-    public static class SqlLogger
+    public class SqlLogger : ILogger
     {
-        private static string _directory = "";
-        private static readonly Regex _passwordRegex = new Regex("Password=[^;]*(;|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        public const string CONN_STR_KEY = "ConnectionString";
+        public const string DATABASES_KEY = "Databases";
 
-        /// <summary>
-        /// Get or set whether SQL logging is enabled.
-        /// </summary>
-        public static bool Enabled { get; set; } = true;
-
-        /// <summary>
-        /// Get or set the directory where the log files are saved.
-        /// </summary>
-        public static string Directory
-        {
-            get => _directory;
-            set
-            {
-                _directory = value ?? "";
-                InitialilzeAsync();
-            }
-        }
-
-        /// <summary>
-        /// Get the log file name.
-        /// </summary>
-        public static string Filename => $"execute-history-{DateTime.Now.ToString("yyyyMMdd", CultureInfo.CurrentCulture)}.sql";
-
-        /// <summary>
-        /// Get or set the number of log files to retain.
-        /// </summary>
-        public static int? Retention { get; set; } = 10;
+        private string _directory = "";
+        private readonly Regex _passwordRegex = new Regex("Password=[^;]*(;|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
         /// <summary>
         /// Log the sql being executed.
         /// </summary>
-        /// <param name="connectionString">The connection string</param>
-        /// <param name="dbs">The list of databases being executed against</param>
+        /// <param name="logLevel">The log message severity level.</param>
+        /// <param name="properties">A dictionary of properties. Shold contain the connection and list of databases.</param>
         /// <param name="sql">The SQL being executed.</param>
-        public static void Log(string connectionString, IEnumerable<string> dbs, string sql)
+        /// <param name="args">Ignored</param>
+        public virtual void Write(LogLevel logLevel, IDictionary<string, object> properties, string sql, params object[] args)
         {
-            if (Enabled)
+            if (Level != LogLevel.None && logLevel <= Level)
             {
                 try
                 {
+                    var connectionString = "";
+                    IEnumerable<string> dbs = new List<string>();
+
+                    if (properties != null)
+                    {
+                        connectionString = properties.TryGetValue(CONN_STR_KEY, out var tmp) ? tmp as string : "";
+                        dbs = properties.TryGetValue(DATABASES_KEY, out tmp) ? tmp as IEnumerable<string> : dbs;
+                    }
+
                     var file = new FileInfo(Path.Combine(Directory, Filename));
                     file.Directory.Create();
                     File.AppendAllText(file.FullName, $@"
@@ -76,13 +60,41 @@ namespace Tokafew420.MDbScriptTool
         }
 
         /// <summary>
+        /// Get or set the logger's log level.
+        /// </summary>
+        public virtual LogLevel Level { get; set; }
+
+        /// <summary>
+        /// Get or set the directory where the log files are saved.
+        /// </summary>
+        public string Directory
+        {
+            get => _directory;
+            set
+            {
+                _directory = value ?? "";
+                InitialilzeAsync();
+            }
+        }
+
+        /// <summary>
+        /// Get the log file name.
+        /// </summary>
+        public string Filename => $"execute-history-{DateTime.Now.ToString("yyyyMMdd", CultureInfo.CurrentCulture)}.sql";
+
+        /// <summary>
+        /// Get or set the number of log files to retain.
+        /// </summary>
+        public int? Retention { get; set; } = 10;
+
+        /// <summary>
         /// Initializes the logger
         /// </summary>
         /// <returns></returns>
-        private static Task InitialilzeAsync()
+        private Task InitialilzeAsync()
         {
             // Run cleanup based on the retention value
-            if (Enabled && Retention.HasValue)
+            if (Level != LogLevel.None && Retention.HasValue)
             {
                 return Task.Run(() =>
                 {

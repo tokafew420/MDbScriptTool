@@ -6,11 +6,8 @@
 (function (window, app, os, $) {
     var $dlg = $('#settings-modal');
     var $singleInstance = $('#single-instance', $dlg);
-    var $logging = $('#enable-logs', $dlg);
-    var $loggingDebug = $('#enable-logs-debug', $dlg);
-    var $loggingInfo = $('#enable-logs-info', $dlg);
-    var $loggingWarn = $('#enable-logs-warn', $dlg);
-    var $loggingError = $('#enable-logs-error', $dlg);
+    var $logToDevConsole = $('#log-to-dev-console', $dlg);
+    var $logLevel = $('#log-level-select', $dlg);
     var $sqlLogging = $('#enable-sql-logs', $dlg);
     var $sqlLoggingDir = $('#sql-log-dir', $dlg);
     var $sqlLogRetention = $('#sql-log-retention', $dlg);
@@ -19,15 +16,6 @@
     var $scriptLibDir = $('#script-library-dir', $dlg);
 
     var $saveBtn = $('.save-btn', $dlg);
-
-    $logging.on('change', function () {
-        var enabled = $logging.is(':checked');
-
-        $loggingDebug.prop('disabled', !enabled);
-        $loggingInfo.prop('disabled', !enabled);
-        $loggingWarn.prop('disabled', !enabled);
-        $loggingError.prop('disabled', !enabled);
-    });
 
     $sqlLogging.on('change', function () {
         var enabled = $sqlLogging.is(':checked');
@@ -45,11 +33,8 @@
     $saveBtn.click(function () {
         if ($('input.is-invalid', $dlg).length === 0) {
             app.settings.singleInstance = $singleInstance.is(':checked');
-            app.settings.logging.enabled = $logging.is(':checked');
-            app.settings.logging.debug = $loggingDebug.is(':checked');
-            app.settings.logging.info = $loggingInfo.is(':checked');
-            app.settings.logging.warn = $loggingWarn.is(':checked');
-            app.settings.logging.error = $loggingError.is(':checked');
+            app.settings.logging.logToDevConsole = $logToDevConsole.is(':checked');
+            app.settings.logging.logLevel = $logLevel.val();
 
             var retention = $sqlLogRetention.val();
             app.settings.sqlLogging.enabled = $sqlLogging.is(':checked');
@@ -125,11 +110,8 @@
 
     $dlg.on('show.bs.modal', function (evt) {
         $singleInstance.prop('checked', app.settings.singleInstance);
-        $logging.prop('checked', app.settings.logging.enabled).change();
-        $loggingDebug.prop('checked', app.settings.logging.debug);
-        $loggingInfo.prop('checked', app.settings.logging.info);
-        $loggingWarn.prop('checked', app.settings.logging.warn);
-        $loggingError.prop('checked', app.settings.logging.error);
+        $logToDevConsole.prop('checked', app.settings.logging.logToDevConsole);
+        $logLevel.val(app.settings.logging.logLevel);
         $sqlLogging.prop('checked', app.settings.sqlLogging.enabled).change();
         $sqlLoggingDir.val(app.settings.sqlLogging.directory);
         $sqlLogRetention.val(app.settings.sqlLogging.retention);

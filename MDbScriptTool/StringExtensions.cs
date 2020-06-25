@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Text;
 
 namespace Tokafew420.MDbScriptTool
@@ -18,6 +19,21 @@ namespace Tokafew420.MDbScriptTool
         {
             if (string.IsNullOrWhiteSpace(value)) return defaultValue ?? "";
             return value;
+        }
+
+        /// <summary>
+        /// Format a log message with the specified parameters.
+        /// </summary>
+        /// <param name="message">The format message.</param>
+        /// <param name="args">The message parameters.</param>
+        /// <returns>The formatted message.</returns>
+        public static string Format(this string message, object[] args)
+        {
+            if (!string.IsNullOrWhiteSpace(message) && args?.Length > 0)
+            {
+                return string.Format(CultureInfo.CurrentCulture, message ?? "", args);
+            }
+            return message;
         }
 
         /// <summary>

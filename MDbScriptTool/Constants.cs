@@ -12,7 +12,7 @@ namespace Tokafew420.MDbScriptTool
         {
             public const string LastFileDialogDirectory = "LastFileDialogDirectory";
             public const string LogLevel = "LogLevel";
-            public const string LogToBrowser = "LogToBrowser";
+            public const string LogToDevConsole = "LogToDevConsole";
             public const string ScriptLibraryDirectory = "ScriptLibraryDirectory";
             public const string SingleInstance = "SingleInstance";
             public const string SqlLoggingEnabled = "SqlLoggingEnabled";

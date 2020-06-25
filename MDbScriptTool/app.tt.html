@@ -329,39 +329,29 @@
             </div>
           </section>
           <section id="logging-setting" class="mb-2">
-            <label for="logging-seting">Logging <i class="fa fa-info-circle" data-toggle="tooltip" title="View logs from native code in browser console" aria-hidden="true"></i></label>
+            <label for="logging-seting">Logging <i class="fa fa-info-circle" data-toggle="tooltip" title="Set the logging level and whether to send logs to browser dev console" aria-hidden="true"></i></label>
             <div class="container-fluid settings">
               <div class="row my-2">
                 <div class="col">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="enable-logs" />
-                    <label class="custom-control-label" for="enable-logs">Enable Native Logs</label>
+                  <div class="input-group input-group-sm mb-2">
+                    <div class="input-group-prepend">
+                      <label class="input-group-text" id="log-level-lbl">Log Level</label>
+                    </div>
+                    <select id="log-level-select" class="form-control custom-select" aria-label="Log Level" aria-describedby="log-level-select-lbl">
+                      <option value="None" selected>None</option>
+                      <option value="Error" selected>Error</option>
+                      <option value="Warn" selected>Warning</option>
+                      <option value="Info" selected>Informational</option>
+                      <option value="Debug" selected>Debug</option>
+                    </select>
                   </div>
                 </div>
               </div>
               <div class="row mb-2">
-                <div class="col-sm">
+                <div class="col">
                   <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="enable-logs-debug" />
-                    <label class="custom-control-label" for="enable-logs-debug">Debug</label>
-                  </div>
-                </div>
-                <div class="col-sm">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="enable-logs-info" />
-                    <label class="custom-control-label" for="enable-logs-info">Info</label>
-                  </div>
-                </div>
-                <div class="col-sm">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="enable-logs-warn" />
-                    <label class="custom-control-label" for="enable-logs-warn">Warn</label>
-                  </div>
-                </div>
-                <div class="col-sm">
-                  <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="enable-logs-error" />
-                    <label class="custom-control-label" for="enable-logs-error">Error</label>
+                    <input type="checkbox" class="custom-control-input" id="log-to-dev-console" />
+                    <label class="custom-control-label" for="log-to-dev-console">Log To Dev Console</label>
                   </div>
                 </div>
               </div>

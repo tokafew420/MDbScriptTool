@@ -435,3 +435,6 @@ dotnet_diagnostic.CA1308.severity = none
 
 # CA1822: Member does not access instance data and can be marked as static
 dotnet_diagnostic.CA1822.severity = none
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none

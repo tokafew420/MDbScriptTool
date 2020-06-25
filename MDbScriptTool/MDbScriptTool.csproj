@@ -126,10 +126,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
+    <Compile Include="Logging\BrowserLogger.cs" />
+    <Compile Include="Logging\CompositeLogger.cs" />
+    <Compile Include="Logging\NoopLogger.cs" />
+    <Compile Include="Logging\FileLogger.cs" />
+    <Compile Include="Logging\TraceListenerLogger.cs" />
     <Compile Include="Logging\ILoggerExtensions.cs" />
     <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Logging\LogLevel.cs" />
-    <Compile Include="SqlLogger.cs" />
+    <Compile Include="Logging\SqlLogger.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Crypto.cs" />
@@ -141,7 +147,6 @@
     <Compile Include="AppSettings.cs" />
     <Compile Include="IEvent.cs" />
     <Compile Include="SettingsJsonConverter.cs" />
-    <Compile Include="Logging\Logger.cs" />
     <Compile Include="OsEvent.cs" />
     <Compile Include="App.cs">
       <SubType>Form</SubType>
