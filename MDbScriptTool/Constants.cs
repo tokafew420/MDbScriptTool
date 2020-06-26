@@ -10,6 +10,8 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         internal class Settings
         {
+            public const string AddOnJs = "AddOnJs";
+            public const string AddOnCss = "AddOnCss";
             public const string LastFileDialogDirectory = "LastFileDialogDirectory";
             public const string LogLevel = "LogLevel";
             public const string LogToDevConsole = "LogToDevConsole";

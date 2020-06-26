@@ -14,7 +14,7 @@
     var $tbody = $('tbody', $entriesWrapper);
     var $errMsg = $('.err-msg', $dlg);
     var _entries, _rootEntries;
-    var scriptDirectory = app.settings.scriptLibrary.directory;
+    var scriptDirectory = app.settings.scriptLibrary;
     var sqlExtRegex = new RegExp(/\.sql$/, 'i');
 
     os.on('directory-listed', function (err, entries) {
@@ -25,7 +25,7 @@
             $errMsg.text(err.Message).show();
             _entries = [];
         } else {
-            var basePath = app.settings.scriptLibrary.directory.replace(/\\/g, '/').replace(/[\/\s]+$/, '');
+            var basePath = app.settings.scriptLibrary.replace(/\\/g, '/').replace(/[/\s]+$/, '');
             var basePathLen = basePath.length;
 
             _entries = entries
@@ -79,7 +79,7 @@
     });
 
     $dlg.on('show.bs.modal', function (evt) {
-        if (app.settings.scriptLibrary.view === 'list') {
+        if (app.ui.scriptLibrary.view === 'list') {
             $listViewBtn.addClass('active');
             $dirViewBtn.removeClass('active');
             $entriesWrapper.addClass('list-view');
@@ -89,20 +89,20 @@
             $entriesWrapper.removeClass('list-view');
         }
 
-        if (!_entries || scriptDirectory !== app.settings.scriptLibrary.directory) {
+        if (!_entries || scriptDirectory !== app.settings.scriptLibrary) {
             init();
-            scriptDirectory = app.settings.scriptLibrary.directory;
+            scriptDirectory = app.settings.scriptLibrary;
         }
     });
 
     function init() {
-        if (app.settings.scriptLibrary.directory) {
+        if (app.settings.scriptLibrary) {
             $errMsg.empty().show();
             app.loading.show({
                 text: 'Loading',
                 parent: $('.modal-body', $dlg)
             });
-            os.emit('list-directory', app.settings.scriptLibrary.directory);
+            os.emit('list-directory', app.settings.scriptLibrary);
         } else {
             $tbody.empty();
             $entriesWrapper.hide();
@@ -114,15 +114,15 @@
         $dirViewBtn.removeClass('active');
         $listViewBtn.addClass('active');
         $entriesWrapper.addClass('list-view');
-        app.settings.scriptLibrary.view = 'list';
-        if (app.settings.scriptLibrary.sort === 'files') {
+        app.ui.scriptLibrary.view = 'list';
+        if (app.ui.scriptLibrary.sort === 'files') {
             // Don't sort by files in list view
-            app.settings.scriptLibrary.sort = 'name';
+            app.ui.scriptLibrary.sort = 'name';
             $('thead th', $entriesWrapper).removeAttr('data-asc');
-            $('thead th[data-sort="name"]', $entriesWrapper).attr('data-asc', app.settings.scriptLibrary.asc);
+            $('thead th[data-sort="name"]', $entriesWrapper).attr('data-asc', app.ui.scriptLibrary.asc);
         }
 
-        app.saveState('settings');
+        app.saveState('ui');
         render();
     });
 
@@ -130,8 +130,8 @@
         $listViewBtn.removeClass('active');
         $dirViewBtn.addClass('active');
         $entriesWrapper.removeClass('list-view');
-        app.settings.scriptLibrary.view = 'directory';
-        app.saveState('settings');
+        app.ui.scriptLibrary.view = 'directory';
+        app.saveState('ui');
         render();
     });
 
@@ -153,7 +153,7 @@
     }, 300));
 
     function render() {
-        let view = app.settings.scriptLibrary.view || 'list';
+        let view = app.ui.scriptLibrary.view || 'list';
 
         $entriesWrapper.show();
         $tbody.html(_render(view === 'list' ? _entries : _rootEntries));
@@ -168,9 +168,9 @@
 
     function _render(entries) {
         if (entries) {
-            let view = app.settings.scriptLibrary.view || 'list';
-            let sort = app.settings.scriptLibrary.sort || 'name';
-            let order = app.settings.scriptLibrary.asc === false ? -1 : 1;
+            let view = app.ui.scriptLibrary.view || 'list';
+            let sort = app.ui.scriptLibrary.sort || 'name';
+            let order = app.ui.scriptLibrary.asc === false ? -1 : 1;
             let search = $search.val().trim().toLowerCase();
 
             return entries.filter(function (e) {
@@ -218,12 +218,12 @@
 
         $('thead th', $entriesWrapper).removeAttr('data-asc');
 
-        app.settings.scriptLibrary.sort = sort;
-        app.settings.scriptLibrary.asc = asc === 'true' ? false : true;
+        app.ui.scriptLibrary.sort = sort;
+        app.ui.scriptLibrary.asc = asc === 'true' ? false : true;
 
-        $this.attr('data-asc', app.settings.scriptLibrary.asc);
+        $this.attr('data-asc', app.ui.scriptLibrary.asc);
 
-        app.saveState('settings');
+        app.saveState('ui');
 
         render();
     }).on('click', 'a', function (e) {
@@ -272,4 +272,18 @@
         $dlg.modal('hide');
         $('#settings-modal').modal('show');
     });
+
+    // Restore sort attribute on th
+    if (typeof app.ui.scriptLibrary.asc === 'boolean') {
+        $('thead th', $entriesWrapper).each(function () {
+            let $this = $(this);
+            let sort = $this.attr('data-sort');
+
+            $this.removeAttr('data-asc');
+
+            if (app.ui.scriptLibrary.sort === sort) {
+                $this.attr('data-asc', app.ui.scriptLibrary.asc);
+            }
+        });
+    }
 }(window, window.app = window.app || {}, window.os, jQuery));

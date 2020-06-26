@@ -24,6 +24,7 @@ namespace Tokafew420.MDbScriptTool
         private static bool _runningInVs = false;
         private static string _appDir;
         private static string _dataDir;
+        private static bool _singleInstance;
 
         private readonly static Lazy<string> _appDirectory = new Lazy<string>(() =>
         {
@@ -120,8 +121,8 @@ namespace Tokafew420.MDbScriptTool
                 return;
             }
 
-            // Load global configurations
-            LoadConfiguration();
+            // Initialize
+            Init();
 
             // Allow only a single process in this section at a time.
             if (_mutex.WaitOne(-1, true))
@@ -237,63 +238,26 @@ namespace Tokafew420.MDbScriptTool
         }
 
         /// <summary>
-        /// BroadCast an event to all application instances.
-        /// </summary>
-        /// <param name="name">The name of the event.</param>
-        /// <param name="args">The event data.</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1062:Validate arguments of public methods", Justification = "Ok if null")]
-        public void BroadCast(string name, App app, params object[] args)
-        {
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
-
-            foreach (var a in _apps)
-            {
-                if (a != app)
-                {
-                    a.Emit(name, args);
-                }
-            }
-        }
-
-        /// <summary>
         /// Load global configurations.
         /// </summary>
-        private static void LoadConfiguration()
+        private static void Init()
         {
             Logger = new TraceListenerLogger();
-            SqlLogger = new SqlLogger();
 
             // Load saved state
             try
             {
-                SingleInstance = AppSettings.Get<bool>(Constants.Settings.SingleInstance);
+                _singleInstance = AppSettings.Get<bool>(Constants.Settings.SingleInstance);
 
-                SqlLogger.Level = AppSettings.Get<bool>(Constants.Settings.SqlLoggingEnabled) ? LogLevel.All : LogLevel.None;
-                SqlLogger.Retention = AppSettings.Get<int?>(Constants.Settings.SqlLoggingRetention);
-                // Set the directory last as that will initialize the directory
-                SqlLogger.Directory = AppSettings.GetOrDefault(Constants.Settings.SqlLoggingDirectory, Path.GetFullPath(Path.Combine(DataDirectory, Constants.Defaults.SqlLoggingDirectory)));
-
-                ScriptLibraryDirectory = AppSettings.GetOrDefault(Constants.Settings.ScriptLibraryDirectory, Path.GetFullPath(Path.Combine(DataDirectory, Constants.Defaults.ScriptLibraryDirectory)));
+                var sqlLogLevel = AppSettings.Get<bool>(Constants.Settings.SqlLoggingEnabled) ? LogLevel.All : LogLevel.None;
+                var sqlLogRetention = AppSettings.Get<int?>(Constants.Settings.SqlLoggingRetention);
+                var sqlLogDirectory = AppSettings.GetOrDefault(Constants.Settings.SqlLoggingDirectory, Path.GetFullPath(Path.Combine(DataDirectory, Constants.Defaults.SqlLoggingDirectory)));
+                SqlLogger = new SqlLogger(sqlLogDirectory, sqlLogRetention, sqlLogLevel);
             }
             catch (Exception e)
             {
                 Logger.Warn($"Failed to apply AppSettings. Error: {e}");
             }
-        }
-
-        /// <summary>
-        /// Save global configurations.
-        /// </summary>
-        private static void SaveConfiguration()
-        {
-            // These are global configurations
-            AppSettings.Set(Constants.Settings.SqlLoggingEnabled, SqlLogger.Level != LogLevel.None);
-            AppSettings.Set(Constants.Settings.SqlLoggingDirectory, SqlLogger.Directory);
-            AppSettings.Set(Constants.Settings.SqlLoggingRetention, SqlLogger.Retention);
-            AppSettings.Set(Constants.Settings.ScriptLibraryDirectory, ScriptLibraryDirectory);
-            AppSettings.Set(Constants.Settings.SingleInstance, SingleInstance);
-
-            AppSettings.Save();
         }
 
         /// <summary>
@@ -304,12 +268,11 @@ namespace Tokafew420.MDbScriptTool
             if (sender is App app)
             {
                 _apps.Remove(app);
+                AppSettings.Save(this);
 
                 // If all application forms are closed then save settings an exit process
                 if (_apps.Count == 0)
                 {
-                    SaveConfiguration();
-
                     base.OnMainFormClosed(sender, e);
                 }
                 else if (app == MainForm)
@@ -375,12 +338,15 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Get or set whether only a single instance of this application is allowed.
         /// </summary>
-        public static bool SingleInstance { get; set; }
-
-        /// <summary>
-        /// Get or set the path to the script library directory.
-        /// </summary>
-        public static string ScriptLibraryDirectory { get; set; }
+        public static bool SingleInstance
+        {
+            get => _singleInstance;
+            set
+            {
+                _singleInstance = value;
+                AppSettings.Set(Constants.Settings.SingleInstance, _singleInstance);
+            }
+        }
 
         #endregion Properties
     }

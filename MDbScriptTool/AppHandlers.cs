@@ -51,25 +51,6 @@ namespace Tokafew420.MDbScriptTool
         }
 
         /// <summary>
-        /// Emit the specified event to the browser application.
-        /// </summary>
-        /// <param name="name">The name of the event.</param>
-        /// <param name="args">The event data</param>
-        public void Emit(string name, params object[] args)
-        {
-            if (string.IsNullOrWhiteSpace(name)) throw new ArgumentNullException(nameof(name));
-
-            try
-            {
-                OsEvent.Emit(name, args);
-            }
-            catch (Exception e)
-            {
-                _app.Logger.Error(e.ToString());
-            }
-        }
-
-        /// <summary>
         /// Get version numbers of the app and dependencies.
         /// </summary>
         /// <param name="args">Ignored</param>
@@ -479,7 +460,7 @@ namespace Tokafew420.MDbScriptTool
         /// [0] Always null
         /// [1] The log settings
         /// </remarks>
-        private void GetSettings(object[] args)
+        internal void GetSettings(object[] args)
         {
             var replyMsgName = "settings";
 
@@ -494,14 +475,13 @@ namespace Tokafew420.MDbScriptTool
                 },
                 sqlLogging = new
                 {
-                    enabled = AppContext.SqlLogger.Level != LogLevel.None,
+                    enabled = AppContext.SqlLogger.Enabled,
                     directory = AppContext.SqlLogger.Directory,
                     retention = AppContext.SqlLogger.Retention
                 },
-                scriptLibrary = new
-                {
-                    directory = AppContext.ScriptLibraryDirectory
-                }
+                scriptLibrary = AppSettings.GetOrDefault(Constants.Settings.ScriptLibraryDirectory, Path.GetFullPath(Path.Combine(AppContext.DataDirectory, Constants.Defaults.ScriptLibraryDirectory))),
+                addOnJs = AppSettings.GetOrDefault(Constants.Settings.AddOnJs, ""),
+                addOnCss = AppSettings.GetOrDefault(Constants.Settings.AddOnCss, "")
             });
         }
 
@@ -542,17 +522,17 @@ namespace Tokafew420.MDbScriptTool
 
                 if (settings.sqlLogging != null)
                 {
-                    AppContext.SqlLogger.Level = settings.sqlLogging.enabled == true ? LogLevel.All : LogLevel.None;
+                    AppContext.SqlLogger.Enabled = settings.sqlLogging.enabled == true;
                     AppContext.SqlLogger.Retention = settings.sqlLogging.retention;
                     AppContext.SqlLogger.Directory = settings.sqlLogging.directory;
                 }
 
-                if (settings.scriptLibrary != null)
-                {
-                    AppContext.ScriptLibraryDirectory = settings.scriptLibrary.directory;
-                }
+                AppSettings.Set(Constants.Settings.ScriptLibraryDirectory, settings.scriptLibrary as string ?? "");
+                AppSettings.Set(Constants.Settings.AddOnJs, settings.addOnJs as string ?? "");
+                AppSettings.Set(Constants.Settings.AddOnCss, settings.addOnCss as string ?? "");
 
                 OsEvent.Emit(replyMsgName);
+                AppSettings.Save(_app);
             }
         }
 

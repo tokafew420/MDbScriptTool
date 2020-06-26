@@ -922,9 +922,10 @@
             instances: [],      // Holds all instances
             settings: {},       // Settings object
             ui: {               // Settings object related to the ui
-                sidebarCollapsed: false
+                sidebarCollapsed: false,
+                scriptLibrary: {}
             },
-            savedStates: ['connections', 'instances', 'settings', 'ui'], // States to save
+            savedStates: ['connections', 'instances', 'ui'], // States to save
             draggedItems: []    // Items from the dragItems event
         });
 
@@ -1662,12 +1663,27 @@
         $(function () {
             // On fresh startup, the app may need time to build out the data/settings directory.
             os.on('settings', function (err, settings) {
+                // Before updating check if it's not the initial app load
+                // and the addon changed we need to prompt for a refresh
+                var promptAddOnChanged = app.settings.addOnJs !== undefined &&
+                    (app.compare(app.settings.addOnJs, settings.addOnJs) || app.compare(app.settings.addOnCss, settings.addOnCss));
+
                 // Sync settings
                 app.merge(app.settings, {
                     logging: {},
-                    sqlLogging: {},
-                    scriptLibrary: {}
+                    sqlLogging: {}
                 }, settings);
+
+                if (promptAddOnChanged) {
+                    app.alert('AddOn Script and CSS file will be apply on next reload. Reload Now?', 'Hey!!', {
+                        cancel: 'Later',
+                        ok: 'Reload'
+                    }, function (reload) {
+                        if (reload) {
+                            window.location.reload(true);
+                        }
+                    });
+                }
             }).once('settings', function (err, settings) {
                 function alertError(err) {
                     app.alert('<p>Failed to load custom script: </p>' +
@@ -1686,9 +1702,9 @@
                 }
 
                 // Initialize addons
-                var addonJs = app.settings.addonJs;
-                if (addonJs) {
-                    app.openFile(addonJs, function (err, res) {
+                var addOnJs = app.settings.addOnJs;
+                if (addOnJs) {
+                    app.openFile(addOnJs, function (err, res) {
                         if (!err) {
                             res = `(function (window, app, os, $) {
                             try { ${res} } catch (err) { (${alertError.toString()}(err)); }
@@ -1704,18 +1720,18 @@
                             $onerror.remove();
                             $cleanup.remove();
                         } else {
-                            app.alert(`Failed to load custom script: [${app.settings.addonJs}]`, 'Error');
+                            app.alert(`Failed to load custom script: [${app.settings.addOnJs}]`, 'Error');
                         }
                     });
                 }
-                var addonCss = app.settings.addonCss;
-                if (addonCss) {
-                    if (addonCss.indexOf('http') !== 0) {
+                var addOnCss = app.settings.addOnCss;
+                if (addOnCss) {
+                    if (addOnCss.indexOf('http') !== 0) {
                         // Append filesystem schema
                         // Add guid to disable chrome caching
-                        addonCss = 'fs://' + addonCss + '?' + app.guid();
+                        addOnCss = 'fs://' + addOnCss + '?' + app.guid();
                     }
-                    $('head').append(`<link rel="stylesheet" href="${addonCss}" />`);
+                    $('head').append(`<link rel="stylesheet" href="${app.settings.addOnCss}" />`);
                 }
 
                 // Initialize saved instances

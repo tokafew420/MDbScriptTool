@@ -17,7 +17,18 @@ namespace Tokafew420.MDbScriptTool.Logging
         public const string DATABASES_KEY = "Databases";
 
         private string _directory = "";
+        private LogLevel _level;
+        private int? _retention = 10;
         private readonly Regex _passwordRegex = new Regex("Password=[^;]*(;|$)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        public SqlLogger(string directory, int? retention = 10, LogLevel logLevel = LogLevel.None)
+        {
+            _directory = directory;
+            _retention = retention;
+            _level = logLevel;
+
+            InitialilzeAsync();
+        }
 
         /// <summary>
         /// Log the sql being executed.
@@ -62,7 +73,26 @@ namespace Tokafew420.MDbScriptTool.Logging
         /// <summary>
         /// Get or set the logger's log level.
         /// </summary>
-        public virtual LogLevel Level { get; set; }
+        /// <remarks>LogLevel is used as a binary flag here. LogLevel.None means don't log, any other value will enable logs.</remarks>
+        public virtual LogLevel Level
+        {
+            get => _level;
+            set
+            {
+                _level = value;
+                AppSettings.Set(Constants.Settings.SqlLoggingEnabled, _level != LogLevel.None);
+            }
+        }
+
+        public virtual bool Enabled
+        {
+            get => _level != LogLevel.None;
+            set
+            {
+                _level = value ? LogLevel.All : LogLevel.None;
+                AppSettings.Set(Constants.Settings.SqlLoggingEnabled, value);
+            }
+        }
 
         /// <summary>
         /// Get or set the directory where the log files are saved.
@@ -72,8 +102,12 @@ namespace Tokafew420.MDbScriptTool.Logging
             get => _directory;
             set
             {
+                var doInit = _directory != value;
+
                 _directory = value ?? "";
-                InitialilzeAsync();
+                AppSettings.Set(Constants.Settings.SqlLoggingDirectory, _directory);
+
+                if (doInit) InitialilzeAsync();
             }
         }
 
@@ -85,7 +119,19 @@ namespace Tokafew420.MDbScriptTool.Logging
         /// <summary>
         /// Get or set the number of log files to retain.
         /// </summary>
-        public int? Retention { get; set; } = 10;
+        public int? Retention
+        {
+            get => _retention;
+            set
+            {
+                var doInit = _retention != value;
+
+                _retention = value;
+                AppSettings.Set(Constants.Settings.SqlLoggingRetention, _retention);
+
+                if (doInit) InitialilzeAsync();
+            }
+        }
 
         /// <summary>
         /// Initializes the logger

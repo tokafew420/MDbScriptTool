@@ -15,7 +15,8 @@ namespace Tokafew420.MDbScriptTool
         private readonly AppHandlers _appHandler;
         private readonly CompositeLogger _compositeLogger;
         private readonly BrowserLogger _browserLogger;
-        private bool _logToBrowser;
+        private bool _logToDevConsole;
+        private string _lastFileDialogDirectory;
 
         public App(AppContext context)
         {
@@ -50,16 +51,15 @@ namespace Tokafew420.MDbScriptTool
 
             NativeMethods.CreateSysMenu(this);
 
+            AppSettings.Saved += ResyncSettings;
+
             // Load saved state
             try
             {
-                LastFileDialogDirectory = AppSettings.Get<string>(Constants.Settings.LastFileDialogDirectory) ?? "";
+                _logToDevConsole = AppSettings.Get<bool>(Constants.Settings.LogToDevConsole);
+                Logger.Level = AppSettings.GetOrDefault(Constants.Settings.LogLevel, LogLevel.Warn);
 
-                if (AppSettings.GetOrDefault(Constants.Settings.LogToDevConsole, false))
-                {
-                    LogToDevConsole = true;
-                }
-                _compositeLogger.Level = AppSettings.GetOrDefault(Constants.Settings.LogLevel, LogLevel.Warn);
+                _lastFileDialogDirectory = AppSettings.Get<string>(Constants.Settings.LastFileDialogDirectory) ?? "";
 
                 Location = AppSettings.Get<Point?>(Constants.Settings.WindowLocation) ?? Location;
                 Size = AppSettings.Get<Size?>(Constants.Settings.WindowSize) ?? Size;
@@ -72,13 +72,6 @@ namespace Tokafew420.MDbScriptTool
                 Logger.Warn($"Failed to apply AppSettings. Error: {ex}");
             }
         }
-
-        /// <summary>
-        /// Emits an event.
-        /// </summary>
-        /// <param name="name">The name of the event.</param>
-        /// <param name="data">The event data.</param>
-        public void Emit(string name, params object[] args) => _appHandler.Emit(name, args);
 
         /// <summary>
         /// Custom handling for windows messages
@@ -134,8 +127,26 @@ namespace Tokafew420.MDbScriptTool
             }
         }
 
+        /// <summary>
+        /// Handle the settings saved event. In cases when there's multiple instances
+        /// we want to notify other instances of changes.
+        /// </summary>
+        private void ResyncSettings(object sender, EventArgs e)
+        {
+            if (sender != this &&
+                _browser != null &&
+                _appHandler != null)
+            {
+
+                // Trigger the UI to reload its settings.
+                _appHandler.GetSettings(null);
+            }
+        }
+
         private void AppForm_Closing(object sender, FormClosingEventArgs e)
         {
+            AppSettings.Saved -= ResyncSettings;
+
             //Comment out Cef.Shutdown() call - it will be automatically called when exiting the application.
             //Due to a timing issue and the way the WCF service closes it's self in newer versions, it can be best to leave CefSharp to clean it's self up.
             //Alternative solution is to set the WCF timeout to Zero (or a smaller number) using CefSharp.CefSharpSettings.WcfTimeout = TimeSpan.Zero;
@@ -156,11 +167,10 @@ namespace Tokafew420.MDbScriptTool
                 AppSettings.Set(Constants.Settings.WindowSize, new Size?(RestoreBounds.Size));
             }
             AppSettings.Set(Constants.Settings.WindowIsMaximized, WindowState == FormWindowState.Maximized);
-            AppSettings.Set(Constants.Settings.LastFileDialogDirectory, LastFileDialogDirectory);
-            AppSettings.Set(Constants.Settings.LogToDevConsole, LogToDevConsole);
+
             AppSettings.Set(Constants.Settings.LogLevel, Logger.Level);
 
-            AppSettings.Save();
+            AppSettings.Save(this);
         }
 
         /// <summary>
@@ -189,7 +199,15 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Get or set the last directory path used from a file dialog.
         /// </summary>
-        public string LastFileDialogDirectory { get; set; }
+        public string LastFileDialogDirectory
+        {
+            get => _lastFileDialogDirectory;
+            set
+            {
+                _lastFileDialogDirectory = value;
+                AppSettings.Set(Constants.Settings.LastFileDialogDirectory, _lastFileDialogDirectory);
+            }
+        }
 
         /// <summary>
         /// Get the application's logger.
@@ -201,13 +219,14 @@ namespace Tokafew420.MDbScriptTool
         /// </summary>
         public bool LogToDevConsole
         {
-            get => _logToBrowser;
+            get => _logToDevConsole;
             set
             {
-                _logToBrowser = value;
+                _logToDevConsole = value;
+                AppSettings.Set(Constants.Settings.LogToDevConsole, _logToDevConsole);
 
                 _compositeLogger.RemoveTypeOf<BrowserLogger>();
-                if (_logToBrowser)
+                if (_logToDevConsole)
                 {
                     _compositeLogger.Add(_browserLogger);
                 }

@@ -123,7 +123,8 @@ namespace Tokafew420.MDbScriptTool
         /// <summary>
         /// Saves the app settings to persistent storage.
         /// </summary>
-        public static void Save()
+        /// <param name="sender">The source object calling doing the save. Will be passed along as the event sender.</param>
+        public static void Save(object sender = null)
         {
             try
             {
@@ -135,6 +136,7 @@ namespace Tokafew420.MDbScriptTool
 
                 File.WriteAllText(Path, JsonConvert.SerializeObject(Settings, new SettingsJsonConverter()), Encoding.UTF8);
                 AppContext.Logger.Debug("Saved AppSettings");
+                Saved(sender, EventArgs.Empty);
             }
             catch (Exception e)
             {
@@ -151,5 +153,11 @@ namespace Tokafew420.MDbScriptTool
         /// Get the app settings.
         /// </summary>
         public static IDictionary<string, object> Settings { get; } = new ConcurrentDictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+
+        /// <summary>
+        /// An event that fires when settings are saved.
+        /// </summary>
+        /// <remarks>Initialize with delegate so we don't have to do null checking.</remarks>
+        public static event EventHandler Saved = delegate { };
     }
 }
