@@ -1731,7 +1731,7 @@
                         // Add guid to disable chrome caching
                         addOnCss = 'fs://' + addOnCss + '?' + app.guid();
                     }
-                    $('head').append(`<link rel="stylesheet" href="${app.settings.addOnCss}" />`);
+                    $('head').append(`<link rel="stylesheet" href="${addOnCss}" />`);
                 }
 
                 // Initialize saved instances

@@ -303,6 +303,26 @@ namespace Tokafew420.MDbScriptTool
                 p.MainModule.FileName == currentPath);
         }
 
+        /// <summary>
+        /// Determine if the specified app instance is "perfectly" covering another app instance (In position and size).
+        /// </summary>
+        /// <param name="app">The App instance to test.</param>
+        /// <returns>true if the app instance covers another instance otherwise false.</returns>
+        /// <remarks>This is used when multiple app instances are opened. We don't want to open directly on top of an existing instance thereby hiding it.</remarks>
+        public bool IsHidingAnotherForm(App app)
+        {
+            if (app != null)
+            {
+                foreach (var a in _apps)
+                {
+                    if (app == a) continue;
+                    if (app.Location.Equals(a.Location) && app.Size.Equals(a.Size)) return true;
+                }
+            }
+
+            return false;
+        }
+
         #region Properties
 
         /// <summary>

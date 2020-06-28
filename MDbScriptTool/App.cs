@@ -125,6 +125,13 @@ namespace Tokafew420.MDbScriptTool
                 Location = new Point(Screen.PrimaryScreen.WorkingArea.Left - border, Screen.PrimaryScreen.WorkingArea.Top - border);
                 WindowState = FormWindowState.Normal;
             }
+
+            // Don't hide other opened forms. 
+            while (Context.IsHidingAnotherForm(this))
+            {
+                // Stagger the new form.
+                Location = new Point(Location.X + 20, Location.Y + 20);
+            }
         }
 
         /// <summary>
