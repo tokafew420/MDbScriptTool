@@ -25,9 +25,11 @@ namespace Tokafew420.MDbScriptTool
             LMEM_VALID_FLAGS = 0x0F72,
             LMEM_INVALID_HANDLE = 0x8000,
             LHND = (LMEM_MOVEABLE | LMEM_ZEROINIT),
-            LPTR = (LMEM_FIXED | LMEM_ZEROINIT),
-            NONZEROLHND = (LMEM_MOVEABLE),
-            NONZEROLPTR = (LMEM_FIXED)
+#pragma warning disable CA1069 // Enums values should not be duplicated
+            LPTR = LMEM_FIXED | LMEM_ZEROINIT,
+#pragma warning restore CA1069 // Enums values should not be duplicated
+            NONZEROLHND = LMEM_MOVEABLE,
+            NONZEROLPTR = LMEM_FIXED
         }
 
         [Flags]
@@ -60,7 +62,9 @@ namespace Tokafew420.MDbScriptTool
             /// <summary>
             /// Applies new frame styles set using the SetWindowLong function.Sends a WM_NCCALCSIZE message to the window, even if the window's size is not being changed. If this flag is not specified, WM_NCCALCSIZE is sent only when the window's size is being changed.
             /// </summary>
+#pragma warning disable CA1069 // Enums values should not be duplicated
             SWP_FRAMECHANGED = 0x0020,
+#pragma warning restore CA1069 // Enums values should not be duplicated
 
             /// <summary>
             /// Hides the window.
@@ -95,7 +99,9 @@ namespace Tokafew420.MDbScriptTool
             /// <summary>
             /// Same as the SWP_NOOWNERZORDER flag.
             /// </summary>
+#pragma warning disable CA1069 // Enums values should not be duplicated
             SWP_NOREPOSITION = 0x0200,
+#pragma warning restore CA1069 // Enums values should not be duplicated
 
             /// <summary>
             /// Prevents the window from receiving the WM_WINDOWPOSCHANGING message.
@@ -143,7 +149,9 @@ namespace Tokafew420.MDbScriptTool
             /// <summary>
             /// Activates the window and displays it as a maximized window.
             /// </summary>
+#pragma warning disable CA1069 // Enums values should not be duplicated
             SW_SHOWMAXIMIZED = 3,
+#pragma warning restore CA1069 // Enums values should not be duplicated
 
             /// <summary>
             /// Displays a window in its most recent size and position. This value is similar to SW_SHOWNORMAL, except that the window is not activated.
@@ -253,13 +261,26 @@ namespace Tokafew420.MDbScriptTool
         [DllImport("user32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         private static extern bool AppendMenu(IntPtr hMenu, MenuFlags uFlags, IntPtr uIDNewItem, string lpNewItem);
 
-        [DllImport("User32")]
+        /// <summary>
+        /// Retrieves a handle to the foreground window (the window with which the user is currently working). The system
+        /// assigns a slightly higher priority to the thread that creates the foreground window than it does to other threads.
+        /// <para>See https://msdn.microsoft.com/en-us/library/windows/desktop/ms633505%28v=vs.85%29.aspx for more information.</para>
+        /// </summary>
+        /// <returns>
+        /// The return value is a handle to the foreground window. The foreground window
+        /// can be NULL in certain circumstances, such as when a window is losing activation.
+        /// </returns>
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetForegroundWindow();
+
+
+        [DllImport("user32.dll")]
         public static extern int SetForegroundWindow(IntPtr hwnd);
 
         [DllImport("user32.dll")]
         public static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SetWindowPosFlags uFlags);
 
-        [DllImport("User32.dll")]
+        [DllImport("user32.dll")]
         public static extern bool ShowWindow(IntPtr handle, CmdShow nCmdShow);
 
         /// <summary>

@@ -71,6 +71,29 @@
         app.createInstance();
     });
 
+    var openFile = function (name, path, callback) {
+        callback = callback || app.noop;
+        app.openFile(path, function (err, res) {
+            if (err) {
+                return app.alert(`<span class="text-danger">${err || 'Failed to load file'}</span >`, 'Error', { html: true });
+            }
+
+            var instance = app.createInstance({
+                path: path,
+                name: name,
+                code: res,
+                dirty: false
+            });
+
+            // Let the editor instance create itself first.
+            setTimeout(function () {
+                app.switchInstance(instance);
+
+                callback(instance);
+            }, 0);
+        });
+    };
+
     $openFile.on('click', function () {
         $('#open-file-file', $toolbar).val(null).click();
         return false;
@@ -90,26 +113,30 @@
             if (osFile) {
                 var path = osFile.Path.replace(/\\/g, '/');
 
-                app.openFile(path, function (err, res) {
-                    if (err) {
-                        return app.alert(`<span class="text-danger">${err || 'Failed to load file'}</span >`, 'Error', { html: true });
-                    }
-
-                    var instance = app.createInstance({
-                        path: path,
-                        name: name,
-                        code: res,
-                        dirty: false
-                    });
-
-                    // Let the editor instance create itself first.
-                    setTimeout(function () {
-                        app.switchInstance(instance);
-                    }, 0);
-                });
+                openFile(name, path);
             }
         }
         osFiles = null;
+    });
+
+    // When the server asks for a file to be opened
+    app.on('open-file', function (name, path) {
+        // If the file is already opened then switch to it
+        for (var instance of app.instances) {
+            // Check if id is from this app (in case of multi app instances)
+            if (instance.path === path) {
+                app.switchInstance(instance);
+                return;
+            }
+        }
+        openFile(name, path, function (instance) {
+            // If it's a new app instance and there's the default "New" tab then close it
+            let first = app.instances[0];
+
+            if (first && !first.code && !first.path) {
+                app.removeInstance(first);
+            }
+        });
     });
 
     $saveFile.on('click', function () {

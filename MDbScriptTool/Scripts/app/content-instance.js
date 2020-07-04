@@ -93,31 +93,6 @@
         app.updateStatusBarForInstance(instance);
     });
 
-    $(window).on('beforeunload', function () {
-        // When closing app, remove any unsaved instances with no code.
-        // Only search local container in case of multi-instances
-        var saveInstances = false;
-        $('.instance', $instanceContainer).each(function () {
-            var $this = $(this);
-            var id = $this.attr('id');
-            var instance = app.findBy(app.instances, 'id', id);
-
-            if (instance && !instance.code && !instance.path) {
-                var idx = app.instances.indexOf(instance);
-
-                if (idx !== -1) {
-                    app.instances.splice(idx, 1);
-
-                    saveInstances = true;
-                }
-            }
-        });
-
-        if (saveInstances) {
-            app.saveState('instances');
-        }
-    });
-
     /**
      * Update the status bar with the current instance's metadata
      * @param {any} instance The  current instance.

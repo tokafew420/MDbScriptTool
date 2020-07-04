@@ -34,8 +34,8 @@
 
             editor.on('change', app.debounce(function () {
                 instance.code = editor.getValue();
-                app.saveState('instances');
-            }, 5000));
+                app.saveInstance(instance);
+            }, 1000));
 
             // Ignore when a file is dragged to allow for custom handling
             editor.on('dragstart', function (cm, e) {

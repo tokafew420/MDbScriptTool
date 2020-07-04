@@ -48,6 +48,7 @@ namespace Tokafew420.MDbScriptTool
             UiEvent.On("set-settings", SetSettings);
             UiEvent.On("open-explorer", OpenExplorer);
             UiEvent.On("list-directory", ListDirectory);
+            UiEvent.On("client-initialized", ClientInitialized);
         }
 
         /// <summary>
@@ -466,8 +467,10 @@ namespace Tokafew420.MDbScriptTool
 
             OsEvent.Emit(replyMsgName, null, new
             {
+                appId = _app.Id,
                 singleInstance = AppContext.SingleInstance,
                 isMainForm = _app.IsMainForm,
+                isStartup = _app.IsStartup,
                 logging = new
                 {
                     logToDevConsole = _app.LogToDevConsole,
@@ -651,6 +654,27 @@ namespace Tokafew420.MDbScriptTool
             catch (Exception e)
             {
                 OsEvent.Emit(replyMsgName, e);
+            }
+        }
+
+        /// <summary>
+        /// Called from client to notify server that the client is initialized.
+        /// </summary>
+        /// <param name="args">Ignored</param>
+        private void ClientInitialized(object[] args) => _app.IsClientInitialized = true;
+
+        /// <summary>
+        /// Sends a message to the client telling it to open the specified file.
+        /// </summary>
+        /// <param name="path">The file path to open.</param>
+        internal void InitiateOpenFile(string path)
+        {
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                var emitMsgName = "open-file";
+                var name = Path.GetFileName(path);
+
+                OsEvent.Emit(emitMsgName, name, path);
             }
         }
 

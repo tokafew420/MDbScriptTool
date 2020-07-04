@@ -1,6 +1,9 @@
 using System;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using CefSharp;
 using CefSharp.WinForms;
@@ -56,7 +59,7 @@ namespace Tokafew420.MDbScriptTool
             // Load saved state
             try
             {
-                _logToDevConsole = AppSettings.Get<bool>(Constants.Settings.LogToDevConsole);
+                LogToDevConsole = AppSettings.Get<bool>(Constants.Settings.LogToDevConsole);
                 Logger.Level = AppSettings.GetOrDefault(Constants.Settings.LogLevel, LogLevel.Warn);
 
                 _lastFileDialogDirectory = AppSettings.Get<string>(Constants.Settings.LastFileDialogDirectory) ?? "";
@@ -74,6 +77,29 @@ namespace Tokafew420.MDbScriptTool
         }
 
         /// <summary>
+        /// Tells the client to open the specified file.
+        /// </summary>
+        /// <param name="path">The path to the file.</param>
+        /// <returns>A task representing the asynchronous operation.</returns>
+        public async Task OpenFile(string path)
+        {
+            if (File.Exists(path))
+            {
+                // Wait for the client to initialize for a max of 5 seconds.
+                var delay = 500;
+                var timeout = delay * 10;
+                var time = 0;
+                while (!IsClientInitialized)
+                {
+                    await Task.Delay(delay).ConfigureAwait(false);
+                    time += delay;
+                    if (time > timeout) return;
+                }
+                _appHandler.InitiateOpenFile(path);
+            }
+        }
+
+        /// <summary>
         /// Custom handling for windows messages
         /// </summary>
         /// <param name="m">The message received.</param>
@@ -85,7 +111,25 @@ namespace Tokafew420.MDbScriptTool
                 var data = Marshal.PtrToStringUni(cds.lpData);
                 if (data == "Cmd:New Window")
                 {
+                    Logger.Debug("Open New Window");
                     Context.CreateNewApplicationInstance();
+                }
+                else if (data.StartsWith("Cmd:Open File:", true, CultureInfo.InvariantCulture))
+                {
+                    var path = data.Replace("Cmd:Open File:", "");
+                    Logger.Debug($"Open File: {path}");
+
+                    var app = Context.GetForegroundApp();
+
+                    if (app != null)
+                    {
+                        Logger.Debug("Open file");
+                        _ = app.OpenFile(path);
+                    }
+                    else
+                    {
+                        Logger.Debug("No foreground app. File not opened.");
+                    }
                 }
             }
             // Test if the Chrome Dev Tools item was selected from the system menu
@@ -126,9 +170,15 @@ namespace Tokafew420.MDbScriptTool
                 WindowState = FormWindowState.Normal;
             }
 
-            // Don't hide other opened forms. 
+            // Don't hide other opened forms.
             while (Context.IsHidingAnotherForm(this))
             {
+                if (WindowState == FormWindowState.Maximized)
+                {
+                    // If the window is maximized then of course it's hiding the previous window.
+                    WindowState = FormWindowState.Normal;
+                }
+
                 // Stagger the new form.
                 Location = new Point(Location.X + 20, Location.Y + 20);
             }
@@ -144,7 +194,6 @@ namespace Tokafew420.MDbScriptTool
                 _browser != null &&
                 _appHandler != null)
             {
-
                 // Trigger the UI to reload its settings.
                 _appHandler.GetSettings(null);
             }
@@ -196,12 +245,31 @@ namespace Tokafew420.MDbScriptTool
 
         #region Properties
 
+        /// <summary>
+        /// Get the app context.
+        /// </summary>
         public AppContext Context { get; }
+
+        /// <summary>
+        /// Get the app instance id.
+        /// </summary>
+        public string Id { get; } = Guid.NewGuid().ToString();
 
         /// <summary>
         /// Get whether this application instance is the main form.
         /// </summary>
         public bool IsMainForm => Context.MainForm == this;
+
+        /// <summary>
+        /// Get or set whether the client is initialized.
+        /// </summary>
+        public bool IsClientInitialized { get; set; }
+
+        /// <summary>
+        /// Get or set whether is this the initial startup.
+        /// </summary>
+        /// <remarks>Will be true only for the first instance loading for the first time.</remarks>
+        public bool IsStartup => IsMainForm && !IsClientInitialized;
 
         /// <summary>
         /// Get or set the last directory path used from a file dialog.

@@ -63,7 +63,7 @@
             if (addOnChanged) {
                 app.alert('AddOn Script and CSS file will be apply on next reload. Reload Now?', 'Hey!!', {
                     cancel: 'Later',
-                    ok: 'Reload'
+                    yes: 'Reload'
                 }, function (reload) {
                     if (reload) {
                         window.location.reload(true);

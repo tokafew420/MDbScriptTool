@@ -26,7 +26,7 @@
 
             app.instance.timeout = timeout ? +timeout : null;
 
-            app.saveState('instances');
+            app.saveInstance(app.instance);
 
             $dlg.modal('hide');
         }

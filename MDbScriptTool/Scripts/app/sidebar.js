@@ -157,7 +157,7 @@
         // Update selected db text
         updateStatusText();
     }).on('change', '.db-lst-item input[type="checkbox"]', app.debounce(function () {
-        app.saveState('instances');
+        app.saveInstance(app.instance);
     }, 1000));
 
     app.on('sort-db-list', function (asc) {

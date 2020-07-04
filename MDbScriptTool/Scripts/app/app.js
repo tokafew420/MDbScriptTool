@@ -915,6 +915,10 @@
 
     /* App */
     (function () {
+        const DB_NAME = 'mdbscripttool';
+        const DB_VERSION = 1; // Use a long long for this value (don't use a float)
+        const DB_STORE_INSTANCE = 'instance';
+
         Object.assign(app, {
             connection: null,   // The current active connection
             connections: [],    // Holds all defined connections
@@ -925,9 +929,57 @@
                 sidebarCollapsed: false,
                 scriptLibrary: {}
             },
-            savedStates: ['connections', 'instances', 'ui'], // States to save
+            savedStates: ['connections', 'ui'], // States to save
             draggedItems: []    // Items from the dragItems event
         });
+
+        // Initialize indexedDB
+        const dbInitialized = (function () {
+            // Return promise so we know when we can start accessing the db
+            const deferred = $.Deferred();
+
+            var req = indexedDB.open(DB_NAME, DB_VERSION);
+            req.onsuccess = function (e) {
+                // Equal to: db = req.result;
+                app.db = this.result;
+
+                app.db.onerror = function (e) {
+                    console.error(e);
+                };
+                deferred.resolve(app.db);
+            };
+            req.onerror = function (e) {
+                console.error('Failed to open indexedDB:', e.target.errorCode);
+                deferred.reject(e);
+                app.alert('A critical error occurred.<br />Failed to open indexedDB: ' + e.target.errorCode, 'Critical!!', {
+                    yes: 'Close',
+                    html: true
+                }, function () {
+                    window.close()
+                });
+            };
+
+            req.onblocked = function (e) {
+                // If some other tab is loaded with the database, then it needs to be closed
+                // before we can proceed.
+                app.alert('A new version was detected. You need to reload this instance.', 'No Choice!!', {
+                    yes: 'Reload'
+                }, function (reload) {
+                    if (reload) {
+                        window.location.reload(true);
+                    }
+                });
+            };
+
+            // This will be called on initial creation or when the database version is bumped
+            req.onupgradeneeded = function (e) {
+                var store = e.currentTarget.result.createObjectStore(DB_STORE_INSTANCE, { keyPath: 'id' });
+
+                store.createIndex('appId', 'appId', { unique: false });
+            };
+
+            return deferred.promise();
+        }());
 
         // Creates a connection object with only properties relevant for the instance.
         function _createInstanceConnection(connection) {
@@ -962,7 +1014,8 @@
                 code: '',
                 dirty: false,
                 connections: [],
-                connection: null
+                connection: null,
+                created: new Date().getTime()
             }, instance);
         }
 
@@ -986,6 +1039,7 @@
             if (!instance.original) {
                 instance.original = SparkMD5.hash(instance.code || '');
             }
+            instance.appId = app.settings.appId;
 
             app.emit('create-instance', instance);
 
@@ -993,7 +1047,7 @@
 
             app.emit('instance-created', instance);
 
-            app.saveState('instances');
+            app.saveInstance(instance);
 
             return instance;
         };
@@ -1007,11 +1061,7 @@
          * @type {object} instance The instance to remove.
          */
         app.removeInstance = function (instance) {
-            if (typeof instance === 'string') {
-                instance = app.findBy(app.instances, 'id', instance);
-            }
-
-            var idx = app.instances.indexOf(instance);
+            let idx = app.indexBy(app.instances, 'id', typeof id === 'string' ? instance : instance.id);
 
             if (idx !== -1) {
                 instance = app.instances[idx];
@@ -1021,9 +1071,16 @@
                 if (app.instance === instance) {
                     app.instance = null;
                 }
-                app.saveState('instances');
-
-                app.emit('instance-removed', instance);
+                let req = app.db.transaction(DB_STORE_INSTANCE, 'readwrite')
+                    .objectStore(DB_STORE_INSTANCE)
+                    .delete(instance.id);
+                req.onsuccess = function (e) {
+                    app.emit('instance-removed', null, instance);
+                };
+                req.onerror = function (e) {
+                    console.error(e);
+                    app.emit('instance-removed', e, instance);
+                };
 
                 if (app.instances.length && app.instance === null) {
                     // Switch to previous instance (to left) or next instance (to right)
@@ -1034,9 +1091,47 @@
                 }
 
                 return instance;
+            } else {
+                console.warn(`Instance with id [${typeof id === 'string' ? instance : instance.id}] not found.`);
             }
 
             return null;
+        };
+
+        /**
+         * Saves the application state.
+         *
+         * @param {object|string} instance The instance to save or its id.
+         * @returns {object} This app.
+         * @event save-instance|instance-saved
+         * @type {Array} The target instance being saved.
+         */
+        app.saveInstance = function (instance) {
+            let id = instance;
+            if (typeof id === 'string') {
+                instance = app.findBy(app.instances, 'id', id);
+            }
+
+            if (instance) {
+                // For app instances, pull only specific properties and then merge with the existing 
+                instance = app.exclude(instance, ['editor', 'pending', 'results', 'totalRows', 'affectedRows', 'time', '$editor', '$instance', '$tab', '$result', '$slider']);
+
+                app.emit('save-instance', instance);
+
+                let req = app.db.transaction(DB_STORE_INSTANCE, 'readwrite')
+                    .objectStore(DB_STORE_INSTANCE)
+                    .put(instance);
+                req.onsuccess = function (e) {
+                    app.emit('instance-saved', null, instance);
+                };
+                req.onerror = function (e) {
+                    console.error(e);
+                    app.emit('instance-saved', e, instance);
+                };
+            } else {
+                console.warn(`Instance with id [${id}] not found.`);
+            }
+            return app;
         };
 
         /**
@@ -1049,12 +1144,13 @@
          * @type {object} The previous instance.
          */
         app.switchInstance = function (instance) {
-            if (typeof instance === 'string') {
+            let id = instance;
+            if (typeof id === 'string') {
                 instance = app.findBy(app.instances, 'id', id);
             }
 
             if (instance && instance !== app.instance) {
-                var prev = app.instance;
+                let prev = app.instance;
 
                 app.emit('switch-instance', instance, prev);
 
@@ -1066,7 +1162,7 @@
 
                 // Update connection
                 if (instance.connection) {
-                    var conn = app.findBy(app.connections, 'id', instance.connection.id);
+                    let conn = app.findBy(app.connections, 'id', instance.connection.id);
 
                     if (conn) {
                         app.switchConnection(conn);
@@ -1080,9 +1176,14 @@
                 }
 
                 app.emit('instance-switched', instance, prev);
-                app.saveState('instances');
+                app.saveInstance(instance);
+                app.saveInstance(prev);
 
                 return instance;
+            } else {
+                if (!instance) {
+                    console.warn(`Instance with id [${id}] not found.`);
+                }
             }
 
             return null;
@@ -1102,14 +1203,7 @@
             app.emit('save-state', states);
 
             states.forEach(function (key) {
-                if (key === 'instances') {
-                    var instances = app.instances.map(function (instance) {
-                        return app.exclude(instance, ['editor', 'pending', 'results', 'totalRows', 'affectedRows', 'time', '$editor', '$instance', '$tab', '$result', '$slider']);
-                    });
-                    app.localStorage.set('app-' + key, instances);
-                } else {
-                    app.localStorage.set('app-' + key, app[key]);
-                }
+                app.localStorage.set('app-' + key, app[key]);
             });
 
             app.emit('state-saved', states);
@@ -1230,7 +1324,7 @@
             app.connection = conn;
 
             app.emit('connection-switched', conn, prev);
-            app.saveState('instances');
+            app.saveInstance(app.instance);
 
             return conn;
         };
@@ -1310,12 +1404,19 @@
                         instance.name = instance.path.split('/').pop();
                         instance.dirty = false;
 
-                        app.saveState('instances');
+                        app.saveInstance(instance);
                     }
                     app.emit('instance-file-saved', instance, complete);
                 });
             }
         };
+
+        os.on('open-file', function (name, path) {
+            if (name && path) {
+                path = path.replace(/\\/g, '/');
+                app.emit('open-file', name, path);
+            }
+        });
 
         /**
          * Force the app to redraw (re-render).
@@ -1677,7 +1778,7 @@
                 if (promptAddOnChanged) {
                     app.alert('AddOn Script and CSS file will be apply on next reload. Reload Now?', 'Hey!!', {
                         cancel: 'Later',
-                        ok: 'Reload'
+                        yes: 'Reload'
                     }, function (reload) {
                         if (reload) {
                             window.location.reload(true);
@@ -1734,28 +1835,80 @@
                     $('head').append(`<link rel="stylesheet" href="${addOnCss}" />`);
                 }
 
-                // Initialize saved instances
-                if (app.settings.isMainForm && app.instances.length) {
-                    app.instances = app.instances.map(function (instance) {
-                        instance = _createInstance(instance);
+                function initInstances() {
+                    // Remove any unsaved instances with no code and is not a file.
+                    for (let i = app.instances.length - 1; i >= 0; i--) {
+                        let instance = app.instances[i];
+                        if (instance && !instance.code && !instance.path) {
+                            app.instances.splice(i, 1);
 
-                        if (instance.connection) {
-                            // Restore connection/connections reference
-                            instance.connection = app.findBy(instance.connections, 'id', instance.connection.id);
+                            app.db.transaction(DB_STORE_INSTANCE, 'readwrite')
+                                .objectStore(DB_STORE_INSTANCE)
+                                .delete(instance.id)
+                                .onsuccess = function (e) {
+                                    console.debug(`Instance [${instance.id}] removed`);
+                                };
                         }
+                    }
+                    if (app.instances.length) {
+                        app.instances.sort(function (a, b) {
+                            return a.created - b.created;
+                        });
+                        app.instances = app.instances.map(function (instance) {
+                            instance = _createInstance(instance);
 
-                        app.emit('create-instance', instance);
-                        app.emit('instance-created', instance);
+                            if (instance.connection) {
+                                // Restore connection/connections reference
+                                instance.connection = app.findBy(instance.connections, 'id', instance.connection.id);
+                            }
+                            // Override appId, tying instance to this app instance.
+                            instance.appId = app.settings.appId;
 
-                        return instance;
-                    });
-                } else {
-                    app.createInstance();
+                            app.db.transaction(DB_STORE_INSTANCE, 'readwrite')
+                                .objectStore(DB_STORE_INSTANCE)
+                                .put(instance)
+                                .onsuccess = function (e) {
+                                    console.debug(`Instance [${instance.id}] saved`);
+                                };
+
+                            app.emit('create-instance', instance);
+                            app.emit('instance-created', instance);
+
+                            return instance;
+                        });
+                    } else {
+                        app.createInstance();
+                    }
+
+                    // Set active instance
+                    var activeInstances = app.instances.filter(function (i) { return i && i.active; });
+                    app.switchInstance(app.last(activeInstances.length ? activeInstances : app.instances));
                 }
 
-                // Set active instance
-                var activeInstances = app.instances.filter(function (i) { return i && i.active; });
-                app.switchInstance(app.last(activeInstances.length ? activeInstances : app.instances));
+                // Initialize saved instances
+                $.when(dbInitialized).then(function () {
+                    let req = app.db.transaction(DB_STORE_INSTANCE, 'readonly')
+                        .objectStore(DB_STORE_INSTANCE);
+
+                    if (app.settings.isStartup) {
+                        // On initial startup load everything from the database
+                        req = req.getAll();
+                    } else {
+                        // When it's a refresh or additional app instance, then
+                        // just load instances for this appId
+                        req = req.index('appId')
+                            .getAll(app.settings.appId);
+                    }
+
+                    req.onsuccess = function (e) {
+                        app.instances = e.target.result || [];
+                        initInstances();
+                    };
+
+                    req.onerror = function (e) {
+                        console.error(e);
+                    };
+                });
             }).emit('get-settings');
         });
     }());
@@ -1864,5 +2017,9 @@
                     os.emit('open-explorer', val);
                 }
             });
+
+        // Last thing to do.
+        // Notify the serverside that the client is done initialization
+        os.emit('client-initialized');
     });
 }(window, window.app = window.app || {}, window.os, jQuery));
