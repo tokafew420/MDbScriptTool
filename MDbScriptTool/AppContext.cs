@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Tokafew420.MDbScriptTool.Handlers;
 using Tokafew420.MDbScriptTool.Locale;
 using Tokafew420.MDbScriptTool.Logging;
+using Tokafew420.MDbScriptTool.Native;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -144,9 +145,9 @@ namespace Tokafew420.MDbScriptTool
 
                     // If the window is minimized then restore it
                     var windowPlacement = NativeMethods.GetPlacement(firstInstance.MainWindowHandle);
-                    if (windowPlacement.showCmd == (int)NativeMethods.CmdShow.SW_SHOWMINIMIZED)
+                    if (windowPlacement.showCmd == (int)CmdShow.SW_SHOWMINIMIZED)
                     {
-                        NativeMethods.ShowWindow(firstInstance.MainWindowHandle, NativeMethods.CmdShow.SW_SHOWNORMAL);
+                        NativeMethods.ShowWindow(firstInstance.MainWindowHandle, CmdShow.SW_SHOWNORMAL);
                     }
 
                     if (!SingleInstance)
@@ -156,12 +157,12 @@ namespace Tokafew420.MDbScriptTool
 
                         // The top most form will receive and process the message.
                         // Note: The dev console is a separate form and if that is the top most then this will not work.
-                        var cds = new NativeMethods.CopyDataStruct();
+                        var cds = new CopyDataStruct();
                         try
                         {
                             var data = "Cmd:New Window";
                             cds.cbData = (UIntPtr)((data.Length + 1) * 2); // Number of bytes
-                            cds.lpData = NativeMethods.LocalAlloc(NativeMethods.LocalMemoryFlags.LMEM_ZEROINIT, cds.cbData); // Known local-pointer in RAM.
+                            cds.lpData = NativeMethods.LocalAlloc(LocalMemoryFlags.LMEM_ZEROINIT, cds.cbData); // Known local-pointer in RAM.
 
                             if (cds.lpData == IntPtr.Zero) throw new OutOfMemoryException();
 
@@ -180,12 +181,12 @@ namespace Tokafew420.MDbScriptTool
                         // Send messages to open the files
                         foreach (var filepath in filepaths)
                         {
-                            var cds = new NativeMethods.CopyDataStruct();
+                            var cds = new CopyDataStruct();
                             try
                             {
                                 var data = "Cmd:Open File:" + filepath;
                                 cds.cbData = (UIntPtr)((data.Length + 1) * 2); // Number of bytes
-                                cds.lpData = NativeMethods.LocalAlloc(NativeMethods.LocalMemoryFlags.LMEM_ZEROINIT, cds.cbData); // Known local-pointer in RAM.
+                                cds.lpData = NativeMethods.LocalAlloc(LocalMemoryFlags.LMEM_ZEROINIT, cds.cbData); // Known local-pointer in RAM.
 
                                 if (cds.lpData == IntPtr.Zero) throw new OutOfMemoryException();
 

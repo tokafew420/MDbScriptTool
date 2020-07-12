@@ -9,6 +9,7 @@ using CefSharp;
 using CefSharp.WinForms;
 using Tokafew420.MDbScriptTool.Handlers;
 using Tokafew420.MDbScriptTool.Logging;
+using Tokafew420.MDbScriptTool.Native;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -107,7 +108,7 @@ namespace Tokafew420.MDbScriptTool
         {
             if (m.Msg == NativeMethods.WM_COPYDATA)
             {
-                var cds = (NativeMethods.CopyDataStruct)Marshal.PtrToStructure(m.LParam, typeof(NativeMethods.CopyDataStruct));
+                var cds = (CopyDataStruct)Marshal.PtrToStructure(m.LParam, typeof(CopyDataStruct));
                 var data = Marshal.PtrToStringUni(cds.lpData);
                 if (data == "Cmd:New Window")
                 {

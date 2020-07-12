@@ -18,7 +18,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tokafew420.MDbScriptTool</RootNamespace>
     <AssemblyName>MDbScriptTool</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <NuGetPackageImportStamp>
@@ -50,6 +50,7 @@
     <Prefer32Bit>true</Prefer32Bit>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <StartArguments>--vs</StartArguments>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -61,6 +62,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>true</Prefer32Bit>
     <StartArguments>--vs</StartArguments>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -136,11 +138,19 @@
     <Compile Include="Logging\ConsoleLogger.cs" />
     <Compile Include="Logging\LogLevel.cs" />
     <Compile Include="Logging\SqlLogger.cs" />
+    <Compile Include="Native\HChangeNotifyEventID.cs" />
+    <Compile Include="Native\CopyDataStruct.cs" />
+    <Compile Include="Native\WindowPlacement.cs" />
+    <Compile Include="Native\ShowCmd.cs" />
+    <Compile Include="Native\SHChangeNotifyFlags.cs" />
+    <Compile Include="Native\MenuFlags.cs" />
+    <Compile Include="Native\SetWindowPosFlags.cs" />
+    <Compile Include="Native\LocalMemoryFlags.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Crypto.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="NativeMethods.cs" />
+    <Compile Include="Native\NativeMethods.cs" />
     <Compile Include="Handlers\FileSystemSchemeHandlerFactory.cs" />
     <Compile Include="Handlers\KeyboardHandler.cs" />
     <Compile Include="AppHandlers.cs" />

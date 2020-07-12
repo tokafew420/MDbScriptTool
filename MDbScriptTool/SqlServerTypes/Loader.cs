@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
-using Tokafew420.MDbScriptTool;
+using Tokafew420.MDbScriptTool.Native;
 
 namespace SqlServerTypes
 {
