@@ -683,6 +683,17 @@
          * Wrapper for sessionStorage with auto value [de]serialization.
          */
         app.sessionStorage = storageWrapper('sessionStorage');
+
+        /**
+         * Get the type of the specified parameter.
+         * https://goo.gl/pxwQGp
+         *
+         * @param {any} obj The value to inspect.
+         * @returns {string} The name of the parameter type.
+         */
+        app.toType = function (obj) {
+            return ({}).toString.call(obj).match(/\s([a-z|A-Z]+)/)[1].toLowerCase();
+        };
     }());
 
     /* UI Utilities */
@@ -1020,6 +1031,20 @@
         }
 
         /**
+         * Get the instance given the instance object or the instance id.
+         * @param {any} instance The instance or instance id.
+         * @returns {object} The instance or null.
+         */
+        app.getInstance = function (instance) {
+            if (instance) {
+                let idx = app.indexBy(app.instances, 'id', typeof instance === 'string' ? instance : instance.id);
+
+                if (idx !== -1) return app.instances[idx];
+            }
+            return null;
+        };
+
+        /**
          * Creates a new instance.
          *
          * @param {any} instance Optional. The initial instance properties.
@@ -1043,11 +1068,43 @@
 
             app.emit('create-instance', instance);
 
-            app.instances.push(instance);
+            if (app.indexBy(app.instances, 'id', instance.id) === -1) {
+                app.instances.push(instance);
+            }
 
             app.emit('instance-created', instance);
 
             app.saveInstance(instance);
+
+            return instance;
+        };
+
+        /**
+         * Load content into an existing instance.
+         *
+         * @param {any} instance The existing instance.
+         * @param {string} path The file path.
+         * @param {string} name The file name (for the tab).
+         * @param {string} code The code to put in the editor.
+         * @returns {object} The existing instance.
+         * @event load-instance|instance-loaded
+         * @type {object} The existing instance.
+         */
+        app.loadInstance = function (instance, path, name, code) {
+            instance = app.getInstance(instance);
+            if (instance) {
+                app.emit('load-instance', instance, path, name, code);
+
+                instance.path = path;
+                instance.name = name;
+                instance.code = code;
+                instance.dirty = false;
+                instance.original = SparkMD5.hash(instance.code || '');
+
+                app.emit('instance-loaded', instance);
+
+                app.saveInstance(instance);
+            }
 
             return instance;
         };

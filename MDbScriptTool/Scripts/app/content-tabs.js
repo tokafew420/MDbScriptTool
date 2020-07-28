@@ -90,6 +90,22 @@
                 $tab.addClass('is-dirty');
             }
         }
+    }).on('instance-loaded', function (instance) {
+        if (instance && instance.$tab) {
+            $('.filename', instance.$tab).text(instance.name)
+
+            if (instance.path) {
+                instance.$tab.tooltip('dispose')
+                    .tooltip({
+                        boundary: 'window',
+                        tigger: 'hover',
+                        html: true,
+                        title: `<span style="white-space: nowrap;">${instance.path}</span>`
+                    });
+            }
+
+            instance.$tab.removeClass('is-dirty');
+        }
     }).on('remove-instance', function (instance) {
         if (instance && instance.$tab) {
             var $tab = instance.$tab;

@@ -71,26 +71,27 @@
         app.createInstance();
     });
 
-    var openFile = function (name, path, callback) {
-        callback = callback || app.noop;
+    var openFile = function (name, path) {
         app.openFile(path, function (err, res) {
             if (err) {
-                return app.alert(`<span class="text-danger">${err || 'Failed to load file'}</span >`, 'Error', { html: true });
+                return app.alert(`<span class="text-danger">${err || 'Failed to load file'}</span>`, 'Error', { html: true });
             }
+            // If the current instance the default "New" tab then load the file into that instead.
+            if (!app.instance.code && !app.instance.path) {
+                app.loadInstance(app.instance, path, name, res);
+            } else {
+                let instance = app.createInstance({
+                    path: path,
+                    name: name,
+                    code: res,
+                    dirty: false
+                });
 
-            var instance = app.createInstance({
-                path: path,
-                name: name,
-                code: res,
-                dirty: false
-            });
-
-            // Let the editor instance create itself first.
-            setTimeout(function () {
-                app.switchInstance(instance);
-
-                callback(instance);
-            }, 0);
+                // Let the editor instance create itself first.
+                setTimeout(function () {
+                    app.switchInstance(instance);
+                }, 0);
+            }
         });
     };
 
@@ -129,14 +130,7 @@
                 return;
             }
         }
-        openFile(name, path, function (instance) {
-            // If it's a new app instance and there's the default "New" tab then close it
-            let first = app.instances[0];
-
-            if (first && !first.code && !first.path) {
-                app.removeInstance(first);
-            }
-        });
+        openFile(name, path);
     });
 
     $saveFile.on('click', function () {

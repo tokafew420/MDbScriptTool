@@ -51,5 +51,10 @@
                 e.codemirrorIgnore = e.dataTransfer.items.length && e.dataTransfer.items[0].kind === 'file';
             });
         }
+    }).on('instance-loaded', function (instance) {
+        if (instance && instance.$editor) {
+            instance.editor.setValue(instance.code || '');
+            instance.editor.clearHistory();
+        }
     });
 }(window, window.app = window.app || {}, window.os, jQuery));

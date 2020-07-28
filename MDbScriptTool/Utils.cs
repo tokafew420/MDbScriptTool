@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.AccessControl;
+using System.Security.Principal;
+using Microsoft.Win32;
 
 namespace Tokafew420.MDbScriptTool
 {
@@ -675,6 +678,65 @@ namespace Tokafew420.MDbScriptTool
             var origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             var diff = date.ToUniversalTime() - origin;
             return Math.Floor(diff.TotalMilliseconds);
+        }
+
+        /// <summary>
+        /// Sets the name/value pair on the specified registry key, using the specified registry
+        /// data type. If the specified key does not exist, it is created. If the value is null, then the key value is deleted.
+        /// If the name and value is null, then the key is deleted.
+        /// </summary>
+        /// <param name="path">The full registry path of the key, beginning with a valid registry root, such as "HKEY_CURRENT_USER".</param>
+        /// <param name="name">The name of the name/value pair.</param>
+        /// <param name="value">The value to be stored or null to delete the key.</param>
+        /// <param name="kind">The registry data type to use when storing the data.</param>
+        /// <returns>The previous key value if any, otherwise null.</returns>
+        public static object SetRegistryKey(string path, string name, object value, RegistryValueKind kind = RegistryValueKind.String)
+        {
+            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException(nameof(path));
+
+            var existingValue = Registry.GetValue(path, name, null);
+
+            if (value == null)
+            {
+                // Default to HKEY_CURRENT_USER
+                var hive = Registry.CurrentUser;
+
+                if (path.StartsWith("HKEY_LOCAL_MACHINE", true, CultureInfo.InvariantCulture) || path.StartsWith("HKLM", true, CultureInfo.InvariantCulture))
+                {
+                    hive = Registry.LocalMachine;
+                }
+                else if (path.StartsWith("HKEY_CLASSES_ROOT", true, CultureInfo.InvariantCulture) || path.StartsWith("HKCR", true, CultureInfo.InvariantCulture))
+                {
+                    hive = Registry.ClassesRoot;
+                }
+                else if (path.StartsWith("HKEY_USERS", true, CultureInfo.InvariantCulture) || path.StartsWith("HKU", true, CultureInfo.InvariantCulture))
+                {
+                    hive = Registry.Users;
+                }
+
+                var subKey = string.Join("\\", path.Split('\\').Skip(1));
+
+                if (name == null)
+                {
+                    hive.DeleteSubKeyTree(subKey, false);
+                }
+                else
+                {
+                    using (var key = hive.OpenSubKey(subKey, true))
+                    {
+                        if (key != null)
+                        {
+                            key.DeleteValue(name, false);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Registry.SetValue(path, name, value, kind);
+            }
+
+            return existingValue;
         }
     }
 }

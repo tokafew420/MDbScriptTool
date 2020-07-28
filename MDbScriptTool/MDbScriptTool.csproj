@@ -182,6 +182,7 @@
     </Content>
     <Content Include="Scripts\app\script-library-modal.js" />
     <Content Include="Scripts\app\cm-search.js" />
+    <Content Include="Scripts\app\extensions-modal.js" />
     <Content Include="Scripts\cm-search.min.js" />
     <Content Include="Scripts\CodeMirror\addon\search\searchcursor.js" />
     <Content Include="Scripts\noose\noose.js" />
@@ -212,6 +213,7 @@
     </None>
     <None Include="Content\app\css\script-library-modal.less" />
     <None Include="Content\app\css\cm-search.less" />
+    <None Include="Content\app\css\extensions-modal.less" />
     <None Include="Content\app\css\variables.less" />
     <None Include="Content\app\css\content-result.less" />
     <None Include="Content\app\css\settings-modal.less" />

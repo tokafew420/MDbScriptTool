@@ -6,6 +6,16 @@ namespace Tokafew420.MDbScriptTool
     internal class Constants
     {
         /// <summary>
+        /// Application level constants.
+        /// </summary>
+        internal class App
+        {
+            public const string FullName = "Multi Database Script Tool";
+            public const string Name = "MDbScriptTool";
+            public const string ProgId = "mdbscripttool";
+        }
+
+        /// <summary>
         /// Setting keys.
         /// </summary>
         internal class Settings
@@ -15,6 +25,7 @@ namespace Tokafew420.MDbScriptTool
             public const string LastFileDialogDirectory = "LastFileDialogDirectory";
             public const string LogLevel = "LogLevel";
             public const string LogToDevConsole = "LogToDevConsole";
+            public const string PreviousFileAssociation = "PreviousFileAssociation";
             public const string ScriptLibraryDirectory = "ScriptLibraryDirectory";
             public const string SingleInstance = "SingleInstance";
             public const string SqlLoggingEnabled = "SqlLoggingEnabled";

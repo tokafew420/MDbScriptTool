@@ -49,6 +49,8 @@ namespace Tokafew420.MDbScriptTool
             UiEvent.On("open-explorer", OpenExplorer);
             UiEvent.On("list-directory", ListDirectory);
             UiEvent.On("client-initialized", ClientInitialized);
+            UiEvent.On("set-file-association", SetFileAssociation);
+            UiEvent.On("remove-file-association", RemoveFileAssociation);
         }
 
         /// <summary>
@@ -654,6 +656,107 @@ namespace Tokafew420.MDbScriptTool
             catch (Exception e)
             {
                 OsEvent.Emit(replyMsgName, e);
+            }
+        }
+
+        /// <summary>
+        /// Sets the file association for .sql files to this application.
+        /// </summary>
+        /// <param name="args">Ignored</param>
+        /// <remarks>
+        /// Emits event: file-association-set
+        /// Event params:
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] A message indicating the status of the operation.
+        /// </remarks>
+        private void SetFileAssociation(object[] args)
+        {
+            var replyMsgName = "file-association-set";
+
+            try
+            {
+                // Use CodeBase instead of Location property because location property may not be the pyhsical path
+                // in some cases (ie: shadow copy)
+                var exePath = Assembly.GetExecutingAssembly().CodeBase
+                    .Replace("file:///", "")
+                    .Replace("/", @"\");
+
+                // Note: Using HKEY_CURRENT_USER because HKEY_LOCAL_MACHINE requires admin permissions
+
+                // Computer\HKEY_CURRENT_USER\Software\Classes\Applications\MDbScriptTool.exe
+
+                // Set the file association icon
+                Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\{Constants.App.ProgId}\DefaultIcon", "", $@"""{exePath}"",0");
+                //Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\Applications\{Constants.App.ProgId}\DefaultIcon", "", $@"""{exePath}"",0");
+                // Set the open cmdline
+                Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\{Constants.App.ProgId}\shell\open\command", "", $@"""{exePath}"" ""%1""");
+                //Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\Applications\{Constants.App.ProgId}\shell\open\command", "", $@"""{exePath}"" ""%1""");
+                // Set extension to program id
+                var existingAssoc = Utils.SetRegistryKey(@"HKEY_CURRENT_USER\Software\Classes\.sql", "", Constants.App.ProgId) as string;
+
+                // In windows 8+, windows doesn't allow programmatic setting of file associations. This is done via a secret hash at
+                // HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.sql\UserChoice
+                // Although we can set the ProdId, we cannot calculate the hash.
+                // So instead of jumping through hoops, we will add an entry to the OpenWWith options
+                Utils.SetRegistryKey(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.sql\OpenWithProgids", Constants.App.ProgId, "");
+
+                if (existingAssoc != Constants.App.ProgId)
+                {
+                    Native.NativeMethods.SHChangeNotify(Native.HChangeNotifyEventID.SHCNE_ASSOCCHANGED, Native.SHChangeNotifyFlags.SHCNF_FLUSH, IntPtr.Zero, IntPtr.Zero);
+
+                    // Save this off so we can restore it later (if needed)
+                    if (!string.IsNullOrWhiteSpace(existingAssoc))
+                    {
+                        AppSettings.Set(Constants.Settings.PreviousFileAssociation, existingAssoc);
+                        AppSettings.Save();
+                    }
+                }
+
+                OsEvent.Emit(replyMsgName, null, "File association set.");
+            }
+            catch (Exception e)
+            {
+                OsEvent.Emit(replyMsgName, e, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Remove the file association for .sql files from this application.
+        /// </summary>
+        /// <param name="args">Ignored</param>
+        /// <remarks>
+        /// Emits event: file-association-removed
+        /// Event params:
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] A message indicating the status of the operation.
+        /// </remarks>
+        private void RemoveFileAssociation(object[] args)
+        {
+            var replyMsgName = "file-association-removed";
+
+            try
+            {
+                Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\{Constants.App.ProgId}", null, null);
+                Utils.SetRegistryKey(@"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.sql\OpenWithProgids", Constants.App.ProgId, null);
+
+                // Restore previous association if any
+                var previousAssoc = AppSettings.Get<string>(Constants.Settings.PreviousFileAssociation)?.Trim() ?? "";
+                Utils.SetRegistryKey(@"HKEY_CURRENT_USER\Software\Classes\.sql", "", previousAssoc);
+
+                Native.NativeMethods.SHChangeNotify(Native.HChangeNotifyEventID.SHCNE_ASSOCCHANGED, Native.SHChangeNotifyFlags.SHCNF_FLUSH, IntPtr.Zero, IntPtr.Zero);
+
+                // Save this off so we can restore it later (if needed)
+                if (!string.IsNullOrWhiteSpace(previousAssoc))
+                {
+                    AppSettings.Set(Constants.Settings.PreviousFileAssociation, "");
+                    AppSettings.Save();
+                }
+
+                OsEvent.Emit(replyMsgName, null, "File association removed.");
+            }
+            catch (Exception e)
+            {
+                OsEvent.Emit(replyMsgName, e, e.Message);
             }
         }
 

@@ -45,6 +45,9 @@
             <a class="nav-link connection-menu-lnk accent-link" href="#" data-toggle="modal" data-target="#connections-modal"><i class="fa fa-sitemap fa-fw"></i>&nbsp;Connections</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link extensions-menu-lnk accent-link" href="#" data-toggle="modal" data-target="#extensions-modal"><i class="fa fa-bolt fa-fw"></i>&nbsp;Extensions</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link settings-menu-lnk accent-link" href="#" data-toggle="modal" data-target="#settings-modal"><i class="fa fa-cog fa-fw"></i>&nbsp;Settings</a>
           </li>
           <li class="nav-item">
@@ -300,6 +303,37 @@
           <button type="button" class="btn btn-sm btn-outline-danger delete-btn hidden">Delete</button>
           <button type="button" class="btn btn-sm btn-outline-primary add-btn">Add</button>
           <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Extensions dialog -->
+  <div class="modal fade" id="extensions-modal" tabindex="-1" role="dialog" aria-labelledby="extensions-modal" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="extensions-modal-title">Extensions</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <section id="application-setting" class="mb-2">
+            <label for="application-seting">Windows Features <i class="fa fa-info-circle" data-toggle="tooltip" title="Enable/Disable Windows features" aria-hidden="true"></i></label>
+            <div class="container-fluid extensions">
+              <div class="row my-2">
+                <div class="col">
+                  <p><strong>Note:</strong> Starting with Windows 8, file associations can only be set by the user. Clicking <strong>Set File Assoc.</strong> will only add an entry to the OpenWith menu.</p>
+                  <button type="button" id="extensions-set-file-assoc-btn" class="btn btn-sm btn-outline-primary">Set File Assoc.</button>
+                  <button type="button" id="extensions-remove-file-assoc-btn" class="btn btn-sm btn-outline-secondary">Remove File Assoc.</button>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div class="modal-footer">
+          <!--<button type="button" class="btn btn-sm btn-outline-primary save-btn">Save</button>-->
+          <button type="button" class="btn btn-sm btn-outline-secondary cancel-btn auto-focus" data-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
@@ -610,8 +644,7 @@
                   <th data-sort="size">Size</th>
                 </tr>
               </thead>
-              <tbody>
-              </tbody>
+              <tbody></tbody>
             </table>
           </div>
         </div>
@@ -693,6 +726,7 @@
   <script src="./Scripts/app/content-result.js"></script>
   <script src="./Scripts/app/execute-options-modal.js"></script>
   <script src="./Scripts/app/connections-modal.js"></script>
+  <script src="./Scripts/app/extensions-modal.js"></script>
   <script src="./Scripts/app/settings-modal.js"></script>
   <script src="./Scripts/app/about-modal.js"></script>
   <script src="./Scripts/app/script-library-modal.js"></script>
