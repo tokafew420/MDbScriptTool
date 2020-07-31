@@ -51,6 +51,8 @@ namespace Tokafew420.MDbScriptTool
             UiEvent.On("client-initialized", ClientInitialized);
             UiEvent.On("set-file-association", SetFileAssociation);
             UiEvent.On("remove-file-association", RemoveFileAssociation);
+            UiEvent.On("add-context-menu", AddContextMenu);
+            UiEvent.On("remove-context-menu", RemoveContextMenu);
         }
 
         /// <summary>
@@ -683,14 +685,10 @@ namespace Tokafew420.MDbScriptTool
 
                 // Note: Using HKEY_CURRENT_USER because HKEY_LOCAL_MACHINE requires admin permissions
 
-                // Computer\HKEY_CURRENT_USER\Software\Classes\Applications\MDbScriptTool.exe
-
                 // Set the file association icon
                 Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\{Constants.App.ProgId}\DefaultIcon", "", $@"""{exePath}"",0");
-                //Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\Applications\{Constants.App.ProgId}\DefaultIcon", "", $@"""{exePath}"",0");
                 // Set the open cmdline
                 Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\{Constants.App.ProgId}\shell\open\command", "", $@"""{exePath}"" ""%1""");
-                //Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\Applications\{Constants.App.ProgId}\shell\open\command", "", $@"""{exePath}"" ""%1""");
                 // Set extension to program id
                 var existingAssoc = Utils.SetRegistryKey(@"HKEY_CURRENT_USER\Software\Classes\.sql", "", Constants.App.ProgId) as string;
 
@@ -751,6 +749,70 @@ namespace Tokafew420.MDbScriptTool
                     AppSettings.Set(Constants.Settings.PreviousFileAssociation, "");
                     AppSettings.Save();
                 }
+
+                OsEvent.Emit(replyMsgName, null, "File association removed.");
+            }
+            catch (Exception e)
+            {
+                OsEvent.Emit(replyMsgName, e, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Adds a Windows context menu (for all files) for this application.
+        /// </summary>
+        /// <param name="args">Ignored</param>
+        /// <remarks>
+        /// Emits event: context-menu-added
+        /// Event params:
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] A message indicating the status of the operation.
+        /// </remarks>
+        private void AddContextMenu(object[] args)
+        {
+            var replyMsgName = "context-menu-added";
+
+            try
+            {
+                // Use CodeBase instead of Location property because location property may not be the pyhsical path
+                // in some cases (ie: shadow copy)
+                var exePath = Assembly.GetExecutingAssembly().CodeBase
+                    .Replace("file:///", "")
+                    .Replace("/", @"\");
+
+                // Note: Using HKEY_CURRENT_USER because HKEY_LOCAL_MACHINE requires admin permissions
+                // Set context menu text
+                Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\*\shell\{Constants.App.ProgId}", "", $@"Open with {Constants.App.Name}");
+                // Set context menu icon
+                Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\*\shell\{Constants.App.ProgId}", "Icon", $@"""{exePath}"",0");
+                // Set context menu command
+                Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\*\shell\{Constants.App.ProgId}\command", "", $@"""{exePath}"" ""%1""");
+
+                OsEvent.Emit(replyMsgName, null, "Context menu added.");
+            }
+            catch (Exception e)
+            {
+                OsEvent.Emit(replyMsgName, e, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Remove the Windows context menu (for all files) for this application.
+        /// </summary>
+        /// <param name="args">Ignored</param>
+        /// <remarks>
+        /// Emits event: context-menu-removed
+        /// Event params:
+        /// [0] <see cref="Exception"/> if any.
+        /// [1] A message indicating the status of the operation.
+        /// </remarks>
+        private void RemoveContextMenu(object[] args)
+        {
+            var replyMsgName = "context-menu-removed";
+
+            try
+            {
+                Utils.SetRegistryKey($@"HKEY_CURRENT_USER\Software\Classes\*\shell\{Constants.App.ProgId}", null, null);
 
                 OsEvent.Emit(replyMsgName, null, "File association removed.");
             }

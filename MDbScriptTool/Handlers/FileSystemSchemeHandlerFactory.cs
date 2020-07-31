@@ -54,7 +54,7 @@ namespace Tokafew420.MDbScriptTool.Handlers
                     stream.CopyTo(ms);
                     ms.Seek(0, SeekOrigin.Begin);
 
-                    return ResourceHandler.FromStream(ms, ResourceHandler.GetMimeType(Path.GetExtension(filepath)), false);
+                    return ResourceHandler.FromStream(ms, Cef.GetMimeType(Path.GetExtension(filepath)), false);
                 }
             }
 
