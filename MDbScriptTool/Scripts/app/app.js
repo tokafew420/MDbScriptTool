@@ -578,6 +578,29 @@
         };
 
         /**
+         * Parse the given path.
+         * @param {string} path The value to parse.
+         * @return {object} A object containing the parsed values.
+         */
+        app.parsePath = function (path) {
+            var res = {
+                raw: path,
+                path: '',
+                filename: '',
+                filenameWithoutExt: '',
+                ext: ''
+            };
+
+            res.path = app.str(path).replace(/\\/g, '/').trim();
+            res.filename = res.path.split('/').pop();
+            var tmp = res.filename.split('.');
+            if (tmp.length > 1) res.ext = tmp.pop();
+            res.filenameWithoutExt = tmp.join('.');
+
+            return res;
+        };
+
+        /**
          * Pick out the specified properties of an object.
          *
          * @param {object} obj The source object.
@@ -590,6 +613,43 @@
             return props.reduce(function (acc, prop) {
                 acc[prop] = obj[prop];
             }, {});
+        };
+
+        /**
+         * Returns a function wrapper that will queue up the given function to run sequentially.
+         * Runs are always schedule for the next event loop.
+         * 
+         * @param {function} fn The function to run.
+         * @param {number} delay The delay between consecutive runs.
+         * @returns {function} The queue-able function.
+         */
+        app.queuer = function (fn, delay) {
+            let queue = [];
+            let lock = false;
+            let run = function () {
+                let inst = queue.shift();
+
+                if (inst) {
+                    fn.apply(inst.context, inst.args);
+                }
+
+                lock = !!queue.length;
+                if (lock) {
+                    setTimeout(run, delay || 0);
+                }
+            };
+
+            return function () {
+                queue.push({
+                    context: this,
+                    args: arguments
+                });
+
+                if (!lock) {
+                    lock = true;
+                    setTimeout(run, 0);
+                }
+            };
         };
 
         /**
@@ -683,6 +743,15 @@
          * Wrapper for sessionStorage with auto value [de]serialization.
          */
         app.sessionStorage = storageWrapper('sessionStorage');
+
+        /**
+         * Returns the string representation of the parameter value. null, undefined, NaN, etc...
+         * will all return an empty string.
+         * 
+         * @param {any} s The value to turn into a string.
+         * @returns {string} The string.
+         */
+        app.str = function (s) { return String(s || ''); };
 
         /**
          * Get the type of the specified parameter.
@@ -1080,34 +1149,69 @@
         };
 
         /**
-         * Load content into an existing instance.
+         * Load content into an instance.
          *
-         * @param {any} instance The existing instance.
+         * @param {any} instance The instance to load.
          * @param {string} path The file path.
          * @param {string} name The file name (for the tab).
          * @param {string} code The code to put in the editor.
-         * @returns {object} The existing instance.
          * @event load-instance|instance-loaded
          * @type {object} The existing instance.
          */
-        app.loadInstance = function (instance, path, name, code) {
+        app.loadInstance = app.queuer(function (instance, path, name, code) {
             instance = app.getInstance(instance);
-            if (instance) {
+            path = app.str(path).replace(/\\/g, '/').trim();
+
+            if (!path) return;
+            if (!name) name = app.parsePath(path).filename;
+
+            if (instance && path && name) {
                 app.emit('load-instance', instance, path, name, code);
 
                 instance.path = path;
                 instance.name = name;
-                instance.code = code;
+                // Remove CR to get correct hash
+                // https://github.com/codemirror/CodeMirror/issues/3395
+                // https://github.com/firasdib/Regex101/issues/931
+                instance.code = (code || '').replace(/\r/g, '');
                 instance.dirty = false;
-                instance.original = SparkMD5.hash(instance.code || '');
+                instance.original = SparkMD5.hash(instance.code);
 
                 app.emit('instance-loaded', instance);
 
                 app.saveInstance(instance);
-            }
+            } else {
+                // If the file is already opened then switch to it
+                for (let inst of app.instances) {
+                    if (inst.path === path) {
+                        app.switchInstance(inst);
+                        return;
+                    }
+                }
 
-            return instance;
-        };
+                app.openFile(path, function (err, res) {
+                    if (err) {
+                        return app.alert(`<span class="text-danger">${err || 'Failed to load file'}</span>`, 'Error', { html: true });
+                    }
+                    // If the current instance is the default "New" tab then load the file into that instead.
+                    if (!app.instance.code && !app.instance.path) {
+                        app.loadInstance(app.instance, path, name, res);
+                    } else {
+                        let inst = app.createInstance({
+                            path: path,
+                            name: name,
+                            code: (res || '').replace(/\r/g, ''),
+                            dirty: false
+                        });
+
+                        // Let the editor instance create itself first.
+                        requestAnimationFrame(function () {
+                            app.switchInstance(inst);
+                        });
+                    }
+                });
+            }
+        }, 200);
 
         /**
          * Remove an instance.
@@ -2018,7 +2122,8 @@
             'Ctrl-U': 'downcaseAtCursor',
             'Shift-Ctrl-U': 'upcaseAtCursor',
             'Ctrl-/': 'toggleComment',
-            'Shift-Ctrl-D': 'duplicateLine',
+            'Ctrl-D': 'duplicateLine',
+            'Shift-Ctrl-D': 'deleteLine',
             // Custom commands
             'Ctrl-E': 'executeSql',
             'Ctrl-P': 'parseSql',

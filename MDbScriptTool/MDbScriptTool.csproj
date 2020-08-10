@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\CefSharp.WinForms.83.4.20\build\CefSharp.WinForms.props" Condition="Exists('..\packages\CefSharp.WinForms.83.4.20\build\CefSharp.WinForms.props')" />
+  <Import Project="..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.props" Condition="Exists('..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.props')" />
+  <Import Project="..\packages\cef.redist.x86.83.4.2\build\cef.redist.x86.props" Condition="Exists('..\packages\cef.redist.x86.83.4.2\build\cef.redist.x86.props')" />
+  <Import Project="..\packages\cef.redist.x64.83.4.2\build\cef.redist.x64.props" Condition="Exists('..\packages\cef.redist.x64.83.4.2\build\cef.redist.x64.props')" />
   <Import Project="..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" />
   <Import Project="..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props" Condition="Exists('..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props')" />
   <Import Project="..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props" Condition="Exists('..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props')" />
   <Import Project="..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props" Condition="Exists('..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props')" />
   <Import Project="..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props" Condition="Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" />
-  <Import Project="..\packages\CefSharp.WinForms.81.3.100\build\CefSharp.WinForms.props" Condition="Exists('..\packages\CefSharp.WinForms.81.3.100\build\CefSharp.WinForms.props')" />
-  <Import Project="..\packages\CefSharp.Common.81.3.100\build\CefSharp.Common.props" Condition="Exists('..\packages\CefSharp.Common.81.3.100\build\CefSharp.Common.props')" />
-  <Import Project="..\packages\cef.redist.x86.81.3.10\build\cef.redist.x86.props" Condition="Exists('..\packages\cef.redist.x86.81.3.10\build\cef.redist.x86.props')" />
-  <Import Project="..\packages\cef.redist.x64.81.3.10\build\cef.redist.x64.props" Condition="Exists('..\packages\cef.redist.x64.81.3.10\build\cef.redist.x64.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -185,6 +185,9 @@
     <Content Include="Scripts\app\extensions-modal.js" />
     <Content Include="Scripts\cm-search.min.js" />
     <Content Include="Scripts\CodeMirror\addon\search\searchcursor.js" />
+    <Content Include="Scripts\jquery\jquery-3.5.1.intellisense.js" />
+    <Content Include="Scripts\jquery\jquery-3.5.1.js" />
+    <Content Include="Scripts\jquery\jquery-3.5.1.min.js" />
     <Content Include="Scripts\noose\noose.js" />
     <Content Include="Scripts\noose\noose.min.js" />
     <Content Include="SqlServerTypes\readme.htm" />
@@ -222,8 +225,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>app.html</LastGenOutput>
     </Content>
-    <Content Include="Content\bootstrap-4.3.1\js\bootstrap.bundle.js" />
-    <Content Include="Content\bootstrap-4.3.1\js\bootstrap.bundle.min.js" />
     <Content Include="Content\bootstrap.css">
       <DependentUpon>bootstrap.scss</DependentUpon>
     </Content>
@@ -267,9 +268,6 @@
     <Content Include="Scripts\CodeMirror\keymap\sublime.js" />
     <Content Include="Scripts\CodeMirror\lib\codemirror.css" />
     <Content Include="Scripts\CodeMirror\lib\codemirror.js" />
-    <Content Include="Scripts\jquery-3.4.1\jquery-3.4.1.intellisense.js" />
-    <Content Include="Scripts\jquery-3.4.1\jquery-3.4.1.js" />
-    <Content Include="Scripts\jquery-3.4.1\jquery-3.4.1.min.js" />
     <Content Include="Scripts\js-spark-md5\spark-md5.js" />
     <Content Include="Scripts\js-spark-md5\spark-md5.min.js" />
     <EmbeddedResource Include="App.resx">
@@ -288,97 +286,6 @@
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
     <None Include="Content\app\css\app.less" />
-    <None Include="Content\bootstrap-4.3.1\js\bootstrap.bundle.js.map" />
-    <None Include="Content\bootstrap-4.3.1\js\bootstrap.bundle.min.js.map" />
-    <None Include="Content\bootstrap-4.3.1\scss\bootstrap-grid.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\bootstrap-reboot.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\bootstrap.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_alert.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_background-variant.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_badge.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_border-radius.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_box-shadow.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_breakpoints.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_buttons.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_caret.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_clearfix.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_deprecate.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_float.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_forms.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_gradients.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_grid-framework.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_grid.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_hover.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_image.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_list-group.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_lists.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_nav-divider.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_pagination.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_reset-text.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_resize.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_screen-reader.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_size.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_table-row.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_text-emphasis.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_text-hide.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_text-truncate.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_transition.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\mixins\_visibility.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_align.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_background.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_borders.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_clearfix.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_display.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_embed.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_flex.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_float.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_overflow.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_position.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_screenreaders.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_shadows.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_sizing.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_spacing.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_stretched-link.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_text.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\utilities\_visibility.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\vendor\_rfs.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_alert.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_badge.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_breadcrumb.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_button-group.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_buttons.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_card.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_carousel.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_close.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_code.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_custom-forms.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_dropdown.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_forms.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_functions.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_grid.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_images.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_input-group.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_jumbotron.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_list-group.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_media.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_mixins.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_modal.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_nav.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_navbar.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_pagination.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_popover.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_print.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_progress.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_reboot.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_root.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_spinners.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_tables.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_toasts.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_tooltip.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_transitions.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_type.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_utilities.scss" />
-    <None Include="Content\bootstrap-4.3.1\scss\_variables.scss" />
     <None Include="Content\bootstrap.scss" />
     <None Include="Content\fontawesome-4.7\fonts\fontawesome-webfont.eot" />
     <None Include="Content\fontawesome-4.7\fonts\fontawesome-webfont.ttf" />
@@ -416,7 +323,7 @@
       <DependentUpon>cm-tsql-mode.min.js</DependentUpon>
     </None>
     <None Include="Scripts\CodeMirror\LICENSE" />
-    <None Include="Scripts\jquery-3.4.1\jquery-3.4.1.min.map" />
+    <None Include="Scripts\jquery\jquery-3.5.1.min.map" />
     <None Include="Scripts\js-spark-md5\LICENSE" />
     <None Include="Scripts\js-spark-md5\package.json" />
     <None Include="Scripts\js-spark-md5\README.md" />
@@ -489,6 +396,9 @@
     <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.NetFramework.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.NetFramework.Analyzers.3.0.0\analyzers\dotnet\cs\Microsoft.NetFramework.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Content\bootstrap\" />
+  </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>ECHO Copying directories to output
 ECHO Command: xcopy "$(ProjectDir)Content" "$(TargetDir)Content" /S /I /Y
@@ -509,20 +419,20 @@ rd /s /q "$(TargetDir)Scripts"</PreBuildEvent>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\BuildWebCompiler.1.12.405\build\BuildWebCompiler.targets'))" />
-    <Error Condition="!Exists('..\packages\cef.redist.x64.81.3.10\build\cef.redist.x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x64.81.3.10\build\cef.redist.x64.props'))" />
-    <Error Condition="!Exists('..\packages\cef.redist.x86.81.3.10\build\cef.redist.x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x86.81.3.10\build\cef.redist.x86.props'))" />
-    <Error Condition="!Exists('..\packages\CefSharp.Common.81.3.100\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.81.3.100\build\CefSharp.Common.props'))" />
-    <Error Condition="!Exists('..\packages\CefSharp.Common.81.3.100\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.81.3.100\build\CefSharp.Common.targets'))" />
-    <Error Condition="!Exists('..\packages\CefSharp.WinForms.81.3.100\build\CefSharp.WinForms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.81.3.100\build\CefSharp.WinForms.props'))" />
-    <Error Condition="!Exists('..\packages\CefSharp.WinForms.81.3.100\build\CefSharp.WinForms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.81.3.100\build\CefSharp.WinForms.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.VersionCheckAnalyzer.3.0.0\build\Microsoft.CodeAnalysis.VersionCheckAnalyzer.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeQuality.Analyzers.3.0.0\build\Microsoft.CodeQuality.Analyzers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetCore.Analyzers.3.0.0\build\Microsoft.NetCore.Analyzers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.NetFramework.Analyzers.3.0.0\build\Microsoft.NetFramework.Analyzers.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeAnalysis.FxCopAnalyzers.3.0.0\build\Microsoft.CodeAnalysis.FxCopAnalyzers.props'))" />
+    <Error Condition="!Exists('..\packages\cef.redist.x64.83.4.2\build\cef.redist.x64.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x64.83.4.2\build\cef.redist.x64.props'))" />
+    <Error Condition="!Exists('..\packages\cef.redist.x86.83.4.2\build\cef.redist.x86.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\cef.redist.x86.83.4.2\build\cef.redist.x86.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.targets'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.WinForms.83.4.20\build\CefSharp.WinForms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.83.4.20\build\CefSharp.WinForms.props'))" />
+    <Error Condition="!Exists('..\packages\CefSharp.WinForms.83.4.20\build\CefSharp.WinForms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CefSharp.WinForms.83.4.20\build\CefSharp.WinForms.targets'))" />
   </Target>
-  <Import Project="..\packages\CefSharp.Common.81.3.100\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.81.3.100\build\CefSharp.Common.targets')" />
-  <Import Project="..\packages\CefSharp.WinForms.81.3.100\build\CefSharp.WinForms.targets" Condition="Exists('..\packages\CefSharp.WinForms.81.3.100\build\CefSharp.WinForms.targets')" />
+  <Import Project="..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.targets" Condition="Exists('..\packages\CefSharp.Common.83.4.20\build\CefSharp.Common.targets')" />
+  <Import Project="..\packages\CefSharp.WinForms.83.4.20\build\CefSharp.WinForms.targets" Condition="Exists('..\packages\CefSharp.WinForms.83.4.20\build\CefSharp.WinForms.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -237,24 +237,8 @@
             entry.show = !entry.show;
             render();
         } else {
-            app.openFile(entry.Path, function (err, res) {
-                if (err) {
-                    return app.alert(`<span class="text-danger">${err || 'Failed to load file'}</span >`, 'Error', { html: true });
-                }
-
-                var instance = app.createInstance({
-                    path: entry.Path,
-                    name: entry.Name,
-                    code: res,
-                    dirty: false
-                });
-
-                // Let the editor instance create itself first.
-                requestAnimationFrame(function () {
-                    app.switchInstance(instance);
-                    $dlg.modal('hide');
-                });
-            });
+            app.loadInstance(null, entry.Path, entry.Name);
+            $dlg.modal('hide');
         }
     }).on('click', 'i', function () {
         var $this = $(this);

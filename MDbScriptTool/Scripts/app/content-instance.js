@@ -151,27 +151,7 @@
                 app.draggedItems.forEach(function (file, idx) {
                     if (file.Type === 'directory') return;
 
-                    var path = file.Path.replace(/\\/g, '/');
-
-                    app.openFile(path, function (err, res) {
-                        if (err) {
-                            return app.alert(`<span class="text-danger">${err || 'Failed to load file'}</span >`, 'Error', { html: true });
-                        }
-
-                        var instance = app.createInstance({
-                            path: path,
-                            name: file.Name,
-                            code: res,
-                            dirty: false
-                        });
-
-                        if (idx === lastIdx) {
-                            // Let the editor instance create itself first.
-                            setTimeout(function () {
-                                app.switchInstance(instance);
-                            }, 0);
-                        }
-                    });
+                    app.loadInstance(null, file.Path, file.Name);
                 });
             }
         });

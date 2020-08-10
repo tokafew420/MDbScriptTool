@@ -6,7 +6,9 @@ namespace Tokafew420.MDbScriptTool.Native
     /// Used with SetWindowPos.
     /// </summary>
     [Flags]
+#pragma warning disable CA1028 // Enum Storage should be Int32
     public enum SetWindowPosFlags : uint
+#pragma warning restore CA1028 // Enum Storage should be Int32
     {
         /// <summary>
         /// If the calling thread and the thread that owns the window are attached to different input queues, the system posts the request to the thread that owns the window. This prevents the calling thread from blocking its execution while other threads process the request.

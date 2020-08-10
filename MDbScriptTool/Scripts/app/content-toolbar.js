@@ -71,30 +71,6 @@
         app.createInstance();
     });
 
-    var openFile = function (name, path) {
-        app.openFile(path, function (err, res) {
-            if (err) {
-                return app.alert(`<span class="text-danger">${err || 'Failed to load file'}</span>`, 'Error', { html: true });
-            }
-            // If the current instance the default "New" tab then load the file into that instead.
-            if (!app.instance.code && !app.instance.path) {
-                app.loadInstance(app.instance, path, name, res);
-            } else {
-                let instance = app.createInstance({
-                    path: path,
-                    name: name,
-                    code: res,
-                    dirty: false
-                });
-
-                // Let the editor instance create itself first.
-                setTimeout(function () {
-                    app.switchInstance(instance);
-                }, 0);
-            }
-        });
-    };
-
     $openFile.on('click', function () {
         $('#open-file-file', $toolbar).val(null).click();
         return false;
@@ -107,14 +83,11 @@
             if (!cancelled) osFiles = files;
         });
     }).on('change', function () {
-        var $this = $(this);
         if (osFiles && osFiles.length && this.files && this.files.length) {
             var name = this.files[0].name;
             var osFile = app.findBy(osFiles, 'Name', name);
             if (osFile) {
-                var path = osFile.Path.replace(/\\/g, '/');
-
-                openFile(name, path);
+                app.loadInstance(null, osFile.Path, name);
             }
         }
         osFiles = null;
@@ -122,15 +95,7 @@
 
     // When the server asks for a file to be opened
     app.on('open-file', function (name, path) {
-        // If the file is already opened then switch to it
-        for (var instance of app.instances) {
-            // Check if id is from this app (in case of multi app instances)
-            if (instance.path === path) {
-                app.switchInstance(instance);
-                return;
-            }
-        }
-        openFile(name, path);
+        app.loadInstance(null, path, name);
     });
 
     $saveFile.on('click', function () {
