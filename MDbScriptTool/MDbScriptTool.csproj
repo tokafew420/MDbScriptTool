@@ -184,6 +184,7 @@
     <Content Include="Scripts\app\cm-search.js" />
     <Content Include="Scripts\app\extensions-modal.js" />
     <Content Include="Scripts\cm-search.min.js" />
+    <Content Include="Scripts\CodeMirror\addon\scroll\scrollpastend.js" />
     <Content Include="Scripts\CodeMirror\addon\search\searchcursor.js" />
     <Content Include="Scripts\jquery\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery\jquery-3.5.1.js" />

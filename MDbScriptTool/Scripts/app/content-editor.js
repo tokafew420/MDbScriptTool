@@ -11,15 +11,16 @@
             var theme = 'twilight-vs-tsql';
 
             var editor = instance.editor = CodeMirror(instance.$editor[0], {
-                mode: mime,
+                autofocus: true,
                 indentWithTabs: true,
                 indentUnit: 4,
-                smartIndent: true,
                 lineNumbers: true,
+                keyMap: 'app',
                 matchBrackets: true,
-                autofocus: true,
-                theme: theme,
-                keyMap: 'app'
+                mode: mime,
+                scrollPastEnd: true,
+                smartIndent: true,
+                theme: theme
             });
 
             if (instance.code) {
