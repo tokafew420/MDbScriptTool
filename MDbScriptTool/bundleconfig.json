@@ -63,5 +63,17 @@
       "renameLocals": true
     },
     "sourceMap": true
+  },
+  {
+    "outputFileName": "Scripts/cm-tsql-fold.min.js",
+    "includeInProject": false,
+    "inputFiles": [
+      "Scripts/app/cm-tsql-fold.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": true
   }
 ]

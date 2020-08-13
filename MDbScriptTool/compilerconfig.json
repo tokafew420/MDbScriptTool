@@ -38,5 +38,15 @@
     "options": {
       "sourceMap": true
     }
+  },
+  {
+    "outputFile": "Content/cm-tsql-fold.css",
+    "inputFile": "Content/app/css/cm-tsql-fold.less",
+    "minify": {
+      "enabled": true
+    },
+    "options": {
+      "sourceMap": true
+    }
   }
 ]

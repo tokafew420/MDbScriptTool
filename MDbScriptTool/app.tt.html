@@ -16,9 +16,11 @@
   <!--<# if (config == "Debug") { #>-->
   <link rel="stylesheet" href="./Content/cm-s-twilight-vs-tsql.css">
   <link rel="stylesheet" href="./Content/cm-search.css">
+  <link rel="stylesheet" href="./Content/cm-tsql-fold.css">
   <!--<# } else { #>-->
   <link rel="stylesheet" href="./Content/cm-s-twilight-vs-tsql.min.css">
   <link rel="stylesheet" href="./Content/cm-search.min.css">
+  <link rel="stylesheet" href="./Content/cm-tsql-fold.min.css">
   <!--<# } #>-->
   <!--App css -->
   <!--<# if (config == "Debug") { #>-->
@@ -685,15 +687,20 @@
   <script src="./Content/jQuery-contextMenu/jquery.contextMenu.min.js"></script>
   <script src="./Scripts/CodeMirror/lib/codemirror.js"></script>
   <script src="./Scripts/CodeMirror/addon/comment/comment.js"></script>
+  <script src="./Scripts/CodeMirror/addon/fold/comment-fold.js"></script>
+  <script src="./Scripts/CodeMirror/addon/fold/foldcode.js"></script>
+  <script src="./Scripts/CodeMirror/addon/fold/foldgutter.js"></script>
   <script src="./Scripts/CodeMirror/addon/scroll/scrollpastend.js"></script>
   <script src="./Scripts/CodeMirror/addon/search/searchcursor.js"></script>
   <script src="./Scripts/CodeMirror/keymap/sublime.js"></script>
   <!--<# if (config =="Debug") { #>-->
-  <script src="./Scripts/app/cm-tsql-mode.js"></script>
   <script src="./Scripts/app/cm-search.js"></script>
+  <script src="./Scripts/app/cm-tsql-fold.js"></script>
+  <script src="./Scripts/app/cm-tsql-mode.js"></script>
   <!--<# } else { #>-->
-  <script src="./Scripts/cm-tsql-mode.min.js"></script>
   <script src="./Scripts/cm-search.min.js"></script>
+  <script src="./Scripts/cm-tsql-fold.min.js"></script>
+  <script src="./Scripts/cm-tsql-mode.min.js"></script>
   <!--<# } #>-->
   <script src="./Scripts/noose/noose.min.js"></script>
   <!--<# if (config =="Debug") { #>-->

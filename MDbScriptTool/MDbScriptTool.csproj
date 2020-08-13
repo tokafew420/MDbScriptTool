@@ -180,10 +180,19 @@
     <Content Include="Content\cm-search.min.css">
       <DependentUpon>cm-search.css</DependentUpon>
     </Content>
+    <Content Include="Content\cm-tsql-fold.css" />
+    <Content Include="Content\cm-tsql-fold.min.css">
+      <DependentUpon>cm-tsql-fold.css</DependentUpon>
+    </Content>
+    <Content Include="Scripts\app\cm-tsql-fold.js" />
     <Content Include="Scripts\app\script-library-modal.js" />
     <Content Include="Scripts\app\cm-search.js" />
     <Content Include="Scripts\app\extensions-modal.js" />
     <Content Include="Scripts\cm-search.min.js" />
+    <Content Include="Scripts\cm-tsql-fold.min.js" />
+    <Content Include="Scripts\CodeMirror\addon\fold\comment-fold.js" />
+    <Content Include="Scripts\CodeMirror\addon\fold\foldcode.js" />
+    <Content Include="Scripts\CodeMirror\addon\fold\foldgutter.js" />
     <Content Include="Scripts\CodeMirror\addon\scroll\scrollpastend.js" />
     <Content Include="Scripts\CodeMirror\addon\search\searchcursor.js" />
     <Content Include="Scripts\jquery\jquery-3.5.1.intellisense.js" />
@@ -215,6 +224,7 @@
     <None Include="compilerconfig.json.bindings">
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
+    <None Include="Content\app\css\cm-tsql-fold.less" />
     <None Include="Content\app\css\script-library-modal.less" />
     <None Include="Content\app\css\cm-search.less" />
     <None Include="Content\app\css\extensions-modal.less" />
@@ -319,6 +329,9 @@
     </None>
     <None Include="Scripts\cm-search.min.js.map">
       <DependentUpon>cm-search.min.js</DependentUpon>
+    </None>
+    <None Include="Scripts\cm-tsql-fold.min.js.map">
+      <DependentUpon>cm-tsql-fold.min.js</DependentUpon>
     </None>
     <None Include="Scripts\cm-tsql-mode.min.js.map">
       <DependentUpon>cm-tsql-mode.min.js</DependentUpon>
