@@ -16,7 +16,7 @@
                 indentUnit: 4,
                 foldGutter: true,
                 foldOptions: {
-                    rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.tsql, CodeMirror.fold.comment),
+                    rangeFinder: new CodeMirror.fold.combine(CodeMirror.fold.tsql, CodeMirror.fold.linecomment, CodeMirror.fold.comment),
                     widget: '...'
                 },
                 gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],

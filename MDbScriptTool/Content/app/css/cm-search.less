@@ -1,12 +1,13 @@
 /// <reference path="variables.less" />
+@import "variables.less";
 
 .CodeMirror.cm-search-opened .cm-search-dialog {
   display: block;
 }
 
 .cm-search-dialog {
-  background-color: #141414;
-  border: 1px solid #ffffff;
+  background-color: @dark-1;
+  border: 1px solid @light-0;
   border-top: none;
   border-bottom-left-radius: 4px;
   border-bottom-right-radius: 4px;
@@ -23,9 +24,9 @@
 
   .btn-group {
     .btn {
-      background-color: #000000;
-      border-color: #242424;
-      color: #ffffff;
+      background-color: @dark-0;
+      border-color: @dark-2;
+      color: @light-0;
 
       i {
         font-size: .9em;
@@ -33,18 +34,18 @@
 
       &.disabled,
       &:disabled {
-        background-color: #545454;
+        background-color: @dark-4;
       }
 
       &:not(:disabled):not(.disabled):active,
       &:not(:disabled):not(.disabled).active,
       &:not(:disabled):not(.disabled):focus,
       &:not(:disabled):not(.disabled):hover {
-        background-color: #242424;
+        background-color: @dark-2;
       }
 
       &.active {
-        color: #f7611e;
+        color: @accent2-0;
       }
     }
   }
@@ -83,14 +84,14 @@
       flex-grow: 1;
 
       &.no-match {
-        color: #d41111;
+        color: @accent-0;
       }
     }
   }
 
   .close-btn {
     position: absolute;
-    color: #ffffff;
+    color: @light-0;
     right: 0;
     top: 0;
   }
@@ -108,7 +109,7 @@
       position: absolute;
       height: 135%;
       width: 100%;
-      border-right: solid 2px #f7611e;
+      border-right: solid 2px @accent2-0;
       transform: rotate(-45deg);
       margin: -1px;
     }
@@ -118,7 +119,7 @@
       position: absolute;
       height: 70%;
       width: 32%;
-      border-right: solid 2px #f7611e;
+      border-right: solid 2px @accent2-0;
       transform: rotate(-45deg);
       margin: 2px;
     }
