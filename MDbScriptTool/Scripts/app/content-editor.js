@@ -12,6 +12,9 @@
 
             var editor = instance.editor = CodeMirror(instance.$editor[0], {
                 autofocus: true,
+                highlightSelectionMatches: {
+                    annotateScrollbar: true
+                },
                 indentWithTabs: true,
                 indentUnit: 4,
                 foldGutter: true,

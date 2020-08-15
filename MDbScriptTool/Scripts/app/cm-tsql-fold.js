@@ -21,6 +21,9 @@
                 if (!/^(comment|string)/.test(tokenType)) {
                     // Add length so fold shows first keyword
                     return idx + len;
+                } else if (!at) {
+                    // Edge case when token is found at beginning of line but is a comment or string
+                    return -1;
                 }
                 at = idx;
             }

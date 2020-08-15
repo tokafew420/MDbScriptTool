@@ -193,7 +193,10 @@
     <Content Include="Scripts\CodeMirror\addon\fold\comment-fold.js" />
     <Content Include="Scripts\CodeMirror\addon\fold\foldcode.js" />
     <Content Include="Scripts\CodeMirror\addon\fold\foldgutter.js" />
+    <Content Include="Scripts\CodeMirror\addon\scroll\annotatescrollbar.js" />
     <Content Include="Scripts\CodeMirror\addon\scroll\scrollpastend.js" />
+    <Content Include="Scripts\CodeMirror\addon\search\match-highlighter.js" />
+    <Content Include="Scripts\CodeMirror\addon\search\matchesonscrollbar.js" />
     <Content Include="Scripts\CodeMirror\addon\search\searchcursor.js" />
     <Content Include="Scripts\jquery\jquery-3.5.1.intellisense.js" />
     <Content Include="Scripts\jquery\jquery-3.5.1.js" />
