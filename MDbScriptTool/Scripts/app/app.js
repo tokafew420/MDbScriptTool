@@ -2124,6 +2124,10 @@
             'Ctrl-/': 'toggleComment',
             'Ctrl-D': 'duplicateLine',
             'Shift-Ctrl-D': 'deleteLine',
+            'Ctrl-[': 'unfold',
+            'Ctrl-]': 'fold',
+            'Shift-Ctrl-[': 'unfoldAll',
+            'Shift-Ctrl-]': 'foldAll',
             // Custom commands
             'Ctrl-E': 'executeSql',
             'Ctrl-P': 'parseSql',

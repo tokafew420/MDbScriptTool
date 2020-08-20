@@ -18,6 +18,8 @@
     /** Editor buttons **/
     var $commentBtn = $('.comment-btn', $toolbar);
     var $uncommentBtn = $('.uncomment-btn', $toolbar);
+    var $collapseBtn = $('.collapse-btn', $toolbar);
+    var $expandBtn = $('.expand-btn', $toolbar);
     /** Result buttons **/
     var $exportBtn = $('.export-btn', $toolbar);
 
@@ -122,6 +124,30 @@
     $uncommentBtn.on('click', function () {
         if (app.instance && app.instance.editor) {
             app.instance.editor.appToggleComment({ mode: 'un' });
+            app.instance.editor.focus();
+        }
+    });
+
+    $collapseBtn.on('click', function () {
+        if (app.instance && app.instance.editor) {
+            app.instance.editor.execCommand('fold');
+            app.instance.editor.focus();
+        }
+    }).on('dblclick', function () {
+        if (app.instance && app.instance.editor) {
+            app.instance.editor.execCommand('foldAll');
+            app.instance.editor.focus();
+        }
+    });
+
+    $expandBtn.on('click', function () {
+        if (app.instance && app.instance.editor) {
+            app.instance.editor.execCommand('unfold');
+            app.instance.editor.focus();
+        }
+    }).on('dblclick', function () {
+        if (app.instance && app.instance.editor) {
+            app.instance.editor.execCommand('unfoldAll');
             app.instance.editor.focus();
         }
     });
