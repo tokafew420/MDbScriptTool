@@ -190,11 +190,11 @@
             var $dbTable = $('#r' + db.id, instance.$result);
             if ($dbTable.length === 0) {
                 app.loading.hide(instance.$result);
-                var exportBtn = `<a href="#" class="export-btn d-none" data-toggle="tooltip" title="Export Database Results"><i class="fa fa-download"></i></a>`;
+                var exportBtn = `<a href="#" class="export-result-btn d-none" data-toggle="tooltip" title="Export Database Results"><i class="fa fa-table download-overlay"></i></a>`;
                 instance.$result.append(`<div id="r${db.id}" class="result-sets-container" tabindex="0"><div class="result-sets-header"><div class="header-text mr-2"><span class="db-name">${db.label || db.name}</span><span class="result-sets-meta"></span></div>${exportBtn}</div></div>`);
                 $dbTable = $('#r' + db.id, instance.$result);
 
-                $('.export-btn', instance.$result).tooltip();
+                $('.export-result-btn', instance.$result).tooltip();
             }
 
             if (err) {
@@ -204,7 +204,7 @@
                     $dbTable.append(`<div class="result-text error text-danger" tabindex="0">${err.Message}</div>`);
                 }
             } else if (result && result.length && result[0].length) {
-                $('.export-btn', instance.$result).removeClass('d-none');
+                $('.export-result-btn', instance.$result).removeClass('d-none');
                 var $table = $('<div class="result-set" tabindex="0"><table class="table table-sm table-striped table-hover table-dark table-bordered"><thead><tr><th class="column-header row-number" data-idx="-1"></th></tr></thead><tbody></tbody></table></div>');
                 $table.data('result', result);
 
@@ -301,7 +301,7 @@
         }
     });
 
-    $('.instance-container').on('click', '.instance .export-btn', function (e) {
+    $('.instance-container').on('click', '.instance .export-result-btn', function (e) {
         e.preventDefault();
         var $btn = $(this).tooltip('hide');
         var instance = $btn.closest('.instance').data('instance');
@@ -441,15 +441,16 @@
             return 500;
         },
         callback: function (key, opts, e) {
-            var $this = $(this);
-            var result = $this.data('result');
-            var asScript = key.indexOf('as-script') !== -1;
-            var includeHeaders = key.indexOf('include-headers') !== -1;
+            let $this = $(this);
+            let result = $this.data('result');
+            let asScript = key.indexOf('as-script') !== -1;
+            let includeHeaders = key.indexOf('include-headers') !== -1;
+            let headersOnly = key.indexOf('headers-only') !== -1;
 
-            var selectedData = app.getSelectedResults(result, result.selected, includeHeaders);
+            let selectedData = app.getSelectedResults(result, result.selected, includeHeaders, headersOnly);
 
             if (asScript) {
-                app.copyToClipboard(app.resultToScriptText(selectedData, includeHeaders));
+                app.copyToClipboard(app.resultToScriptText(selectedData, includeHeaders || headersOnly));
             } else {
                 app.copyToClipboard(app.resultToText(selectedData));
             }
@@ -470,8 +471,13 @@
                     copy: { name: 'Copy', visible: false }, // Hack to make parent selectable: https://github.com/swisnl/jQuery-contextMenu/issues/687
                     'copy-include-headers': {
                         name: 'Include Headers',
-                        icon: 'fa-header',
+                        icon: 'fa-th',
                         accesskey: 'h'
+                    },
+                    'copy-headers-only': {
+                        name: 'Headers Only',
+                        icon: 'fa-header',
+                        accesskey: 'o'
                     },
                     'copy-as-script': {
                         name: 'As Script',
@@ -481,9 +487,14 @@
                             'copy-as-script': { name: 'As Script', visible: false },
                             'copy-as-script-include-headers': {
                                 name: 'Include Headers',
-                                icon: 'fa-header',
+                                icon: 'fa-th',
                                 accesskey: 'h'
-                            }
+                            },
+                            'copy-as-script-headers-only': {
+                                name: 'Headers Only',
+                                icon: 'fa-header',
+                                accesskey: 'o'
+                            },
                         }
                     }
                 }
@@ -496,7 +507,7 @@
                 items: {
                     'export-table': {
                         name: 'Table Result',
-                        icon: 'fa-th',
+                        icon: 'fa-table',
                         accesskey: 't',
                         callback: function () {
                             var $this = $(this);
@@ -510,7 +521,7 @@
                         icon: 'fa-database',
                         accesskey: 'd',
                         callback: function () {
-                            $('.export-btn', $(this).closest('.result-sets-container')).click();
+                            $('.export-result-btn', $(this).closest('.result-sets-container')).click();
                         }
                     },
                     'export-all': {

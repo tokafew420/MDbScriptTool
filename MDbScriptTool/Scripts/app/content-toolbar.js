@@ -21,7 +21,8 @@
     var $collapseBtn = $('.collapse-btn', $toolbar);
     var $expandBtn = $('.expand-btn', $toolbar);
     /** Result buttons **/
-    var $exportBtn = $('.export-btn', $toolbar);
+    var $exportResultsBtn = $('.export-results-btn', $toolbar);
+    var $exportTextBtn = $('.export-text-btn', $toolbar);
 
     function _toggleToolbarBtns(disabled) {
         // Disabled these toolbar button while a sql operation is in progress
@@ -152,10 +153,49 @@
         }
     });
 
-    $exportBtn.on('click', function () {
+    $exportResultsBtn.on('click', function () {
         if (app.instance) {
-            app.downloadToCsv(app.instance);
-            app.instance.editor.focus();
+            app.downloadToCsv(app.instance, function () {
+                app.instance.editor.focus()
+            });
         }
+    });
+
+    $exportTextBtn.on('click', function () {
+        let instance = app.instance;
+        if (instance && instance.results && instance.$result) {
+            let $results = $('.header-text, .result-text', instance.$result);
+
+            if ($results.length) {
+                app.emit('export-result-text', instance);
+                var filename = app.date.format(new Date(), 'yyyymmddhhMMss') + '.txt';
+
+                app.downloadText($results.map(function () {
+                    let $this = $(this);
+
+                    if ($this.hasClass('header-text')) {
+                        let header = $this.text();
+                        return header + '\r\n'.padEnd(header.length, '-');
+                    } else {
+                        return $this.text() + '\r\n';
+                    }
+                }).get().join('\r\n'), encodeURIComponent(filename), 'text/plain;charset=utf-8');
+
+                os.once('download-completed', function (complete, download) {
+                    if (complete) {
+                        var file = {
+                            path: download.FullPath.replace(/\\/g, '/')
+                        };
+                        file.name = file.path.split('/').pop();
+                    }
+                    app.emit('file-downloaded', file);
+                });
+                return;
+            }
+        }
+
+        return app.alert('<p>No result set found.</p>', 'Oops!', {
+            html: true
+        });
     });
 }(window, window.app = window.app || {}, window.os, jQuery));

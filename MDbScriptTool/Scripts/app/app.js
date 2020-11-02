@@ -68,6 +68,10 @@
             downloadLink.href = window.webkitURL.createObjectURL(blob);
 
             downloadLink.click();
+
+            os.once('download-completed', function (complete, download) {
+                window.webkitURL.revokeObjectURL(downloadLink.href);
+            });
         };
 
         /**
@@ -307,11 +311,12 @@
          *
          * @param {array} data An array of arrays containing the data to export.
          * @param {string} filename Optional The name of the downloaded file. Defaults to the current date time as 'yyyymmddhhMMss.csv'
+         * @param {function} callback Optional Callback after the download is complete.
          */
-        app.exportCsv = function (data, filename) {
+        app.exportCsv = function (data, filename, callback) {
             if (!Array.isArray(data)) throw new Error('InvalidArgument: Expecting [data] to be an array.');
-
             if (!filename) filename = app.date.format(new Date(), 'yyyymmddhhMMss') + '.csv';
+            callback = app.identity(callback);
 
             var csv = app.resultToText(data, true, ',');
 
@@ -324,6 +329,7 @@
                     };
                     file.name = file.path.split('/').pop();
                 }
+                callback(file);
                 app.emit('file-downloaded', file);
             });
         };
@@ -388,7 +394,17 @@
          * @returns {function} The passed in function or a no-op function.
          **/
         app.identity = function (fn) {
-            return typeof fn === 'function' ? fn : app.noop;
+            return app.isFunction(fn) ? fn : app.noop;
+        };
+
+        /**
+         * Determine if a value is a function.
+         *
+         * @param {any} fn The value to test.
+         * @returns {boolean} true if the value is a function, otherwise false.
+         */
+        app.isFunction = function (fn) {
+            return fn && typeof fn === 'function';
         };
 
         /**
@@ -419,7 +435,7 @@
                     for (i = 0, ii = arr.length; i < ii; i++) {
                         if (arr[i] && arr[i][key] === val) return i;
                     }
-                } else if (typeof arr === 'object') {
+                } else if (app.isObject(arr)) {
                     var keys = Object.keys(arr);
                     for (i = 0, ii = keys.length; i < ii; i++) {
                         k = keys[i];
@@ -540,7 +556,7 @@
             var args = [].slice.call(arguments);
 
             for (var i = 0, ii = args.length; i < ii; i++) {
-                if (typeof args[i] === 'function') {
+                if (app.isFunction(args[i])) {
                     return args[i]();
                 }
             }
@@ -689,9 +705,11 @@
             }
 
             if (includeHeaders && resultset.length) {
-                headers = '(' + resultset.shift().map(function (name) {
+                headers = '(' + resultset[0].map(function (name) {
                     return '[' + name + ']';
                 }).join(', ') + ')\r\n';
+
+                resultset = resultset.slice(1);
             }
 
             var rows = resultset.map(function (row) {
@@ -710,7 +728,7 @@
             }).join(lineDelimiter);
 
             // Wrap in paren if single row
-            if (lineDelimiter === ', ') rows = '(' + rows + ')';
+            if (rows && lineDelimiter === ', ') rows = '(' + rows + ')';
 
             return headers + rows;
         };
@@ -798,17 +816,17 @@
             var $dlg = $('#alert-modal');
 
             var bsModal = function (type, msg, title, opts, callback) {
-                if (typeof title === 'object' || typeof title === 'function') {
+                if (app.isObject(title) || app.isFunction(title)) {
                     callback = opts;
                     opts = title;
                     title = null;
                 }
-                if (typeof opts === 'function') {
+                if (app.isFunction('function')) {
                     callback = opts;
                     opts = {};
                 }
                 opts = opts || {};
-                callback = callback || app.noop;
+                callback = app.identity(callback);
 
                 if (type === 'alert') {
                     opts = Object.assign({
@@ -889,7 +907,7 @@
             var $loader = $('<div class="loader"><div class="loader-wrapper"><div class="loader-spinner"></div><div class="loader-text"></div></div></div>');
 
             var mod = function (text, opts) {
-                if (typeof text === 'object') {
+                if (app.isObject(text)) {
                     opts = text;
                 } else {
                     opts = opts || {};
@@ -1783,13 +1801,19 @@
          *
          * @param {object} instance The instance containing the result sets to download.
          * @param {string} dbId (Optional) The database id (within the current instance) containing the resultset to download.
+         * @param {function} callback Optional Callback after the download is complete.
          */
-        app.downloadToCsv = function (instance, dbId) {
+        app.downloadToCsv = function (instance, dbId, callback) {
             if (instance && instance.results) {
+                if (app.isFunction(dbId)) {
+                    callback = dbId;
+                    dbId = null;
+                }
+                callback = app.identity(callback);
+
                 let exportData = [];
                 let fileName = app.date.format(new Date(), 'yyyymmddhhMMss') + '.csv';
                 let ids = dbId && [dbId] || Object.keys(app.instance.results);
-                let connection = app.findBy(app.connections, 'id', instance.connection.id) || {};
 
                 if (dbId && instance.results[dbId] && instance.results[dbId][0] && instance.results[dbId][0].dbname) {
                     fileName = instance.results[dbId][0].dbname + '-' + fileName;
@@ -1802,7 +1826,7 @@
                         let dbName = dbResults[0].dbname || 'Unresolved';
 
                         dbResults.forEach(function (rs) {
-                            if (rs.result) {
+                            if (rs.result && rs.result.length) {
                                 // Clone resultset
                                 let result = rs.result.map(function (row) {
                                     return row.slice();
@@ -1819,14 +1843,14 @@
                 });
 
                 if (exportData.length) {
-                    app.exportCsv(exportData.flat(), fileName);
+                    app.exportCsv(exportData.flat(), fileName, callback);
                     return;
                 }
             }
 
             app.alert('<p>No result set found.</p>', 'Oops!', {
                 html: true
-            });
+            }, callback);
         };
 
         /**
@@ -1835,29 +1859,37 @@
          * @param {Array} result The result set.
          * @param {object} selected The selection object.
          * @param {boolean} includeHeaders Whether to include column headers.
+         * @param {boolean} headersOnly Whether to only include column headers.
          * @returns {Array} The selected results.
          */
-        app.getSelectedResults = function (result, selected, includeHeaders) {
+        app.getSelectedResults = function (result, selected, includeHeaders, headersOnly) {
             if (result && result.length && selected) {
                 if (selected.type === 'table') {
                     if (includeHeaders) return result;
+                    if (headersOnly) return [result[0]];
                     return result.slice(1, result.length);
                 } else if (selected.type === 'column') {
-                    return result.reduce(function (acc, row, idx) {
-                        if (idx === 0 && !includeHeaders) return acc;
+                    if (headersOnly) {
+                        return [selected.set.map(function (selectedIdx) {
+                            return result[0][selectedIdx];
+                        })];
+                    } else {
+                        return result.reduce(function (acc, row, idx) {
+                            if (idx === 0 && !includeHeaders) return acc;
 
-                        acc.push(selected.set.map(function (selectedIdx) {
-                            return result[idx][selectedIdx];
-                        }));
+                            acc.push(selected.set.map(function (selectedIdx) {
+                                return result[idx][selectedIdx];
+                            }));
 
-                        return acc;
-                    }, []);
+                            return acc;
+                        }, []);
+                    }
                 } else if (selected.type === 'row') {
                     let final = [];
 
-                    if (includeHeaders) final.push(result[0]);
+                    if (includeHeaders || headersOnly) final.push(result[0]);
 
-                    return selected.set.reduce(function (acc, idx) {
+                    return headersOnly ? final : selected.set.reduce(function (acc, idx) {
                         acc.push(result[idx]);
 
                         return acc;
@@ -1874,22 +1906,34 @@
                     if (includeHeaders) rows.unshift(0);
                     let rowSet = new Set(rows.sort(app.compare));
                     let colSet = new Set(cols.sort(app.compare));
-                    let final = Array(rowSet.size).fill().map(function () { return Array(colSet.size).fill(); });
 
-                    let cIdx = 0;
-                    let rIdx = 0;
-                    rowSet.forEach(function (rowIdx) {
-                        cIdx = 0;
-                        colSet.forEach(function (colIdx) {
-                            if (rowIdx === 0 || selected.set.indexOf(`${rowIdx},${colIdx}`) !== -1) {
-                                final[rIdx][cIdx] = result[rowIdx][colIdx];
-                            }
-                            cIdx++;
+                    if (headersOnly) {
+                        let final = [];
+
+                        colSet.forEach(function (idx) {
+                            final.push(result[0][idx]);
                         });
-                        rIdx++;
-                    });
 
-                    return final;
+                        return [final];
+                    } else {
+
+                        let final = Array(rowSet.size).fill().map(function () { return Array(colSet.size).fill(); });
+
+                        let cIdx = 0;
+                        let rIdx = 0;
+                        rowSet.forEach(function (rowIdx) {
+                            cIdx = 0;
+                            colSet.forEach(function (colIdx) {
+                                if (rowIdx === 0 || selected.set.indexOf(`${rowIdx},${colIdx}`) !== -1) {
+                                    final[rIdx][cIdx] = result[rowIdx][colIdx];
+                                }
+                                cIdx++;
+                            });
+                            rIdx++;
+                        });
+
+                        return final;
+                    }
                 }
             }
 
@@ -1914,7 +1958,7 @@
             var savedState = app.localStorage.get(`app-${key}`);
 
             if (savedState) {
-                if (typeof savedState === 'object') {
+                if (app.isObject(savedState)) {
                     Object.assign(app[key], savedState);
                 } else {
                     app[key] = savedState;
